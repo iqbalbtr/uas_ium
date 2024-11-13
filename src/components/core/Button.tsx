@@ -1,9 +1,23 @@
-import React, { ButtonHTMLAttributes, ReactNode } from 'react'
+import React, { ReactNode, useState } from 'react'
 
-function Button({ child, ...props }: { child: ReactNode } & React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) {
+function Button({ children, action, ...props }: { children: ReactNode, action?: () => void } & React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>) {
+
+    const [isLoading, setLoading] = useState(false)
+
+    function handler() {
+        try {
+            setLoading(true)
+            action && action()
+        } catch (error) {
+
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
-        <button {...props}>
-            {child}
+        <button onClick={handler} {...props}>
+            {isLoading ? "Loading" : children}
         </button>
     )
 }
