@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div>
-      Home
+      <h1 className="text-3xl text-center font-bold text-slate-500">Dashboard</h1>
     </div>
   );
 }
