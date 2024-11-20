@@ -20,6 +20,8 @@
 # production
 /build
 
+pnpm-lock.yaml
+
 .env
 
 # misc
