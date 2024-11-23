@@ -1,11 +1,9 @@
-import { Button } from "@components/ui/button";
-import Image from "next/image";
-
-export default function Home() {
+const App = () => {
   return (
-    <div className="w-[100%] h-[100vh] bg-gray-300 block items-center">
-      <h1 className="text-3xl font-bold top-5 text-slate-900">Dashboard</h1>
-      <Button>Click</Button>
+    <div>
+      {" "}
+      <h1>Home</h1>
     </div>
   );
-}
+};
+export default App;
