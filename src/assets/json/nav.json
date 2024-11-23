@@ -1,0 +1,91 @@
+[
+    {
+        "id": 1,
+        "path": "/dashboard",
+        "label": "Dashboard"
+    },
+    {
+        "id": 2,
+        "path": "/dashboard/kasir",
+        "label": "kasir"
+    },
+    {
+        "id": 3,
+        "label": "User",
+        "children": [
+            {
+                "id": 1,
+                "label": "Master User",
+                "path": "/dashboard/user/master"
+            },
+            {
+                "id": 1,
+                "label": "Master Role",
+                "path": "/dashboard/user/role"
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "label": "Obat",
+        "children": [
+            {
+                "id": 1,
+                "path": "/dashboard/obat/master",
+                "label": "Master Obat"
+            },
+            {
+                "id": 2,
+                "path": "/dashboard/obat/pemesanan",
+                "label": "Pemesanan"
+            },
+            {
+                "id": 3,
+                "path": "/dashboard/obat/penerimaan",
+                "label": "Penerimaan"
+            },
+            {
+                "id": 4,
+                "path": "/dashboard/obat/racikan",
+                "label": "Racikan"
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "label": "Laporan",
+        "children": [
+            {
+                "id": 1,
+                "label": "Daftar penjualan",
+                "path": "/dashboard/laporan/penjualan"
+            },
+            {
+                "id": 3,
+                "label": "Daftar pembelian",
+                "path": "/dashboard/laporan/pembelian"
+            },
+            {
+                "id": 3,
+                "label": "Laba rugi",
+                "path": "/dashboard/laporan/laba-rugi"
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "label": "Apotek",
+        "children": [
+            {
+                "id": 1,
+                "label": "Informasi apotek",
+                "path": "/dashboard/apotek/infomasi"
+            },
+            {
+                "id": 2,
+                "label": "Ubah apotek",
+                "path": "/dashboard/apotek/ubah"
+            }
+        ]
+    }
+]
