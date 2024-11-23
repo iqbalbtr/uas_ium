@@ -11,8 +11,8 @@ const testimonials = [
   {
     quote:
       "The curation is highly focused on design and the scene is a clever marketplace that allows users to replicate the design at home.",
-    author: "Kaiya Carder",
-    role: "Freelancer",
+    author: "Iflakul Husada",
+    role: "Apoteker",
     image: "/images/apotek.jpg",
   },
   {
@@ -46,18 +46,32 @@ export default function LoginPage() {
               Login to continue
             </h1>
             <p className="text-muted-foreground">
-              Welcome back! Please enter your details.
+              Welcome, Please enter your details.
             </p>
           </div>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Input id="name" placeholder="Name" />
+              <Input
+                id="name"
+                placeholder="Name"
+                className="placeholder:opacity-50"
+              />
             </div>
             <div className="space-y-2">
-              <Input id="email" placeholder="Email address" type="email" />
+              <Input
+                id="email"
+                placeholder="Email address"
+                type="email"
+                className="placeholder:opacity-50"
+              />
             </div>
             <div className="space-y-2">
-              <Input id="password" placeholder="Password" type="password" />
+              <Input
+                id="password"
+                placeholder="Password"
+                type="password"
+                className="placeholder:opacity-50"
+              />
             </div>
             <Button className="w-full bg-[#2A2B27] hover:bg-[#3F403B]">
               Continue
@@ -82,12 +96,13 @@ export default function LoginPage() {
         </Card>
       </div>
       <div className="hidden lg:block relative">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
-        <img
-          src={testimonials[currentTestimonial].image}
-          alt="Design inspiration"
-          className="h-full w-full object-cover"
-        />
+        <div className="h-full w-full p-2">
+          <img
+            src={testimonials[currentTestimonial].image}
+            alt="Design inspiration"
+            className="h-full w-full object-cover rounded-md"
+          />
+        </div>
         <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
           <blockquote className="space-y-2">
             <p className="text-3xl font-medium leading-tight">
