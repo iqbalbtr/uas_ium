@@ -20,17 +20,13 @@ export default async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL('/login', req.nextUrl))
     }
 
-    if (session?.id && isAuthRoute) {
+    if(!session && publicRoutes)
+        return NextResponse.next()
+
+    if (session && isAuthRoute) {
         return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
     }
 
-    if (
-        isPublicRoute &&
-        session?.id &&
-        !req.nextUrl.pathname.startsWith('/dashboard')
-    ) {
-        return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
-    }
 
     const getRole = await db.query.roles.findFirst({
         where: (role, { eq }) => (eq(role.id, session.roleId))

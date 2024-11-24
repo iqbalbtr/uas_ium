@@ -1,10 +1,8 @@
 import * as schema from "./schema"
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
-const db = drizzle({ client: pool, schema });
+const queryClient = postgres(process.env.DATABASE_URL!);
+const db = drizzle({ client: queryClient,  schema });
 
 export default db;
