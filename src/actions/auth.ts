@@ -2,9 +2,7 @@
 
 import db from "@/db";
 import { users } from "@/db/schema";
-import { signIn } from "next-auth/react"
 import bcrypt from "bcrypt"
-import { redirect } from "next/navigation";
 import { getRoleById } from "./role";
 import { eq } from "drizzle-orm";
 import { ObjectValidation } from "@libs/utils";
@@ -58,24 +56,6 @@ export const createUser = async (data: {
     })
 
     return "Created user successfully"
-}
-
-export const login = async (username: string, password: string) => {
-
-    if (!username || !password)
-        throw new Error("Usernam atau password diperlukan!")
-
-    const res = await signIn("credentials", {
-        username,
-        password,
-        redirect: false
-    });
-
-    if (res?.ok) {
-        redirect("/dashboard")
-    } else {
-        throw new Error("Username atau password salah")
-    }
 }
 
 export const getUser = async (

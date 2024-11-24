@@ -26,6 +26,8 @@ pnpm-lock.yaml
 
 .env
 
+/src/db/migrations
+
 # misc
 .DS_Store
 *.pem
