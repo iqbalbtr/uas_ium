@@ -9,6 +9,9 @@ declare module "next-auth" {
         id: string | number;
         name: string;
         username: string;
+        email: string;
+        phone: string;
+        roleId: number
     }
 
     interface Session {
@@ -16,6 +19,9 @@ declare module "next-auth" {
             id: string | number;
             name: string;
             username: string;
+            email: string;
+            phone: string;
+            roleId: number
         }
     }
 }
