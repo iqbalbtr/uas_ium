@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import LoginForm from "@components/fragments/LoginForm";
 
 const testimonials = [
   {
@@ -36,7 +36,6 @@ export default function LoginPage() {
       (prev) => (prev - 1 + testimonials.length) % testimonials.length
     );
   };
-
   return (
     <div className="grid lg:grid-cols-2 min-h-screen">
       <div className="flex items-center justify-center p-8">
@@ -49,34 +48,7 @@ export default function LoginPage() {
               Welcome, Please enter your details.
             </p>
           </div>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                id="name"
-                placeholder="Name"
-                className="placeholder:opacity-50"
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                id="email"
-                placeholder="Email address"
-                type="email"
-                className="placeholder:opacity-50"
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                id="password"
-                placeholder="Password"
-                type="password"
-                className="placeholder:opacity-50"
-              />
-            </div>
-            <Button className="w-full bg-[#2A2B27] hover:bg-[#3F403B]">
-              Continue
-            </Button>
-          </div>
+          <LoginForm />
           <div className="text-center text-sm text-muted-foreground">
             By signing in or creating an account, you agree with our{" "}
             <Link

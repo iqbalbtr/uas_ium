@@ -101,11 +101,15 @@ export const receipts = pgTable("receipts", {
 
 export const prescriptions = pgTable("prescriptions", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    codePrescription: varchar("code_prescription").unique().notNull(),
     prescriptionDate: timestamp("prescription_date").notNull(),
     name: varchar("name", { length: 55 }).notNull(),
     description: text("description"),
     doctorName: varchar("doctor_name", { length: 50 }),
-    patientName: varchar("patient_name", { length: 50 }),
+    price: integer("price").notNull(),
+    discount: integer("discount").notNull().default(0),
+    fee: integer("fee").notNull().default(0),
+    tax: integer("tax").notNull().default(0),
     instructions: text("instructions")
 });
 
@@ -128,7 +132,8 @@ export const prescriptionsRelations = relations(prescriptions, ({ many }) => ({
 
 export const transactions = pgTable("transactions", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-    transaction_date: timestamp("transaction_date").defaultNow(),
+    transactionDate: timestamp("transaction_date").defaultNow(),
+    codeTransaction: varchar("code_transaction", { length: 50 }).unique().notNull(),
     buyer: varchar("buyer", { length: 100 }).default("guest").notNull(),
     user_id: integer("user_id").references(() => users.id, { onDelete: "set null" }),
     total: integer("total").notNull(),
