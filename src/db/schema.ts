@@ -33,7 +33,10 @@ export const roles = pgTable("role", {
 
 export const userRelations = relations(users, ({ one }) => ({
     auth: one(auth),
-    role: one(roles),
+    role: one(roles, {
+        fields: [users.roleId],
+        references: [roles.id]
+    }),
 }));
 
 export const medicines = pgTable("medicines", {

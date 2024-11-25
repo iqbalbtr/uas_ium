@@ -6,6 +6,7 @@ import bcrypt from "bcrypt"
 import { getRoleById } from "./role";
 import { eq } from "drizzle-orm";
 import { ObjectValidation } from "@libs/utils";
+import { User } from "@/model/users";
 
 export const getUserById = async (id: number) => {
     if (!id)
@@ -81,7 +82,9 @@ export const getUser = async (
         }
     })
 
-    return result
+    return {
+        data: result as User[]
+    }
 }
 
 export const updateUser = async (

@@ -28,8 +28,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={typeof window !== "undefined" ? "light" : "dark"}
-      style={{ colorScheme: typeof window !== "undefined" ? "light" : "dark" }}
+      // className={typeof window !== "undefined" ? "light" : "dark"}
+      // style={{ colorScheme: typeof window !== "undefined" ? "light" : "dark" }}
     >
       <body
       // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
