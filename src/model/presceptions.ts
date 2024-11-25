@@ -6,7 +6,6 @@ export interface Prescription {
     name: string;
     description?: string;
     doctorName?: string;
-    patientName?: string;
     instructions?: string;
     medicines: PrescriptionMedicine[]
 }

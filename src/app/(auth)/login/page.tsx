@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import LoginForm from "@components/fragments/LoginForm";
+import LoginForm from "@components/fragments/auth/LoginForm";
 
 const testimonials = [
   {
@@ -13,7 +13,7 @@ const testimonials = [
       "The curation is highly focused on design and the scene is a clever marketplace that allows users to replicate the design at home.",
     author: "Iflakul Husada",
     role: "Apoteker",
-    image: "/images/apotek.jpg",
+    image: "",
   },
   {
     quote:
@@ -70,41 +70,10 @@ export default function LoginPage() {
       <div className="hidden lg:block relative">
         <div className="h-full w-full p-2">
           <img
-            src={testimonials[currentTestimonial].image}
+            src={"/images/apotek.jpg"}
             alt="Design inspiration"
             className="h-full w-full object-cover rounded-md"
           />
-        </div>
-        <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
-          <blockquote className="space-y-2">
-            <p className="text-3xl font-medium leading-tight">
-              {testimonials[currentTestimonial].quote}
-            </p>
-            <footer className="text-sm">
-              {testimonials[currentTestimonial].author} •{" "}
-              {testimonials[currentTestimonial].role}
-            </footer>
-          </blockquote>
-          <div className="mt-8 flex gap-2">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="text-white hover:bg-white/20"
-              onClick={prevTestimonial}
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="text-white hover:bg-white/20"
-              onClick={nextTestimonial}
-              aria-label="Next testimonial"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
       </div>
     </div>

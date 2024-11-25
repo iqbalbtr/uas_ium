@@ -8,6 +8,7 @@ import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
 import { signIn } from "next-auth/react"
 import { useRouter } from 'next/navigation';
+import useLoading from '@hooks/use-loading';
 
 function LoginForm() {
 
@@ -17,6 +18,8 @@ function LoginForm() {
         username: z.string().min(3).max(55),
         password: z.string().min(3).max(255)
     })
+
+    const {isLoading, setLoading} = useLoading()
 
     const form = useForm<z.infer<typeof loginScheme>>({
         resolver: zodResolver(loginScheme),
@@ -28,6 +31,7 @@ function LoginForm() {
 
 
     const handleLogin = async (values: z.infer<typeof loginScheme>) => {
+        setLoading("loading")
             const res = await signIn("credentials", {
                 username: values.username,
                 password: values.password,
@@ -39,6 +43,7 @@ function LoginForm() {
             } else {
                 navigate.push("/dashboard")
             }
+            setLoading("idle")
     }
 
 
@@ -91,8 +96,8 @@ function LoginForm() {
                         )}
                     />
                 </div>
-                <Button type='submit' className="w-full bg-[#2A2B27] hover:bg-[#3F403B]">
-                    Continue
+                <Button type='submit' className="w-full">
+                    {isLoading ? "Loading" : "Login"}
                 </Button>
             </form>
         </Form>
