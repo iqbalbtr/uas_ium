@@ -9,14 +9,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { signIn } from "next-auth/react"
 import { useRouter } from 'next/navigation';
 import useLoading from '@hooks/use-loading';
+import { toast } from '@hooks/use-toast';
 
 function LoginForm() {
 
     const navigate = useRouter()
 
     const loginScheme = z.object({
-        username: z.string().min(3).max(55),
-        password: z.string().min(3).max(255)
+        username: z.string().min(3).max(55).trim(),
+        password: z.string().min(3).max(255).trim()
     })
 
     const {isLoading, setLoading} = useLoading()
@@ -39,8 +40,15 @@ function LoginForm() {
             })
 
             if(!res?.ok){
-                alert("Username or password is wrong")
+                toast({
+                    title: "Error",
+                    description: "Username or password is wrong",
+                    variant: "destructive"
+                })
             } else {
+                toast({
+                    description: "Login Success",
+                })
                 navigate.push("/dashboard")
             }
             setLoading("idle")
@@ -96,8 +104,8 @@ function LoginForm() {
                         )}
                     />
                 </div>
-                <Button type='submit' className="w-full">
-                    {isLoading ? "Loading" : "Login"}
+                <Button type='submit' className="w-full" disabled={isLoading == "loading"}>
+                    {isLoading == "loading" ? "Loading" : "Login"}
                 </Button>
             </form>
         </Form>

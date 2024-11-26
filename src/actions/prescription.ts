@@ -3,9 +3,9 @@
 import db from "@/db";
 import { getMedicineById } from "./medicine";
 import { prescriptionMedicine, prescriptions } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { getCountData } from "./helper";
-import { ObjectValidation } from "@libs/utils";
+import { ObjectValidation } from "@/lib/utils";
 
 export type MedicinePresciption = {
     medicineId: number;
@@ -18,7 +18,7 @@ export const getPresciptionById = async (id: number) => {
     const get = await db.query.prescriptions.findFirst({
         where: (pres, { eq }) => (eq(pres.id, id)),
         with: {
-            medicines: {
+            prescription_medicines: {
                 with: {
                     medicine: true
                 }
@@ -40,33 +40,46 @@ export const createPresciption = async (
         doctor: string;
         description: string;
         intructions: string;
+        discount: number;
+        tax: number;
+        fee: number;
     },
-    medicnes: MedicinePresciption[]
+    medicines: MedicinePresciption[]
 ) => {
     
     ObjectValidation(presciption)
 
-    if (medicnes.length == 0)
+    if (medicines.length == 0)
         throw new Error("Medicine at least one item")
 
-    const isItem = medicnes.map(async (med) => {
+    const isItem = medicines.map(async (med) => {
         const existing = await getMedicineById(med.medicineId);
         return existing;
     })
 
-    await Promise.all(isItem);
+    const allMediicine = await Promise.all(isItem);
+
+    const code = await db.select({count: sql`COUNT(*)`}).from(prescriptions);
+
+    const total = allMediicine.reduce((acc, pv) => acc += pv.price, 0)
+    const tax = presciption.tax * total;
+    const discount = presciption.discount * total;
 
     await db.transaction(async tx => {
         const newPresciption = await tx.insert(prescriptions).values({
+            codePrescription: "PR" + String(code[0].count as number),
             name: presciption.name,
-            prescriptionDate: new Date(presciption.presciptionDate),
+            prescriptionDate: new Date(),
             description: presciption.description,
             doctorName: presciption.doctor,
             instructions: presciption.intructions,
-            patientName: presciption.patient
+            price: total - discount + tax + presciption.fee,
+            discount: presciption.discount,
+            fee: presciption.fee,
+            tax: presciption.tax,
         }).returning()
 
-        for (const item of medicnes) {
+        for (const item of medicines) {
             await tx.insert(prescriptionMedicine).values({
                 prescriptionId: newPresciption[0].id,
                 quantity: item.qty,
@@ -95,7 +108,6 @@ export const updatePresciption = async (
     presciption: {
         name: string;
         presciptionDate: Date | number;
-        patient: string;
         doctor: string;
         description: string;
         intructions: string;
@@ -125,7 +137,6 @@ export const updatePresciption = async (
             description: presciption.description,
             doctorName: presciption.doctor,
             instructions: presciption.intructions,
-            patientName: presciption.patient
         }).where(eq(prescriptions.id, id))
 
         await tx.delete(prescriptionMedicine).where(eq(prescriptionMedicine.prescriptionId, id))
@@ -155,7 +166,7 @@ export const getPresciption = async (
         limit,
         offset: skip,
         with: {
-            medicines: {
+            prescription_medicines: {
                 with: {
                     medicine: true
                 }

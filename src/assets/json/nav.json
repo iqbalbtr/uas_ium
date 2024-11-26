@@ -2,17 +2,20 @@
     {
         "id": 1,
         "path": "/dashboard",
-        "label": "Dashboard"
+        "label": "Dashboard",
+        "child_path": []
     },
     {
         "id": 2,
         "path": "/dashboard/kasir",
-        "label": "kasir"
+        "label": "kasir",
+        "child_path": []
     },
     {
         "id": 3,
         "label": "User",
-        "children": [
+        "path": "/dashboard/user",
+        "child_path": [
             {
                 "id": 1,
                 "label": "Master User",
@@ -28,7 +31,8 @@
     {
         "id": 4,
         "label": "Obat",
-        "children": [
+        "path": "/dashboard/obat",
+        "child_path": [
             {
                 "id": 1,
                 "path": "/dashboard/obat/master",
@@ -54,7 +58,8 @@
     {
         "id": 5,
         "label": "Laporan",
-        "children": [
+        "path": "/dashboard/laporan",
+        "child_path": [
             {
                 "id": 1,
                 "label": "Daftar penjualan",
@@ -75,7 +80,8 @@
     {
         "id": 6,
         "label": "Apotek",
-        "children": [
+        "path": "/dashboard/apotek",
+        "child_path": [
             {
                 "id": 1,
                 "label": "Informasi apotek",

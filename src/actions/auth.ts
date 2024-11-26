@@ -3,9 +3,9 @@
 import db from "@/db";
 import { users } from "@/db/schema";
 import bcrypt from "bcrypt"
-import { getRoleById } from "./role";
-import { eq } from "drizzle-orm";
-import { ObjectValidation } from "@libs/utils";
+import { getRoleByName } from "./role";
+import { eq, sql } from "drizzle-orm";
+import { ObjectValidation } from "@/lib/utils";
 import { User } from "@/model/users";
 
 export const getUserById = async (id: number) => {
@@ -31,7 +31,7 @@ export const createUser = async (data: {
     password: string,
     email: string,
     phone: string,
-    role: number
+    role: string
 }) => {
 
     ObjectValidation(data);
@@ -43,7 +43,7 @@ export const createUser = async (data: {
     if (existingUser)
         throw new Error("Username already exist!")
 
-    await getRoleById(data.role);
+    const role = await getRoleByName(data.role);
 
     const hash = await bcrypt.hash(data.password, 10)
 
@@ -52,7 +52,7 @@ export const createUser = async (data: {
         username: data.username,
         email: data.email,
         phone: data.phone,
-        roleId: data.role,
+        roleId: role.id,
         password: hash
     })
 
@@ -65,6 +65,8 @@ export const getUser = async (
 ) => {
 
     const skip = (page - 1) * limit;
+
+    const count = await db.select({ count: sql`COUNT(*)` }).from(users)
 
     const result = await db.query.users.findMany({
         limit,
@@ -83,29 +85,54 @@ export const getUser = async (
     })
 
     return {
-        data: result as User[]
+        data: result as User[],
+        pagging: {
+            limit,
+            page,
+            total_item: count[0].count as number,
+            total_page: Math.ceil(count[0].count as number / limit),
+        },
     }
 }
 
 export const updateUser = async (
     id: number,
+    name: string,
     email: string,
-    phone: string
+    phone: string,
+    role: string,
+    password?: string
 ) => {
 
     if (
         !id ||
         !email ||
-        !phone
+        !name ||
+        !role
     )
         throw new Error("All field must be filled1")
 
     await getUserById(id)
 
+    const isRole = await getRoleByName(role)
+
+    const hash = password ? bcrypt.hashSync(password, 10) : undefined
+
     await db.update(users).set({
         email,
-        phone
+        phone,
+        name,
+        roleId: isRole.id,
+        password: hash
     }).where(eq(users.id, id))
 
     return "Update user seuccessfully"
+}
+
+export const deleteUser = async(id: number) => {
+    await getUserById(id);
+
+    await db.delete(users).where(eq(users.id, id))
+
+    return "Delete user successfully"
 }

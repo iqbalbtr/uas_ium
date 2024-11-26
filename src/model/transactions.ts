@@ -1,4 +1,5 @@
 import { Medicine } from "./medicines";
+import { User } from "./users";
 
 enum PaymentMethod {
     Cash = "cash",
@@ -24,6 +25,7 @@ export interface Transaction {
     tax?: number;
     discount?: number;
     items: TransactionItem[]
+    user?: User
   }
   
   export interface TransactionItem {

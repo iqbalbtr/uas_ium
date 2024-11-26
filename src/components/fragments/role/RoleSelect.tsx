@@ -19,31 +19,49 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { getRole } from "@/actions/role"
+import useLoading from "@hooks/use-loading"
+import { toast } from "@hooks/use-toast"
+import { Role } from "@/model/roles"
 
 
 export function RoleSelect({
     onChange,
     value
-}:{
+}: {
     onChange: (...event: any[]) => void;
-    value: number
+    value: string
 }) {
     const [open, setOpen] = React.useState(false)
-    const [roles, setRoles] = React.useState<any[]>([])
+    const [roles, setRoles] = React.useState<{ value: number, label: string }[]>([])
+    const { isLoading, setLoading } = useLoading()
 
-    const getData = async () => {
+    const getData = async (name?: string) => {
+        setLoading("loading");
         try {
-            const get = await getRole();
-            console.log(get);
-            if (get.data.length) {
-                setRoles([...get.data.map(fo => ({ value: fo.id, label: fo.name }))])
-                
-            }
-        } catch (error) {
-
+            const get = await getRole(1, 5, name || "");
+            const data = get?.data || [];
+            setRoles(data.map(role => ({ value: role.id, label: role.name })));
+            setLoading("success");
+        } catch (error: any) {
+            console.error("Error fetching roles:", error);
+            toast({
+                title: "Error",
+                description: error.message,
+                variant: "destructive",
+            });
+            setLoading("error");
         }
-    }
+    };
 
+    const HandleSearch = (() => {
+        let timeout: NodeJS.Timeout | null = null;
+        return (name?: string) => {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                getData(name);
+            }, 700);
+        };
+    })();
     React.useEffect(() => {
         getData()
     }, [])
@@ -59,20 +77,24 @@ export function RoleSelect({
                 >
                     {value
                         ? roles.find((framework) => framework.label === value)?.label
-                        : "Select framework..."}
+                        : "Select role..."}
                     <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
                 <Command>
-                    <CommandInput placeholder="Search framework..." className="h-9" />
+                    <CommandInput onInput={(e: any) => HandleSearch(e.target.value)} placeholder="Search role..." className="h-9" />
                     <CommandList>
-                        <CommandEmpty>No framework found.</CommandEmpty>
+                        {
+                            isLoading == "loading" ?
+                                <span className="px-3 py-2">Loading</span> :
+                                <CommandEmpty>No role found.</CommandEmpty>
+                        }
                         <CommandGroup>
                             {roles.map((framework) => (
                                 <CommandItem
                                     key={framework.value}
-                                    value={framework.value}
+                                    value={String(framework.value)}
                                     onSelect={(currentValue) => {
                                         onChange(currentValue === String(value) ? "" : currentValue)
                                         setOpen(false)
@@ -82,7 +104,7 @@ export function RoleSelect({
                                     <Check
                                         className={cn(
                                             "ml-auto",
-                                            value === framework.value ? "opacity-100" : "opacity-0"
+                                            value === String(framework.value) ? "opacity-100" : "opacity-0"
                                         )}
                                     />
                                 </CommandItem>

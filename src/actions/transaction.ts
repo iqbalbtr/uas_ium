@@ -4,7 +4,7 @@ import { getMedicineById } from "./medicine";
 import { medicines, transactionItem, transactions } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import type { ResponseList } from "@/model/response";
-import { ObjectValidation } from "@libs/utils";
+import { ObjectValidation } from "@/lib/utils";
 
 export type TransactionItem = {
     qty: number;
@@ -85,6 +85,8 @@ export const createTransaction = async (
     const disc = total * transaction.discount;
     const tax = total * transaction.tax;
 
+    const code = await db.select({count: sql`COUNT(*)`}).from(transactions)
+
     if ((total - disc - tax) < 0)
         throw new Error("Total transaction is not valid")
 
@@ -97,9 +99,10 @@ export const createTransaction = async (
             tax: transaction.tax,
             transactionStatus: transaction.transactionStatus,
             total: total - disc - tax,
-            user_id: userId,
-            transaction_date: new Date(),
-            paymentExpired: transaction.expired ? new Date(transaction.expired) : null
+            userId: userId,
+            transactionDate: new Date(),
+            paymentExpired: transaction.expired ? new Date(transaction.expired) : null,
+            codeTransaction: "TS" + String(code[0].count as number),
         }).returning()
 
         for (const item of allItem) {

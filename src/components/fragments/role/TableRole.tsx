@@ -1,43 +1,44 @@
 "use client"
-import { getUser } from '@/actions/auth';
-import { getRole } from '@/actions/role';
-import { Role } from '@/model/roles';
-import { User } from '@/model/users';
-import { Button } from '@components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import AccessView from './AccessView';
+import UpdateRoleForm from './UpdateRoleForm';
+import DeleteRole from './DeleteRole';
+import { LoadingType } from '@hooks/use-loading';
+import { TableView } from '@/model/view';
+import { Role } from '@/model/roles';
 
-function TableRole() {
-
-    const [users, setUsers] = useState<Role[]>([]);
-
-    useEffect(() => {
-        getRole().then(res => {
-            setUsers([...res.data])
-        })
-    }, [])
+function TableRole({ data, isLoading, handleFetch }: TableView<Role>) {
 
     return (
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>No</TableHead>
-                    <TableHead>Nama</TableHead>
+                    <TableHead className='w-[30px]'>No</TableHead>
+                    <TableHead className='min-w-[100px] w-[100px]'>Nama</TableHead>
                     <TableHead>Hak Akses</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Role</TableHead>
+                    <TableHead className='w-[120px]'>Action</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {
-                    users.map((fo, i) => (
+                {isLoading !== "loading" ?
+                    data.map((fo, i) => (
                         <TableRow key={i}>
                             <TableCell>{i + 1}</TableCell>
                             <TableCell>{fo.name}</TableCell>
-                            <TableCell><Button>Cek Akses</Button></TableCell>
+                            <TableCell><AccessView data={fo.access_rights as string[] ?? []} /></TableCell>
+                            <TableCell>
+                                <UpdateRoleForm handleFetch={handleFetch} data={fo ?? {}} />
+                                <DeleteRole handleFetch={handleFetch} data={fo} />
+                            </TableCell>
                         </TableRow>
-                    ))
+                    )) : (
+                        <TableRow >
+                            <TableCell className='text-center' rowSpan={4}>
+                                Loading
+                            </TableCell>
+                        </TableRow>
+                    )
                 }
             </TableBody>
         </Table>
