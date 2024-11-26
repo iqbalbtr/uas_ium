@@ -85,7 +85,7 @@ export const orderMedicine = pgTable("order_medicine", {
 });
 
 export const orderRelations = relations(orders, ({ many }) => ({
-    medicines: many(orderMedicine)
+    order_medicines: many(orderMedicine)
 }));
 
 export const orderMedicineRelations = relations(orderMedicine, ({ one }) => ({
@@ -130,7 +130,7 @@ export const prescriptionMedicineRelations = relations(prescriptionMedicine, ({ 
 }));
 
 export const prescriptionsRelations = relations(prescriptions, ({ many }) => ({
-    medicines: many(prescriptionMedicine)
+    prescription_medicines: many(prescriptionMedicine)
 }));
 
 export const transactions = pgTable("transactions", {
@@ -138,7 +138,7 @@ export const transactions = pgTable("transactions", {
     transactionDate: timestamp("transaction_date").defaultNow(),
     codeTransaction: varchar("code_transaction", { length: 50 }).unique().notNull(),
     buyer: varchar("buyer", { length: 100 }).default("guest").notNull(),
-    user_id: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+    userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
     total: integer("total").notNull(),
     paymentMethod: paymentMethodEnum().default("cash"),
     paymentExpired: timestamp("payment_expired"),
@@ -157,7 +157,7 @@ export const transactionItem = pgTable("transaction_item", {
 
 export const transactionRelations = relations(transactions, ({ many, one }) => ({
     items: many(transactionItem),
-    user: one(users, { fields: [transactions.user_id], references: [users.id] })
+    user: one(users, { fields: [transactions.userId], references: [users.id] })
 }));
 
 export const transactionItemRelations = relations(transactionItem, ({ one }) => ({

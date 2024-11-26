@@ -1,16 +1,20 @@
+import { Role } from "./roles";
+
 export interface User {
     id: number;
     name: string;
     username: string;
-    phone?: string;
-    email?: string;
-    status: string; 
-    role: Role;
-}
-
-export interface Auth {
+    phone: string;
+    email: string;
+    password?: string;
+    status: string;
+    role?: Role;
+    auth?: Auth;
+  }
+  
+  export interface Auth {
     id: number;
-    userId: number;
+    user_id: number;
     token?: string;
-    lastLogged?: Date;
-}
+    last_logged?: Date;
+  }

@@ -13,23 +13,24 @@ enum TransactionStatus {
 
 export interface Transaction {
     id: number;
-    transactionDate?: Date; // Defaults to now
-    buyer: string; // Defaults to "guest"
-    userId?: number; // Nullable
+    transaction_date?: Date;
+    code_transaction: string;
+    buyer: string;
+    user_id?: number;
     total: number;
-    paymentMethod: PaymentMethod; // Enum
-    paymentExpired?: Date;
-    transactionStatus: TransactionStatus; // Enum
-    tax?: number; // Defaults to 0
-    discount?: number; // Defaults to 0
+    payment_method: PaymentMethod;
+    payment_expired?: Date;
+    transaction_status: TransactionStatus;
+    tax?: number;
+    discount?: number;
     items: TransactionItem[]
-}
-
-export interface TransactionItem {
+  }
+  
+  export interface TransactionItem {
     id: number;
     quantity: number;
-    subTotal: number;
-    medicineId?: number; // Nullable
-    transactionId: number;
-    medicine?: Medicine
-}
+    sub_total: number;
+    medicine_id?: number;
+    transaction_id: number;
+    medicine: Medicine
+  }

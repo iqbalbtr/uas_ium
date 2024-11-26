@@ -1,23 +1,22 @@
-
 export interface Medicine {
     id: number;
     name: string;
     dosage?: string;
-    activeIngredients: string;
+    active_ingredients: string;
     expired: Date;
     indication: string;
     price: number;
-    stock: number; // Defaults to 0
-    sideEffect?: string;
-    medicineCode: string; // Unique
-    medicineType: string;
-    medicineCategory: string;
-    reminder: MedicineReminder
+    stock: number;
+    side_effect?: string;
+    medicine_code: string;
+    medicine_type: string;
+    medicine_category: string;
+    medicine_reminder?: MedicineReminder
 }
 
-interface MedicineReminder {
+export interface MedicineReminder {
     id: number;
-    medicineId?: number; 
-    minStock?: number;
-    maxStock?: number;
+    medicine_id?: number;
+    min_stock?: number;
+    max_stock?: number;
 }
