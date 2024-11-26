@@ -1,31 +1,27 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   AudioWaveform,
   BedIcon,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
+  BriefcaseMedical,
+  Computer,
+  HousePlus,
+  ScrollText,
+  UserCog,
+} from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { Button } from "./ui/button"
-import Link from "next/link"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import Image from "next/image";
 
 // This is sample data.
 const data = {
@@ -37,15 +33,15 @@ const data = {
   navMain: [
     {
       title: "Kasir",
-      icon: SquareTerminal,
+      icon: Computer,
       url: "/dashboard/kasir",
       isParent: true,
     },
     {
       title: "Obat",
       url: "/dashboard/obat",
-      icon: SquareTerminal,
-      isActive: true,
+      icon: BriefcaseMedical,
+      isActive: false,
       items: [
         {
           title: "Obat Master",
@@ -68,7 +64,7 @@ const data = {
     {
       title: "Laporan",
       url: "/dashboard/laporan",
-      icon: Bot,
+      icon: ScrollText,
       items: [
         {
           title: "Penjualan",
@@ -87,7 +83,7 @@ const data = {
     {
       title: "User",
       url: "/dashboard/user",
-      icon: Settings2,
+      icon: UserCog,
       items: [
         {
           title: "User Master",
@@ -102,7 +98,7 @@ const data = {
     {
       title: "Apotek",
       url: "/dashboard/apotek",
-      icon: BookOpen,
+      icon: HousePlus,
       items: [
         {
           title: "Informasi",
@@ -114,24 +110,19 @@ const data = {
         },
       ],
     },
-  ]
-}
+  ],
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <Link
-          href="/dashboard"
-          className="flex justify-start gap-2 px-2 py-2"
-        >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-            <BedIcon className="size-4" />
+        <Link href="/dashboard" className="flex justify-start gap-2 px-2 py-2">
+          <div className="flex aspect-square size-8 items-center rounded-md ">
+            <Image src="/images/logo.jpg" width={40} height={40} alt="apotek" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">
-              Apotek Husada
-            </span>
+            <span className="truncate font-semibold">Apotek Empat Husada</span>
             <span className="truncate text-xs">Husada Group</span>
           </div>
         </Link>
@@ -144,5 +135,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
