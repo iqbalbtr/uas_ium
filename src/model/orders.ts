@@ -5,24 +5,23 @@ enum OrderStatus {
     Completed = "completed",
     Cancelled = "cancelled",
 }
-
 export interface Order {
     id: number;
-    orderDate?: Date; 
+    order_date?: Date;
     supplier: string;
-    orderStatus: OrderStatus; 
+    order_status: OrderStatus;
     total: number;
     tax: number;
-    discount?: number; 
-    medicines: OrderMedicine[]
+    discount: number;
+    order_medicines: OrderMedicine[]
 }
 
 export interface OrderMedicine {
     id: number;
-    orderId: number;
-    medicineId?: number; 
+    order_id: number;
+    medicine_id?: number;
     quantity: number;
-    subTotal: number;
+    sub_total: number;
     price: number;
-    medicine?: Medicine
+    medicine: Medicine
 }

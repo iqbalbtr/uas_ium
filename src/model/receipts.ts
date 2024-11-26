@@ -18,10 +18,9 @@ enum RequestStatus {
 
 export interface Receipt {
     id: number;
-    paymentMethod: PaymentMethod; // Enum
-    paymentExpired: Date;
-    receiptStatus: ReceiptStatus; // Enum
-    requestStatus: RequestStatus; // Enum
-    orderId: number;
+    payment_method: PaymentMethod;
+    payment_expired: Date;
+    receipt_status: ReceiptStatus;
+    request_status: RequestStatus;
     order: Order
-}
+  }
