@@ -1,5 +1,5 @@
 "use client"
-import Page from '@components/sidebar'
+import Page from '@components/navbar/sidebar'
 import { SessionProvider } from 'next-auth/react'
 import React, { ReactNode } from 'react'
 

@@ -15,33 +15,33 @@ import { UserCog } from "lucide-react";
 import usePagination from "@hooks/use-paggination";
 import { getRole } from "@/actions/role";
 import { toast } from "@hooks/use-toast";
+import DashboardLayout, { DashboardLayoutHeader } from "@components/layouts/DashboardLayout";
 
 function RoleMaster() {
 
-  
+
   const [roles, setRoles] = useState<any[]>([]);
 
 
   const { Paggination, handleFetch, isLoading } = usePagination({
     handleGet: async (page, setPage) => {
       const get = await getRole(page.page, page.limit)
-        if(get){
-          setRoles(get.data)
-          setPage(get.pagging)
-        }
+      if (get) {
+        setRoles(get.data)
+        setPage(get.pagging)
+      }
     },
     initialize: true
   })
 
   return (
-    <div className="w-full p-4">
-      <div className="flex w-full justify-between">
-        <h1 className="text-2xl py-3 font-semibold">Master Role</h1>
+    <DashboardLayout>
+      <DashboardLayoutHeader title="Master Role">
         <CreateRoleForm handleFetch={handleFetch} />
-      </div>
+      </DashboardLayoutHeader>
       <TableRole isLoading={isLoading} handleFetch={handleFetch} data={roles} />
       <Paggination />
-    </div>
+    </DashboardLayout>
   );
 }
 

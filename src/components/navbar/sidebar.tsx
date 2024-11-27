@@ -1,12 +1,12 @@
 "use client";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@components/app/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import AppNotication from "./app-notification";
+import AppNotication from "@components/app/app-notification";
 import NavBreadCrumb from "./nav-breadcumb";
 
 export default function Page({ children }: { children: React.ReactNode }) {

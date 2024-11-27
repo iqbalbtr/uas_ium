@@ -20,13 +20,15 @@
     ],
     "paths": {
       "@components/*": ["./src/components/*"],
+      "@db/*": ["./src/db/*"],
       "@constant/*": ["./src/constant/*"],
-      "@libs/*": ["./src/libs/*"],
+      "@libs/*": ["./src/lib/*"],
       "@services/*": ["./src/services/*"],
       "@hooks/*": ["./src/hooks/*"],
       "@types/*": ["./src/types/*"],
       "@validations/*": ["./src/validations/*"],
       "@assets/*": ["./src/assets/*"],
+      "@models/*": ["./src/model/*"],
       "@/*": ["./src/*"],
     }
   },
