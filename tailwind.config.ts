@@ -10,7 +10,7 @@ export default {
   theme: {
   	extend: {
   		colors: {
-  			background: 'hsl(var(--background))',
+  			background: 'white',
   			foreground: 'hsl(var(--foreground))',
   			blue: {
   				'50': '#E0F2FE',
@@ -66,7 +66,7 @@ export default {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			}
-  		},
+  		}
   	}
   },
   plugins: [require("tailwindcss-animate")],

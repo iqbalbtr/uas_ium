@@ -1,20 +1,18 @@
 "use client"
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
-import { signIn } from "next-auth/react"
-import { useRouter } from 'next/navigation';
-import { createUser } from '@/actions/auth';
-import { RoleSelect } from '../user/RoleSelect';
-import { updateApotek } from '@/actions/apotek';
+import { getApotek, updateApotek } from '@/actions/apotek';
+import useLoading from '@hooks/use-loading';
+import { toast } from '@hooks/use-toast';
 
 function UbahApotekForm() {
 
-    const navigate = useRouter()
+    const { isLoading, setLoading } = useLoading()
 
     const apotekScheme = z.object({
         name: z.string().min(2).max(255),
@@ -35,9 +33,34 @@ function UbahApotekForm() {
 
 
     const handleLogin = async (values: z.infer<typeof apotekScheme>) => {
-        const res = await updateApotek(values.name, values.alamat, values.email, values.phone)
+        setLoading("loading")
+        try {
+            const res = await updateApotek(values.name, values.alamat, values.email, values.phone)
+            if (res) {
+                toast({
+                    title: "Success",
+                    description: res
+                })
+            }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Internal server error",
+                variant: "destructive"
+            })
+        } finally {
+            setLoading("idle")
+        }
     }
 
+    useEffect(() => {
+        getApotek().then(res => {
+            form.setValue("name", res?.name ?? "")
+            form.setValue("alamat", res?.alamat ?? "")
+            form.setValue("phone", res?.phone ?? "")
+            form.setValue("email", res?.email ?? "")
+        })
+    }, [])
 
     return (
         <Form {...form}>
@@ -47,7 +70,7 @@ function UbahApotekForm() {
                         control={form.control}
                         name='name'
                         render={({ field }) => (
-                               <FormItem>
+                            <FormItem>
                                 <FormLabel>
                                     Name
                                 </FormLabel>
@@ -134,8 +157,8 @@ function UbahApotekForm() {
                         )}
                     />
                 </div>
-                <Button type='submit' className="w-full bg-[#2A2B27] hover:bg-[#3F403B]">
-                    Tambah
+                <Button disabled={isLoading == "loading"} type='submit' className="w-full bg-[#2A2B27] hover:bg-[#3F403B]">
+                    {isLoading == "loading" ? "Loading" : "Ubah"}
                 </Button>
             </form>
         </Form>

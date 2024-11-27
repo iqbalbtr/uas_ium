@@ -1,27 +1,26 @@
 "use client"
-import { Button } from '@components/ui/button'
-import { Input } from '@components/ui/input'
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form';
-import { zodResolver } from "@hookform/resolvers/zod"
+
+import { updateRole } from "@/actions/role";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
+import { Input } from "@components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import useLoading from "@hooks/use-loading";
+import { useForm } from "react-hook-form";
 import { z } from "zod"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
-import { createRole } from '@/actions/role';
-import AccessDialog from './AccessDialog';
-import useLoading from '@hooks/use-loading';
-import { toast } from '@hooks/use-toast';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@components/ui/sheet';
-import { UserCog } from 'lucide-react';
+import AccessDialog from "./AccessDialog";
+import { Button } from "@components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog";
+import { Edit } from "lucide-react";
+import { toast } from "@hooks/use-toast";
+import { TableMutation } from "@/model/view";
+import { Role } from "@/model/roles";
 
-function CreateRoleForm({
+function UpdateRoleForm({
+    data,
     handleFetch
-}:{
-    handleFetch?: () => Promise<void>
-
-}) {
+}: TableMutation<Role>) {
 
     const { isLoading, setLoading } = useLoading();
-    const [isOpen, setOpen] = useState(false)
 
     const roleScheme = z.object({
         name: z.string().min(2).max(55),
@@ -31,24 +30,23 @@ function CreateRoleForm({
     const form = useForm<z.infer<typeof roleScheme>>({
         resolver: zodResolver(roleScheme),
         defaultValues: {
-            acces_rights: [],
-            name: ""
+            acces_rights: data.access_rights,
+            name: data.name
         }
     })
 
 
-    const handleCreate = async (values: z.infer<typeof roleScheme>) => {
+    const handleLogin = async (values: z.infer<typeof roleScheme>) => {
         setLoading("loading")
         try {
-            const res = await createRole(values.name, values.acces_rights)
-            if (res) {
+            const res = await updateRole(data.id, values.name, values.acces_rights)
+            if(res){
                 setLoading("success")
                 toast({
                     title: "Success",
-                    description: res
+                    description: res,
                 })
                 handleFetch && handleFetch()
-                setOpen(false)
             }
         } catch (error: any) {
             toast({
@@ -62,19 +60,19 @@ function CreateRoleForm({
 
 
     return (
-        <Sheet open={isOpen} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-                <Button>
-                    Tambah
-                    <UserCog className="ml-2" />
-                </Button>
-            </SheetTrigger>
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Tambah Role</SheetTitle>
-                </SheetHeader>
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant={"ghost"}><Edit/></Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        Ubah Role
+                    </DialogTitle>
+                    <DialogDescription />
+                </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 pt-6">
+                    <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4 pt-6">
                         <div className="space-y-2">
                             <FormField
                                 control={form.control}
@@ -102,7 +100,7 @@ function CreateRoleForm({
                             <FormField
                                 control={form.control}
                                 name='acces_rights'
-                                render={({ field }) => (
+                                render={() => (
                                     <FormItem className='flex flex-col gap-2'>
                                         <FormLabel>
                                             Hak Akses
@@ -117,14 +115,13 @@ function CreateRoleForm({
                             />
                         </div>
                         <Button type='submit' disabled={isLoading == "loading"} className="w-full bg-[#2A2B27] text-white hover:bg-[#3F403B]">
-                            {isLoading == "loading" ? "Loading" : "Tambah"}
+                            {isLoading == "loading" ? "Loading" : "Ubah"}
                         </Button>
                     </form>
                 </Form>
-            </SheetContent>
-        </Sheet>
-
+            </DialogContent>
+        </Dialog>
     )
 }
 
-export default CreateRoleForm
+export default UpdateRoleForm

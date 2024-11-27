@@ -2,22 +2,23 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
-  BedIcon,
   BriefcaseMedical,
+  ChevronsUpDown,
   Computer,
   HousePlus,
+  LucideAArrowUp,
   ScrollText,
   UserCog,
 } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@components/navbar/nav-main";
+import { NavUser } from "@components/navbar/nav-user";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
@@ -117,21 +118,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <Link href="/dashboard" className="flex justify-start gap-2 px-2 py-2">
-          <div className="flex aspect-square size-8 items-center rounded-md ">
-            <Image src="/images/logo.jpg" width={40} height={40} alt="apotek" />
+        <SidebarMenuButton
+          size="lg"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        >
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+            <LucideAArrowUp className="size-4" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">Apotek Empat Husada</span>
+            <span className="truncate font-semibold">
+              Apotek Empat Husada
+            </span>
             <span className="truncate text-xs">Husada Group</span>
           </div>
-        </Link>
+          <ChevronsUpDown className="ml-auto" />
+        </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -49,7 +49,7 @@ export const createReceipt = async (
             requestStatus
         })
 
-        const updateStock = orderExist.medicines.map(async (med) => {
+        const updateStock = orderExist.order_medicines.map(async (med) => {
             return tx.update(medicines).set({
                 stock: (med.medicine?.stock ?? 0) + med.quantity,
                 expired: expired

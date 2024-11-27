@@ -18,7 +18,7 @@ export const getOrderById = async (id: number) => {
         .query.orders.findFirst({
             where: (orders, { eq }) => (eq(orders.id, id)),
             with: {
-                medicines: {
+                order_medicines: {
                     with: {
                         medicine: true
                     }
@@ -137,7 +137,7 @@ export const getOrder = async (
     const count = await getCountData(orders);
     const result = await db.query.orders.findMany({
         with: {
-            medicines: {
+            order_medicines: {
                 with: {
                     medicine: true
                 }

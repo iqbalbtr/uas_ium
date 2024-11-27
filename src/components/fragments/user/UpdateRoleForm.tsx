@@ -6,49 +6,54 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
-import { createUser } from '@/actions/auth';
+import { updateUser } from '@/actions/auth';
 import { RoleSelect } from '../role/RoleSelect';
 import useLoading from '@hooks/use-loading';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog';
+import { Edit } from 'lucide-react';
 import { toast } from '@hooks/use-toast';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@components/ui/sheet';
-import { UserPlus } from 'lucide-react';
+import { TableMutation } from '@/model/view';
+import { User } from '@/model/users';
 
-function CreateUserForm() {
+function UpdateUserForm({ data, handleFetch }: TableMutation<User>) {
 
     const { isLoading, setLoading } = useLoading()
     const [isOpen, setOpen] = useState(false)
 
     const userSchema = z.object({
+        id: z.number(),
         username: z.string().min(3).max(55),
         name: z.string().min(2).max(255),
         email: z.string().email().min(2).max(255),
         phone: z.string().min(8).max(30),
-        password: z.string().min(3).max(255),
+        password: z.string().max(255).optional(),
         role: z.string().min(1),
     })
 
     const form = useForm<z.infer<typeof userSchema>>({
         resolver: zodResolver(userSchema),
         defaultValues: {
-            username: "",
-            password: "",
-            email: "",
-            name: "",
-            phone: "",
-            role: "",
+            id: data.id,
+            username: data.username,
+            email: data.email ?? "",
+            name: data.name,
+            phone: data.phone ?? "",
+            role: data.role?.name,
+            password: ""
         },
     })
 
 
-    const handleLogin = async (values: z.infer<typeof userSchema>) => {
+    const handleUpdate = async (values: z.infer<typeof userSchema>) => {
         try {
             setLoading("loading")
-            const res = await createUser(values);
+            const res = await updateUser(values.id, values.name, values.email, values.phone, values.role, values.password);
             if (res) {
                 toast({
                     title: "Success",
-                    description: res
+                    description: res,
                 })
+                handleFetch && await handleFetch()
                 setOpen(false)
             }
         } catch (error: any) {
@@ -64,20 +69,21 @@ function CreateUserForm() {
 
 
     return (
-        <Sheet open={isOpen} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-                <Button variant="default">
-                    Tambah
-                    <UserPlus />
+        <Dialog open={isOpen} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant={"ghost"}>
+                    <Edit />
                 </Button>
-            </SheetTrigger>
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Tambah User</SheetTitle>
-                </SheetHeader>
-
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        Ubah user
+                    </DialogTitle>
+                    <DialogDescription />
+                </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4 pt-6">
+                    <form onSubmit={form.handleSubmit(handleUpdate)} className="space-y-4 pt-6">
                         <div className="space-y-2">
                             <FormField
                                 control={form.control}
@@ -182,7 +188,7 @@ function CreateUserForm() {
                                         <FormControl>
                                             <Input
                                                 id="password"
-                                                placeholder="password.."
+                                                placeholder="Optional change..."
                                                 type="text"
                                                 className="placeholder:opacity-50"
                                                 {...field}
@@ -211,13 +217,13 @@ function CreateUserForm() {
                             />
                         </div>
                         <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                            {isLoading == "loading" ? "Loading" : "Tambah"}
+                            {isLoading == "loading" ? "Loading" : "Ubah"}
                         </Button>
                     </form>
                 </Form>
-            </SheetContent>
-        </Sheet>
+            </DialogContent>
+        </Dialog>
     )
 }
 
-export default CreateUserForm
+export default UpdateUserForm

@@ -1,11 +1,15 @@
-import Page from '@components/sidebar'
+"use client"
+import Page from '@components/navbar/sidebar'
+import { SessionProvider } from 'next-auth/react'
 import React, { ReactNode } from 'react'
 
-function layout({children}:{children: ReactNode}) {
+function layout({ children }: { children: ReactNode }) {
   return (
-    <Page>
-      {children}
-    </Page>
+    <SessionProvider>
+      <Page>
+        {children}
+      </Page>
+    </SessionProvider>
   )
 }
 

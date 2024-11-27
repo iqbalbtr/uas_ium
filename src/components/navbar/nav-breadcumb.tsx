@@ -6,12 +6,12 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "./ui/breadcrumb";
+} from "@components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
 
 function NavBreadCrumb() {
   const pathname = usePathname();
-  const [path, setPath] = useState<{ label: string; path: string }[]>([]);
+  const [path, setPath] = useState<{ label: string; path: string, index: string }[]>([]);  
 
   function handle() {
     const path = pathname.split("/");
@@ -21,10 +21,13 @@ function NavBreadCrumb() {
       return {
         label: firstChar + fo.slice(1),
         path: "",
+        index: fo
       };
     });
   }
 
+  console.log(path);
+  
   useEffect(() => {
     setPath([...handle()]);
   }, [pathname]);
@@ -33,7 +36,7 @@ function NavBreadCrumb() {
       <BreadcrumbList>
         {path.map((fo, i) => (
           <span key={i} className="flex items-center justify-center gap-2">
-            <BreadcrumbItem>
+            <BreadcrumbItem className={i == path.length - 1 ? "" : ""}>
               <BreadcrumbPage>{fo.label}</BreadcrumbPage>
             </BreadcrumbItem>
             {i < path.length - 1 && i > 0 && <BreadcrumbSeparator />}

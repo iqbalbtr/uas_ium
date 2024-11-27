@@ -19,6 +19,18 @@ export const getRoleById = async (id: number) => {
     return getRole;
 }
 
+export const getRoleByName = async (name: string) => {
+
+    const getRole = await db.query.roles.findFirst({
+        where: (role, { eq }) => (eq(role.name, name))
+    })
+
+    if (!getRole)
+        throw new Error("Role is not found")
+
+    return getRole;
+}
+
 export const createRole = async (
     name: string,
     roleAssignts: RoleAssignts
@@ -77,9 +89,9 @@ export const updateRole = async (
 }
 
 export const getRole = async (
-    name?: string,
     page: number = 1,
     limit: number = 15,
+    name?: string,
 ) => {
 
     const skip = (page - 1) * limit;
@@ -95,10 +107,12 @@ export const getRole = async (
     })
 
     return {
-        limit,
-        page,
-        total_item: count,
-        total_page: Math.ceil(count / limit),
+        pagging: {
+            limit,
+            page,
+            total_item: count,
+            total_page: Math.ceil(count / limit),
+        },
         data: result
     }
 }
