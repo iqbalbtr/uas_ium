@@ -44,7 +44,6 @@ function TablePembelian({ data, isLoading, handleFetch }: TableView<Order>) {
               <TableCell>{fo.total}</TableCell>
               {/* Drg bener */}
               <TableCell>
-                {fo.order_medicines}
                 <ModalTable />
               </TableCell>
               <TableCell>{fo.payment_method}</TableCell>
