@@ -1,5 +1,10 @@
 import { Medicine } from "./medicines";
 
+enum PaymentMethod {
+    Cash = "cash",
+    Installment = "installment",
+}
+
 enum OrderStatus {
     Pending = "pending",
     Completed = "completed",
@@ -12,6 +17,8 @@ export interface Order {
     order_status: OrderStatus;
     total: number;
     tax: number;
+    payment_method: PaymentMethod;
+    payment_expired?: Date;
     discount: number;
     order_medicines: OrderMedicine[]
 }
