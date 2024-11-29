@@ -1,5 +1,4 @@
-import UbahApotekForm from '@components/fragments/apotek/UbahApotekForm'
-import { Button } from '@components/ui/button'
+import UpdateApotekForm from '@components/fragments/apotek/UpdateApotekForm'
 import React from 'react'
 
 function ApotelUbah() {
@@ -8,7 +7,7 @@ function ApotelUbah() {
       <div className='flex w-full justify-between'>
         <h1 className='text-2xl py-3 font-semibold'>Ubah Apotek</h1>
       </div>
-        <UbahApotekForm />
+        <UpdateApotekForm />
     </div>
   )
 }

@@ -40,7 +40,7 @@ function CreateUserForm() {
     })
 
 
-    const handleLogin = async (values: z.infer<typeof userSchema>) => {
+    const handleCreate = async (values: z.infer<typeof userSchema>) => {
         try {
             setLoading("loading")
             const res = await createUser(values);
@@ -77,7 +77,7 @@ function CreateUserForm() {
                 </SheetHeader>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4 pt-6">
+                    <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 pt-6">
                         <div className="space-y-2">
                             <FormField
                                 control={form.control}

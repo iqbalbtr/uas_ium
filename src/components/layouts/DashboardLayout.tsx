@@ -8,7 +8,7 @@ function DashboardLayout({ children }: { children: ReactNode }) {
     )
 }
 
-export function DashboardLayoutHeader({ children, title }: { title: string, children: ReactNode }) {
+export function DashboardLayoutHeader({ children, title }: { title: string, children?: ReactNode }) {
     return (
         <div className="flex w-full justify-between">
             <h1 className="text-2xl py-3 font-semibold">{title}</h1>

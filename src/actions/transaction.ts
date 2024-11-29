@@ -1,7 +1,7 @@
 "use server"
 import db from "@/db"
 import { getMedicineById } from "./medicine";
-import { medicines, transactionItem, transactions } from "@/db/schema";
+import { medicines, transaction_item, transactions } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import type { ResponseList } from "@/model/response";
 import { ObjectValidation } from "@/lib/utils";
@@ -34,16 +34,15 @@ export const getTransactionById = async (id: number) => {
 export const createTransaction = async (
     userId: number,
     transaction: {
-        userId: number,
         buyer: string,
-        paymentMethod: "cash" | "installment",
-        paymentExpired: number | Date,
-        transactionStatus: "pending" | "completed" | "cancelled",
+        payment_method: "cash" | "installment",
+        payment_expired?: Date,
+        transaction_status: "pending" | "completed" | "cancelled",
         discount: number;
         tax: number;
-        expired?: number | Date;
     },
-    items: TransactionItem[]
+    items: TransactionItem[],
+    cash: number
 ) => {
 
     if(!userId)
@@ -51,26 +50,34 @@ export const createTransaction = async (
 
     ObjectValidation(transaction)
 
-    if (transaction.paymentMethod == "installment" && !transaction.expired)
+    if (transaction.payment_method == "installment" && !transaction.payment_expired)
         throw new Error("Expired value required")
+    
 
-    if (transaction.expired && new Date(transaction.expired).getTime() - new Date().getTime() < 0)
-        throw new Error("Expired not valid")
+    if (
+        transaction.payment_method === "installment" &&
+        transaction.payment_expired &&
+        transaction.payment_expired.getTime() < Date.now()
+    ) {        
+        throw new Error("Expired not valid");
+    }
+    
 
     if (items.length == 0)
         throw new Error("Item at least one item")
 
-
+    
+    
     const isItem = items.map(async (it) => {
         const isExist = await getMedicineById(it.medicineId)
-
+        
         if (!isExist)
             throw new Error("Medicine is not found")
-
+        
         if (isExist.stock - it.qty < 0) {
             throw new Error(`${isExist.name} stock is not enough`)
         }
-
+        
         return {
             medicineId: isExist.id,
             subTotal: (isExist.price * it.qty),
@@ -78,47 +85,48 @@ export const createTransaction = async (
             stock: isExist.stock - it.qty
         }
     })
-
+    
     const allItem = await Promise.all(isItem);
-
+    
     const total = allItem.reduce((acc, prev) => acc += prev.subTotal, 0);
-    const disc = total * transaction.discount;
-    const tax = total * transaction.tax;
-
+    const disc = total * (transaction.discount / 100);
+    const tax = total * (transaction.tax / 100);
+    
     const code = await db.select({count: sql`COUNT(*)`}).from(transactions)
+    
+    if ((total - disc + tax) <= 0 || cash < (total - disc + tax)) {
+        throw new Error("Total transaction is not valid");
+    }
 
-    if ((total - disc - tax) < 0)
-        throw new Error("Total transaction is not valid")
+    // await db.transaction(async tx => {
 
-    await db.transaction(async tx => {
-
-        const trans = await tx.insert(transactions).values({
+        const trans = await db.insert(transactions).values({
             buyer: transaction.buyer,
             discount: transaction.discount,
-            paymentMethod: transaction.paymentMethod,
+            payment_method: transaction.payment_method,
             tax: transaction.tax,
-            transactionStatus: transaction.transactionStatus,
-            total: total - disc - tax,
-            userId: userId,
-            transactionDate: new Date(),
-            paymentExpired: transaction.expired ? new Date(transaction.expired) : null,
-            codeTransaction: "TS" + String(code[0].count as number),
+            transaction_status: transaction.transaction_status,
+            total: total - disc + tax,
+            user_id: userId,
+            transaction_date: new Date(),
+            payment_expired: transaction.payment_expired ? new Date(transaction.payment_expired) : null,
+            code_transaction: "TS" + String(code[0].count as number),
         }).returning()
 
         for (const item of allItem) {
 
-            await tx.update(medicines).set({
-                stock: item.stock
+            await db.update(medicines).set({
+                stock: item.stock 
             })
 
-            await tx.insert(transactionItem).values({
+            await db.insert(transaction_item).values({
                 quantity: item.qty,
-                subTotal: item.subTotal,
-                transactionId: trans[0].id,
-                medicineId: item.medicineId
+                sub_total: item.subTotal,
+                transaction_id: trans[0].id,
+                medicine_id: item.medicineId
             })
         }
-    })
+    // })
 
     return "transaction successfully"
 }
@@ -157,7 +165,7 @@ export const updateTransaction = async (
 
     const exisitngTransaction = await getTransactionById(id)
 
-    const total = exisitngTransaction.items.reduce((acc, prev) => acc += prev.subTotal, 0);
+    const total = exisitngTransaction.items.reduce((acc, prev) => acc += prev.sub_total, 0);
     const disc = total * transaction.discount;
     const tax = total * transaction.tax;
 
@@ -168,9 +176,9 @@ export const updateTransaction = async (
         buyer: transaction.buyer,
         discount: transaction.discount,
         tax: transaction.tax,
-        paymentMethod: transaction.paymentMethod,
-        transactionStatus: transaction.transactionStatus,
-        paymentExpired: transaction.expired ? new Date(transaction.expired) : null,
+        payment_method: transaction.paymentMethod,
+        transaction_status: transaction.transactionStatus,
+        payment_expired: transaction.expired ? new Date(transaction.expired) : null,
         total: total - disc - tax
     })
 

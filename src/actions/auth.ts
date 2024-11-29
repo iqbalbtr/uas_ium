@@ -52,7 +52,7 @@ export const createUser = async (data: {
         username: data.username,
         email: data.email,
         phone: data.phone,
-        roleId: role.id,
+        role_id: role.id,
         password: hash
     })
 
@@ -122,7 +122,7 @@ export const updateUser = async (
         email,
         phone,
         name,
-        roleId: isRole.id,
+        role_id: isRole.id,
         password: hash
     }).where(eq(users.id, id))
 

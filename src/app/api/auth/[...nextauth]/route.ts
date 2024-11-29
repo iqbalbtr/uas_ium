@@ -29,7 +29,7 @@ const handler = NextAuth({
                 if (!verify) return null;
             
                 await db.update(auth).set({
-                    lastLogged: new Date(),
+                    last_logged: new Date(),
                 }).where(eq(auth.id, existingUser.id));
             
        
@@ -39,7 +39,7 @@ const handler = NextAuth({
                     username: existingUser.username,
                     email: existingUser.email,
                     phone: existingUser.phone,
-                    roleId: existingUser.roleId,
+                    roleId: existingUser.role_id,
                     status: existingUser.status,
                 } as any
             }

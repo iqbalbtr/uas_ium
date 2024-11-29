@@ -55,7 +55,7 @@ export const removeRole = async (
     id: number
 ) => {
 
-    const count = await db.select({ count: sql`COUNT(*)` }).from(users).where(eq(users.roleId, id))
+    const count = await db.select({ count: sql`COUNT(*)` }).from(users).where(eq(users.role_id, id))
 
     if (count[0].count as number > 0)
         throw new Error("Role still used")
