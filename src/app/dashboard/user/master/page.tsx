@@ -1,7 +1,7 @@
 "use client"
 import { getUser } from '@/actions/auth'
 import CreateUserForm from '@components/fragments/user/CreateUserForm'
-import TableUser from '@components/fragments/user/TableUser'
+import UserTable from '@components/fragments/user/UserTable'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
 import usePagination from '@hooks/use-paggination'
 import React, { useState } from 'react'
@@ -26,7 +26,7 @@ function MasterUser() {
       <DashboardLayoutHeader title='Master User'>
         <CreateUserForm />
       </DashboardLayoutHeader>
-      <TableUser data={users} isLoading={isLoading} handleFetch={handleFetch} />
+      <UserTable data={users} isLoading={isLoading} handleFetch={handleFetch} />
       <Paggination />
     </DashboardLayout>
   )

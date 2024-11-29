@@ -1,10 +1,13 @@
 "use server"
 
 import db from "@/db";
-import { medicines, orderMedicine, orders } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { getCountData } from "./helper";
 import { ResponseList } from "@/model/response";
+import { Item } from "@/app/dashboard/kasir/page";
+import { getMedicineById } from "./medicine";
+import { generateCode } from "@libs/utils";
+import { order_medicine, orders } from "@db/schema";
 
 export type MedicineOrder = {
     medicineId: number;
@@ -33,8 +36,28 @@ export const getOrderById = async (id: number) => {
     return isExist
 }
 
+export const getOrderByCode = async (id: string) => {
+    const isExist = await db
+        .query.orders.findFirst({
+            where: (orders, { eq }) => (eq(orders.order_code, id)),
+            with: {
+                order_medicines: {
+                    with: {
+                        medicine: true
+                    }
+                }
+            }
+        })
+
+    if (!isExist) {
+        throw new Error("Order is not found")
+    }
+
+    return isExist
+}
+
 export const createOrder = async (
-    medicine: MedicineOrder[],
+    medicine: Item[],
     order: {
         supplier: string;
         orderStatus: "cancelled" | "completed" | "pending",
@@ -47,37 +70,51 @@ export const createOrder = async (
         throw new Error("Medicine minimum is one");
 
     const isValidate = medicine.map(async (m) => {
-        const isExist = await db.select({ count: sql`COUNT(*)` }).from(medicines).where(eq(medicines.id, m.medicineId));
+        const isExist = await getMedicineById(m.medicineId);
 
-        if (isExist[0].count == 0)
+        if (!isExist)
             throw new Error("Medicine is not found")
-    })
 
-    await Promise.all(isValidate);
-
-    const totalOrder = medicine.reduce((acc, prev) => acc += (prev.price * prev.quantity), 0);
-
-    const totalTax = order.tax * totalOrder;
-
-    const totalDisc = order.discount * totalOrder;
-
-    if((totalOrder - totalDisc - totalTax) < 0)
-        throw new Error("Total is not valid")
-
-    await db.transaction(async tx => {
-
-        const newOrder = await tx.insert(orders).values({
-            ...order,
-            total: (totalOrder - totalDisc - totalTax)
-        }).returning()
-
-        for (const med of medicine) {
-            await tx.insert(orderMedicine).values({
-                orderId: newOrder[0].id,
-                ...med,
-            })
+        return {
+            medicine: isExist,
+            payload: m
         }
     })
+
+    const requestMedicine = await Promise.all(isValidate);
+
+    const count = await db.select({ count: sql`COUNT(*)` }).from(orders);
+    const code = generateCode(count[0].count as number)
+
+    const totalOrder = medicine.reduce((acc, prev) => acc += (prev.price * prev.qty), 0);
+
+    const totalTax = (order.tax / 100) * totalOrder;
+
+    const totalDisc = (order.discount / 100) * totalOrder;
+
+    const total = (totalOrder - totalDisc + totalTax)
+
+    if (total < 0)
+        throw new Error("Total is not valid")
+
+    // await db.transaction(async tx => {
+
+    const newOrder = await db.insert(orders).values({
+        ...order,
+        order_code: code,
+        total: total
+    }).returning()
+
+    for (const med of requestMedicine) {
+        await db.insert(order_medicine).values({
+            order_id: newOrder[0].id,
+            quantity: med.payload.qty,
+            sub_total: med.payload.qty * med.medicine.price,
+            price: med.medicine.price,
+            medicine_id: med.medicine.id
+        })
+    }
+    // })
 
     return "Order succesfully added"
 }
@@ -116,7 +153,7 @@ export const updateOrder = async (
 
     const totalDisc = order.discount * isOrder.total;
 
-    if((isOrder.total - totalDisc - totalTax) < 0)
+    if ((isOrder.total - totalDisc - totalTax) < 0)
         throw new Error("Total is not valid")
 
     await db.update(orders).set({
@@ -128,8 +165,9 @@ export const updateOrder = async (
 }
 
 export const getOrder = async (
+    page: number = 1,
     limit: number = 15,
-    page: number,
+    query?: string
 ) => {
 
     const skip = (page - 1) * page
@@ -145,6 +183,12 @@ export const getOrder = async (
         },
         limit,
         offset: skip,
+        orderBy: ({order_date}, {desc}) => (desc(order_date)),
+        where({order_code}, {like}) {
+            return (
+                like(sql`LOWER(${order_code})`, `%${query?.toLocaleLowerCase()}%`)
+            )
+        },
     })
 
     return {

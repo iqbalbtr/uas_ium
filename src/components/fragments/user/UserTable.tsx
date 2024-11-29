@@ -1,16 +1,12 @@
 "use client"
-import { getUser } from '@/actions/auth';
 import { User } from '@/model/users';
-import { Button } from '@components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
-import { Delete } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
-import UpdateUserForm from './UpdateRoleForm';
-import { toast } from '@hooks/use-toast';
+import React from 'react'
+import UpdateUserForm from './UpdateUserForm';
 import { TableView } from '@/model/view';
 import DeleteUser from './DeleteUser';
 
-function TableUser({
+function UserTable({
     data,
     isLoading,
     handleFetch
@@ -55,4 +51,4 @@ function TableUser({
     )
 }
 
-export default TableUser
+export default UserTable

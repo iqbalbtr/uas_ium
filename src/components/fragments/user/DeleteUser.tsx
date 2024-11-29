@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@components/ui/alert-dialog';
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@components/ui/alert-dialog';
 import { Button } from '@components/ui/button';
-import { Delete, DeleteIcon, Edit } from 'lucide-react';
+import { DeleteIcon } from 'lucide-react';
 import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { deleteUser } from '@/actions/auth';
@@ -17,7 +17,7 @@ function DeleteUser({
     const handleDelete = async () => {
         try {
             const get = await deleteUser(data.id);
-            if (get){
+            if (get) {
                 toast({
                     title: "Success",
                     description: get
@@ -25,7 +25,7 @@ function DeleteUser({
                 handleFetch && handleFetch()
                 setOpen(false)
             }
-                
+
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -46,7 +46,7 @@ function DeleteUser({
                 <AlertDialogHeader>
                     <AlertDialogTitle>Apakah anda yakin ingin menghapus?</AlertDialogTitle>
                     <AlertDialogDescription>
-                       Semua data rengkaman tersebut akan dihapus secara permanen
+                        Semua data rengkaman tersebut akan dihapus secara permanen
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

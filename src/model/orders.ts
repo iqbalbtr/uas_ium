@@ -8,6 +8,7 @@ enum OrderStatus {
 export interface Order {
     id: number;
     order_date?: Date;
+    order_code: string;
     supplier: string;
     order_status: OrderStatus;
     total: number;

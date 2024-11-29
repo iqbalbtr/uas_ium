@@ -10,7 +10,7 @@ import { getApotek, updateApotek } from '@/actions/apotek';
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 
-function UbahApotekForm() {
+function UpdateApotekForm() {
 
     const { isLoading, setLoading } = useLoading()
 
@@ -32,7 +32,7 @@ function UbahApotekForm() {
     })
 
 
-    const handleLogin = async (values: z.infer<typeof apotekScheme>) => {
+    const handleUpdate = async (values: z.infer<typeof apotekScheme>) => {
         setLoading("loading")
         try {
             const res = await updateApotek(values.name, values.alamat, values.email, values.phone)
@@ -64,7 +64,7 @@ function UbahApotekForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4 pt-6">
+            <form onSubmit={form.handleSubmit(handleUpdate)} className="space-y-4 pt-6">
                 <div className="space-y-2">
                     <FormField
                         control={form.control}
@@ -165,4 +165,4 @@ function UbahApotekForm() {
     )
 }
 
-export default UbahApotekForm
+export default UpdateApotekForm

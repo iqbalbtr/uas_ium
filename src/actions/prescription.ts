@@ -2,7 +2,7 @@
 
 import db from "@/db";
 import { getMedicineById } from "./medicine";
-import { prescriptionMedicine, prescriptions } from "@/db/schema";
+import { prescription_medicine, prescriptions } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { getCountData } from "./helper";
 import { ObjectValidation } from "@/lib/utils";
@@ -67,11 +67,11 @@ export const createPresciption = async (
 
     await db.transaction(async tx => {
         const newPresciption = await tx.insert(prescriptions).values({
-            codePrescription: "PR" + String(code[0].count as number),
+            code_prescription: "PR" + String(code[0].count as number),
             name: presciption.name,
-            prescriptionDate: new Date(),
+            prescription_date: new Date(),
             description: presciption.description,
-            doctorName: presciption.doctor,
+            doctor_name: presciption.doctor,
             instructions: presciption.intructions,
             price: total - discount + tax + presciption.fee,
             discount: presciption.discount,
@@ -80,11 +80,11 @@ export const createPresciption = async (
         }).returning()
 
         for (const item of medicines) {
-            await tx.insert(prescriptionMedicine).values({
-                prescriptionId: newPresciption[0].id,
+            await tx.insert(prescription_medicine).values({
+                prescription_id: newPresciption[0].id,
                 quantity: item.qty,
                 notes: item.notes,
-                medicineId: item.medicineId
+                medicine_id: item.medicineId
             })
         }
     })
@@ -133,20 +133,20 @@ export const updatePresciption = async (
     await db.transaction(async tx => {
         await tx.update(prescriptions).set({
             name: presciption.name,
-            prescriptionDate: new Date(presciption.presciptionDate),
+            prescription_date: new Date(presciption.presciptionDate),
             description: presciption.description,
-            doctorName: presciption.doctor,
+            doctor_name: presciption.doctor,
             instructions: presciption.intructions,
         }).where(eq(prescriptions.id, id))
 
-        await tx.delete(prescriptionMedicine).where(eq(prescriptionMedicine.prescriptionId, id))
+        await tx.delete(prescription_medicine).where(eq(prescription_medicine.prescription_id, id))
 
         for (const item of medicnes) {
-            await tx.insert(prescriptionMedicine).values({
-                prescriptionId: id,
+            await tx.insert(prescription_medicine).values({
+                prescription_id: id,
                 quantity: item.qty,
                 notes: item.notes,
-                medicineId: item.medicineId
+                medicine_id: item.medicineId
             })
         }
     })

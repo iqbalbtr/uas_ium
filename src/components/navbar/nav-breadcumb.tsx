@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 
 function NavBreadCrumb() {
   const pathname = usePathname();
-  const [path, setPath] = useState<{ label: string; path: string, index: string }[]>([]);  
+  const [path, setPath] = useState<{ label: string; path: string, index: string }[]>([]);
 
   function handle() {
     const path = pathname.split("/");
@@ -26,11 +26,10 @@ function NavBreadCrumb() {
     });
   }
 
-  console.log(path);
-  
   useEffect(() => {
     setPath([...handle()]);
   }, [pathname]);
+
   return (
     <Breadcrumb>
       <BreadcrumbList>

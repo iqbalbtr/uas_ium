@@ -1,5 +1,4 @@
 import db from "@/db"
-import * as schema from "@/db/schema"
 import { sql } from "drizzle-orm"
 import { PgTable } from "drizzle-orm/pg-core"
 

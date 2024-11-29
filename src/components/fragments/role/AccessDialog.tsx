@@ -7,7 +7,6 @@ import { Checkbox } from '@components/ui/checkbox'
 function AccessDialog({ children, access, setAccess }: { children: ReactNode, access: string[], setAccess: (arr: string[]) => void }) {
 
     const handleChek = (val: string) => {
-        console.log(val);
         if (access.find(fo => fo == val))
             return setAccess([...access.filter(fi => fi !== val)])
         return setAccess([...access, val])

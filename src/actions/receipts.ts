@@ -1,8 +1,9 @@
 import db from "@/db";
-import { getOrderById } from "./order";
+import { getOrderByCode, getOrderById } from "./order";
 import { medicines, receipts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { getCountData } from "./helper";
+import { generateCode } from "@libs/utils";
 
 export const getReceiptById = async (id: number) => {
     const getReceipt = await db.query.receipts.findFirst({
@@ -16,48 +17,52 @@ export const getReceiptById = async (id: number) => {
 }
 
 export const createReceipt = async (
-    paymentMethod: "cash" | "installment",
-    receiptStatus: "pending" | "rejected" | "accepted",
-    requestStatus: "full" | "partial",
-    orderId: number,
-    paymentExpired?: number | Date,
+    payment_method: "cash" | "installment",
+    receipt_status: "pending" | "rejected" | "accepted",
+    request_status: "full" | "partial",
+    order_code: string,
+    payment_expired?: number | Date,
 ) => {
 
-    if (!paymentMethod || !receiptStatus || !orderId)
+    if (!payment_method || !receipt_status || !order_code)
         throw new Error("All field must be filled")
 
-    if (paymentMethod == "installment" && !paymentExpired) {
+    if (payment_method == "installment" && !payment_expired) {
         throw new Error("Payment expred required");
     }
-
-    if (paymentExpired && new Date(paymentExpired).getTime() - new Date().getTime() < 0)
+    if (payment_method == "installment" &&  payment_expired && new Date(payment_expired).getTime() - new Date().getTime() < 0)
         throw new Error("Date is not valid")
 
-    const orderExist = await getOrderById(orderId);
+
+    const orderExist = await getOrderByCode(order_code);
+
+    const countReceipt = await db.select({count: sql`COUNT(*)`}).from(receipts)
+
+    const code = generateCode(countReceipt[0].count as number)
 
     if (!orderExist)
         throw new Error("Order is not found");
 
-    const expired = paymentExpired ? new Date(paymentExpired) : new Date()
+    const expired = payment_expired ? new Date(payment_expired) : new Date()
 
-    await db.transaction(async tx => {
-        await tx.insert(receipts).values({
-            orderId,
-            paymentExpired: expired,
-            paymentMethod,
-            receiptStatus,
-            requestStatus
+    // await db.transaction(async tx => {
+        await db.insert(receipts).values({
+            order_id: orderExist.id,
+            payment_method,
+            receipt_status,
+            payment_expired: expired,
+            request_status,
+            receipt_code: code
         })
 
         const updateStock = orderExist.order_medicines.map(async (med) => {
-            return tx.update(medicines).set({
-                stock: (med.medicine?.stock ?? 0) + med.quantity,
-                expired: expired
+            return db.update(medicines).set({
+                stock: med.medicine?.stock! + med.quantity,
             })
         })
 
         await Promise.all(updateStock)
-    })
+    // })
     return "Receipts created successfully"
 }
 
@@ -78,17 +83,17 @@ export const removeReceipt = async (
 
 export const updateReceipt = async (
     id: number,
-    paymentMethod: "cash" | "installment",
-    receiptStatus: "pending" | "rejected" | "accepted",
-    requestStatus: "full" | "partial",
+    payment_method: "cash" | "installment",
+    receipt_status: "pending" | "rejected" | "accepted",
+    request_status: "full" | "partial",
 ) => {
 
     const isExisting = await getReceiptById(id);
 
     await db.update(receipts).set({
-        paymentMethod,
-        receiptStatus,
-        requestStatus,
+        payment_method,
+        receipt_status,
+        request_status,
     }).where(eq(receipts.id, isExisting.id))
 
     return "Update recipe successfully"

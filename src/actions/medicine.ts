@@ -1,11 +1,11 @@
 "use server"
 
 import db from "@/db"
-import { medicineReminder, medicines } from "@/db/schema"
 import {  eq, sql } from "drizzle-orm"
 import { getCountData } from "./helper"
 import { ResponseList } from "@/model/response"
 import { ObjectValidation } from "@libs/utils"
+import { medicine_reminder, medicines } from "@db/schema"
 
 export const getMedicineById = async (id: number) => {
 
@@ -24,43 +24,43 @@ export const getMedicineById = async (id: number) => {
 
 export const createMedicine = async (
     medicine: {
-        activeIngredients: string,
+        active_ingredients: string,
         indication: string,
-        medicineCategory: string,
-        medicineCode: string,
-        medicineType: string,
+        medicine_category: string,
+        medicine_code: string,
+        medicine_type: string,
         name: string,
         dosage: string,
-        expired: number | Date,
-        sideEffect: string,
+        expired: number,
+        side_effect: string,
         price: number
+        stock: number
     },
     reminder: {
         min: number,
         max: number
     }
-) => {
+) => {    
 
     ObjectValidation(medicine)
     ObjectValidation(reminder)
 
-    const isExist = await db.select({ count: sql`COUNT(*)` }).from(medicines).where(eq(medicines.medicineCode, medicine.medicineCode));
+    const isExist = await db.select({ count: sql`COUNT(*)` }).from(medicines).where(eq(medicines.medicine_code, medicine.medicine_code));
 
-    if (isExist[0].count)
+    if (isExist[0].count == 1)
         throw new Error("Medicine code already exist")
 
-    await db.transaction(async tx => {
-        const id = await tx.insert(medicines).values({
-            ...medicine,
-            expired: medicine.expired as Date,
+    // await db.transaction(async tx => {
+        const id = await db.insert(medicines).values({
+            ...medicine
         }).returning()
 
-        await tx.insert(medicineReminder).values({
+        await db.insert(medicine_reminder).values({
             max_stock: reminder.max,
             min_stock: reminder.min,
-            medicineId: id[0].id
+            medicine_id: id[0].id
         })
-    })
+    // })
 
     return "Success added"
 }
@@ -88,7 +88,7 @@ export const updateMedicine = async (
         medicineType: string,
         name: string,
         dosage: string,
-        expired: number | Date,
+        expired: number ,
         sideEffect: string,
         price: number
     },
@@ -109,24 +109,25 @@ export const updateMedicine = async (
     if (isExist[0].count == 0)
         throw new Error("Medicine is not found")
 
-    await db.transaction(async tx => {
-        await tx.update(medicines).set({
+    // await db.transaction(async tx => {
+        await db.update(medicines).set({
             ...medicine,
-            expired: medicine.expired as Date,
+            expired: medicine.expired ,
         }).where(eq(medicines.id, id))
 
-        await tx.update(medicineReminder).set({
+        await db.update(medicine_reminder).set({
             max_stock: reminder.max,
             min_stock: reminder.min,
-        }).where(eq(medicineReminder.medicineId, id))
-    })
+        }).where(eq(medicine_reminder.medicine_id, id))
+    // })
 
     return "Success update medicine"
 }
 
 export const getMedicine = async (
+    page: number = 1,
     limit: number = 15,
-    page: number,
+    query?: string
 ) => {
 
     const skip = (page - 1) * page
@@ -138,8 +139,14 @@ export const getMedicine = async (
         },
         limit,
         offset: skip,
+        where({name, medicine_code}, {or, like}) {
+            return query ? or(
+                like(sql`LOWER(${name})`, `%${query.toLowerCase()}%`),
+                like(sql`LOWER(${medicine_code})`, `%${query.toLowerCase()}%`),
+            ) : undefined
+        },
         orderBy: (med, { desc }) => (desc(med.dosage))
-    });
+    });    
 
     return {
         limit,

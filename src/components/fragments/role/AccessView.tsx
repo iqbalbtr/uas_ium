@@ -4,8 +4,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import React from 'react'
 
 function AccessView({ data }: { data: string[] }) {
-
-    console.log( data);
     
     return (
         <Dialog>
