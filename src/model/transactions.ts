@@ -23,6 +23,7 @@ export interface Transaction {
     payment_expired?: Date;
     transaction_status: TransactionStatus;
     tax?: number;
+    status: string;
     discount?: number;
     items: TransactionItem[]
     user?: User
