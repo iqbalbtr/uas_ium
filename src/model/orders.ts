@@ -1,4 +1,5 @@
 import { Medicine } from "./medicines";
+import { User } from "./users";
 
 enum PaymentMethod {
     Cash = "cash",
@@ -10,26 +11,32 @@ enum OrderStatus {
     Completed = "completed",
     Cancelled = "cancelled",
 }
+
 export interface Order {
     id: number;
-    order_date?: Date;
     order_code: string;
+    order_date: Date | string;
     supplier: string;
     order_status: OrderStatus;
     total: number;
     tax: number;
-    payment_method: PaymentMethod;
-    payment_expired?: Date;
     discount: number;
-    order_medicines: OrderMedicine[]
+    total_item: number;
+    total_item_received: number;
+    request_status: "not_yet" | "full" | "partial";
+    payment_method: PaymentMethod;
+    payment_status: "pending" | "completed" | "cancelled";
+    payment_expired: Date | string;
+    order_medicines: OrderMedicine[];
 }
 
 export interface OrderMedicine {
     id: number;
     order_id: number;
-    medicine_id?: number;
+    medicine_id: number;
     quantity: number;
     sub_total: number;
+    received_total: number;
     price: number;
-    medicine: Medicine
+    medicine: Medicine;
 }

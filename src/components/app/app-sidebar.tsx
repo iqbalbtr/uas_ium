@@ -6,6 +6,7 @@ import {
   ChevronsUpDown,
   Computer,
   HousePlus,
+  LayoutDashboard,
   LucideAArrowUp,
   ScrollText,
   UserCog,
@@ -32,6 +33,12 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
+    {
+      title: "Dashboard",
+      icon: LayoutDashboard,
+      url: "/dashboard",
+      isParent: true,
+    },
     {
       title: "Kasir",
       icon: Computer,

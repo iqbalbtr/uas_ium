@@ -13,6 +13,11 @@ export const payment_method_enum = pgEnum("payment_method", [
   "cash",
   "installment",
 ]);
+export const payment_status_enum = pgEnum("payment_status", [
+  "pending",
+  "completed",
+  "cancelled",
+]);
 export const order_status_enum = pgEnum("order_status", [
   "pending",
   "completed",
@@ -29,8 +34,9 @@ export const receipt_status_enum = pgEnum("receipt_status", [
   "pending",
 ]);
 export const request_status_enum = pgEnum("request_status", [
-  "full",
+  "not_yet",
   "partial",
+  "full",
 ]);
 
 export const users = pgTable("users", {
@@ -109,6 +115,12 @@ export const orders = pgTable("orders", {
   total: integer("total").notNull(),
   tax: integer("tax").notNull(),
   discount: integer("discount").default(0),
+  total_item: integer("total_item").notNull(),
+  total_item_received: integer("total_item_received").notNull(),
+  request_status: request_status_enum().default("not_yet"),
+  payment_method: payment_method_enum().default("cash"),
+  payment_status: payment_status_enum().default("pending"),
+  payment_expired: timestamp("payment_expired").notNull(),
 });
 
 export const order_medicine = pgTable("order_medicine", {
@@ -121,6 +133,7 @@ export const order_medicine = pgTable("order_medicine", {
   }),
   quantity: integer("quantity").notNull(),
   sub_total: integer("sub_total").notNull(),
+  received_total: integer("received_total").notNull(),
   price: integer("price").notNull(),
 });
 
@@ -145,14 +158,43 @@ export const order_medicine_relations = relations(
 export const receipts = pgTable("receipts", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   receipt_code: varchar("receipt_code", { length: 100 }).unique().notNull(),
-  payment_method: payment_method_enum().default("cash"),
-  payment_expired: timestamp("payment_expired").notNull(),
   receipt_status: receipt_status_enum().default("pending"),
-  request_status: request_status_enum().default("full"),
+  total_received_item: integer("total_received_item").notNull(),
+  delivery_name: varchar("delivery_name", { length: 100 }).notNull(),
   order_id: integer("order_id")
     .references(() => orders.id, { onDelete: "cascade" })
     .notNull(),
 });
+
+export const receipt_medicine = pgTable("receipt_medicine", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  receipt_id: integer("receipt_id")
+    .references(() => receipts.id, { onDelete: "cascade" })
+    .notNull(),
+  order_medicine_id: integer("order_medicine_id").references(() => order_medicine.id, {
+    onDelete: "set null",
+  }),
+  received: integer("received").notNull(),
+});
+
+export const receipt_medicine_relations = relations(
+  receipt_medicine,
+  ({ one }) => ({
+    order_medicine: one(order_medicine, {
+      fields: [receipt_medicine.order_medicine_id],
+      references: [order_medicine.id],
+    }),
+    receipt: one(receipts, {
+      fields: [receipt_medicine.receipt_id],
+      references: [receipts.id],
+    })
+  })
+);
+
+export const receipt_relations = relations(receipts, ({ many, one }) => ({
+  receipt_medicines: many(receipt_medicine),
+  order: one(orders, { fields: [receipts.order_id], references: [orders.id] })
+}));
 
 export const prescriptions = pgTable("prescriptions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
@@ -213,6 +255,7 @@ export const transactions = pgTable("transactions", {
   total: integer("total").notNull(),
   payment_method: payment_method_enum().default("cash"),
   payment_expired: timestamp("payment_expired"),
+  payment_status: payment_status_enum().default("pending"),
   transaction_status: transaction_status_enum().default("completed"),
   tax: integer("tax").default(0),
   discount: integer("discount").default(0),

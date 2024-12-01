@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
 import { Medicine } from '@models/medicines'
-import { Minus, Plus, Search } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import React, { useState } from 'react'
 
 
@@ -21,7 +21,7 @@ function SearchMedicine({ handleAdd }: { handleAdd: (val: Medicine, qty: number)
         try {
             setLoading("loading")
             const get = await getMedicine(1,5,e)
-            setResult(get.data)
+            setResult(get.data as Medicine[])
         } catch (error) {
             toast({
                 title: "Error",

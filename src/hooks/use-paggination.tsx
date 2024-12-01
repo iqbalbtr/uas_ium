@@ -81,7 +81,7 @@ function usePagination({
 
     return {
         Paggination: () => (
-            <Pagination>
+            <Pagination className="my-4 mt-16">
                 <PaginationContent>
                     {
                         pagination.page > 1 && (

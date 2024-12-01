@@ -1,5 +1,7 @@
 "use client";
-import MedicineTable from "@components/fragments/obat/MedicineTable";
+import { getMedicine } from "@/actions/medicine";
+import CreateMedicineForm from "@components/fragments/medicine/CreateMedicineForm";
+import MedicineTable from "@components/fragments/medicine/MedicineTable";
 import CreateUserForm from "@components/fragments/user/CreateUserForm";
 import DashboardLayout, {
   DashboardLayoutHeader,
@@ -12,11 +14,11 @@ function ObatMaster() {
 
   const { handleFetch, Paggination, isLoading } = usePagination({
     handleGet: async (page, setPage) => {
-      // const get = await getUser(page.page, page.limit);
-      // if (get) {
-      //   setUser(get.data);
-      //   setPage(get.pagging);
-      // }
+      const get = await getMedicine(page.page, page.limit);
+      if (get) {
+        setUser(get.data);
+        setPage(get.pagging);
+      }
     },
     initialize: true,
   });
@@ -24,7 +26,7 @@ function ObatMaster() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title="Master User">
-        <CreateUserForm />
+        <CreateMedicineForm handleFetch={handleFetch} />
       </DashboardLayoutHeader>
       <MedicineTable
         data={users}

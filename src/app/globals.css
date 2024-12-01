@@ -43,17 +43,17 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
---muted: 210 40% 96.1%;
---muted-foreground: 215.4 16.3% 46.9%;
---card: 0 0% 100%;
---card-foreground: 222.2 47.4% 11.2%;
---popover: 0 0% 100%;
---popover-foreground: 222.2 47.4% 11.2%;
---border: 214.3 31.8% 91.4%;
---input: 214.3 31.8% 91.4%;
---primary: 222.2 47.4% 11.2%;
---primary-foreground: 210 40% 98%;
---primary: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --primary: 222.2 47.4% 11.2%;
 --primary-foreground: 210 40% 98%;
 --secondary: 210 40% 96.1%;
 --secondary-foreground: 222.2 47.4% 11.2%;
@@ -74,3 +74,47 @@
   }
 }
 
+
+.loader {
+  width: 30px;
+  aspect-ratio: 1;
+  display: grid;
+  border: 2px solid #0000;
+  border-radius: 50%;
+  border-right-color: #25b09b;
+  animation: l15 1s infinite linear;
+}
+.loader::before,
+.loader::after {    
+  content: "";
+  grid-area: 1/1;
+  margin: 2px;
+  border: inherit;
+  border-radius: 50%;
+  animation: l15 2s infinite;
+}
+.loader::after {
+  margin: 4px;
+  animation-duration: 3s;
+}
+@keyframes l15{ 
+  100%{transform: rotate(1turn)}
+}
+
+.loader-btn{
+  width: 60px;
+  aspect-ratio: 2;
+  --_g: no-repeat radial-gradient(circle closest-side,#000 100%,#0000);
+  background: 
+    var(--_g) 0%   50%,
+    var(--_g) 50%  50%,
+    var(--_g) 100% 50%;
+  background-size: calc(100%/3) 50%;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+    20%{background-position:0%   0%, 50%  50%,100%  50%}
+    40%{background-position:0% 100%, 50%   0%,100%  50%}
+    60%{background-position:0%  50%, 50% 100%,100%   0%}
+    80%{background-position:0%  50%, 50%  50%,100% 100%}
+}

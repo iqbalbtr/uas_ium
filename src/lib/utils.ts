@@ -61,3 +61,8 @@ export function generateCode(count: number) {
 
     return `ODR-${isDate}-${count.toString().padEnd(4, "0")}`
 }
+
+export const getRupiahFormat = (num: number) => new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR"
+}).format(num)
