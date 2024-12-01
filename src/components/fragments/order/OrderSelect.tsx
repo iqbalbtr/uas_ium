@@ -42,7 +42,7 @@ export function OrderSelect({
         try {
             const get = await getOrder(1, 5, name, "full");
             const data = get?.data || [];
-            setSelect(data);
+            setSelect(data as any);
         } catch (error: any) {
             console.error("Error fetching select:", error);
             toast({

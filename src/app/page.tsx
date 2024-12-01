@@ -1,3 +1,4 @@
+"use client"
 import { useRouter } from "next/navigation";
 
 const App = () => {
@@ -6,4 +7,5 @@ const App = () => {
 
   return navigate.push("/dashboard")
 };
+
 export default App;
