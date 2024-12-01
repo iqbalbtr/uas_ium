@@ -7,40 +7,35 @@ const authRoute = ['/login']
 
 export default async function middleware(req: NextRequest) {
 
-    try {
+    const cookie = await cookies()
+    const path = req.nextUrl.pathname
 
-        const cookie = await cookies()
-        const path = req.nextUrl.pathname
+    const isProtectedRoute = path.startsWith("/dashboard")
+    const isAuthRoute = authRoute.includes(path)
 
-        const isProtectedRoute = path.startsWith("/dashboard")
-        const isAuthRoute = authRoute.includes(path)        
+    const session: any = await getToken({ req, secret: process.env.AUTH_SECRET });
 
-        const session: any = await getToken({ req, secret: process.env.AUTH_SECRET });
-
-        if (isProtectedRoute && session == null) {
-            return NextResponse.redirect(new URL('/login', req.nextUrl))
-        }
-
-        const getRole = await db.query.roles.findFirst({
-            where: (role, { eq }) => (eq(role.id, session.roleId))
-        });
-
-        if (!getRole) {
-            cookie.delete("next-auth.session-token")
-            return NextResponse.redirect(new URL('/login', req.nextUrl))
-        }
-
-        if (session && isAuthRoute) {
-            return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
-        }
-        
-        if (!(getRole.access_rights as string[]).includes(path))
-            return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
-        
-        return NextResponse.next()
-    } catch (error) {
-        return NextResponse.redirect(new URL('/not-found', req.nextUrl))
+    if (isProtectedRoute && session == null) {
+        return NextResponse.redirect(new URL('/login', req.nextUrl))
     }
+
+    const getRole = await db.query.roles.findFirst({
+        where: (role, { eq }) => (eq(role.id, session.roleId))
+    });
+
+    if (!getRole) {
+        cookie.delete("next-auth.session-token")
+        return NextResponse.redirect(new URL('/login', req.nextUrl))
+    }
+
+    if (session && isAuthRoute) {
+        return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
+    }
+
+    if (!(getRole.access_rights as string[]).includes(path))
+        return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
+
+    return NextResponse.next()
 
 }
 
