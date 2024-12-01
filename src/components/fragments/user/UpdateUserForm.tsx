@@ -14,6 +14,7 @@ import { Edit } from 'lucide-react';
 import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { User } from '@/model/users';
+import Loading from '@components/ui/loading';
 
 function UpdateUserForm({ data, handleFetch }: TableMutation<User>) {
 
@@ -217,7 +218,9 @@ function UpdateUserForm({ data, handleFetch }: TableMutation<User>) {
                             />
                         </div>
                         <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                            {isLoading == "loading" ? "Loading" : "Ubah"}
+                            <Loading isLoading={isLoading} type='line'>
+                                Ubah
+                            </Loading>
                         </Button>
                     </form>
                 </Form>

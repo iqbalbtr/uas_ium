@@ -1,4 +1,5 @@
-import { Order } from "./orders";
+import { Medicine } from "./medicines";
+import { Order, OrderMedicine } from "./orders";
 
 enum PaymentMethod {
     Cash = "cash",
@@ -18,9 +19,18 @@ enum RequestStatus {
 
 export interface Receipt {
     id: number;
-    payment_method: PaymentMethod;
-    payment_expired: Date;
-    receipt_status: ReceiptStatus;
-    request_status: RequestStatus;
+    receipt_code: string;
+    receipt_status: string;
+    total_received_item: number;
+    delivery_name: string;
+    order_id: number;
+    receipt_medicines: ReceiptMedicine[];
     order: Order
-  }
+}
+export interface ReceiptMedicine {
+    id: number;
+    receipt_id: number;
+    order_medicine_id: number;
+    received: number;
+    order_medicine: OrderMedicine;
+}

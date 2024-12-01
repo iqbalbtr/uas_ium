@@ -8,15 +8,16 @@ import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
-import { LucideBriefcaseMedical } from 'lucide-react';
+import {Pen } from 'lucide-react';
 import { TextArea } from '@components/ui/textarea';
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
 import { CategoryMedicineSelect } from './CategoryMedicineSelect';
 import { TypeMedicineSelect } from './TypeMedicineSelect';
-import { createMedicine } from '@/actions/medicine';
-import Loading from '@components/ui/loading';
+import {  updateMedicine } from '@/actions/medicine';
+import { TableMutation } from '@models/view';
+import { Medicine } from '@models/medicines';
 
-function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
+function UpdateMedicineForm({ data, handleFetch }: TableMutation<Medicine>) {
 
     const { isLoading, setLoading } = useLoading()
     const [isOpen, setOpen] = useState(false)
@@ -26,7 +27,6 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
         active_ingredients: z.string().min(2).max(255),
         indication: z.string().min(2).max(255),
         price: z.number().min(0),
-        stock: z.number().min(0),
         min: z.number().min(0),
         expired: z.number().min(0),
         side_effect: z.string().min(0),
@@ -40,19 +40,19 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
     const form = useForm<z.infer<typeof medicineSchema>>({
         resolver: zodResolver(medicineSchema),
         defaultValues: {
-            name: "",
-            active_ingredients: "",
-            indication: "",
-            price: 0,
-            expired: 0,
-            side_effect: "",
-            stock: 0,
-            medicine_code: "",
-            medicine_type: "",
-            medicine_category: "",
-            dosage: "",
-            min: 0,
-            max: 0,
+            name: data.name,
+            active_ingredients: data.active_ingredients,
+            indication: data.indication,
+            price: data.price,
+            expired: data.expired,
+            side_effect: data.side_effect,
+            // stock: data.stock,
+            medicine_code: data.medicine_code,
+            medicine_type: data.medicine_type,
+            medicine_category: data.medicine_category,
+            dosage: data.dosage,
+            min: data.medicine_reminder?.min_stock,
+            max: data.medicine_reminder?.max_stock,
         },
     })
 
@@ -60,17 +60,15 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
     const handleCreate = async (values: z.infer<typeof medicineSchema>) => {
         try {
             setLoading("loading")
-            const res = await createMedicine({
-                ...values,
-                stock: values.stock
-            }, { max: values.max, min: values.min });
+            const res = await updateMedicine(
+                data.id, values, { max: values.max, min: values.min });
             if (res) {
                 toast({
                     title: "Success",
                     description: res
                 })
                 setOpen(false)
-                handleFetch()
+                handleFetch && handleFetch()
             }
         } catch (error: any) {
             toast({
@@ -87,14 +85,13 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="default">
-                    Tambah
-                    <LucideBriefcaseMedical />
+                <Button variant="ghost">
+                    <Pen />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='max-h-[100vh]'>
                 <DrawerHeader>
-                    <DrawerTitle className='text-center'>Tambah Obat</DrawerTitle>
+                    <DrawerTitle className='text-center'>Ubah Obat</DrawerTitle>
                 </DrawerHeader>
 
                 <DrawerClose className='w-fit self-end' asChild>
@@ -106,7 +103,7 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                 <div className='overflow-y-auto md:px-32 p-6'>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleCreate)} className="">
-                            <div className='grid grid-cols-2 items-center gap-2'>
+                            <div className='grid md:grid-cols-2 items-center gap-2'>
                                 <div className='flex flex-col gap-2'>
                                     <div className="space-y-2">
                                         <FormField
@@ -131,56 +128,29 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                             )}
                                         />
                                     </div>
-                                    <div className='grid grid-cols-2 gap-2 items-center'>
-                                        <div className="">
-                                            <FormField
-                                                control={form.control}
-                                                name='price'
-                                                render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-1'>
-                                                        <FormLabel>
-                                                            Harga
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                id="price"
-                                                                placeholder="Harga.."
-                                                                type="text"
-                                                                className="placeholder:opacity-50"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-red-500 font-normal" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-
-                                        <div className="">
-                                            <FormField
-                                                control={form.control}
-                                                name='stock'
-                                                render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-1'>
-                                                        <FormLabel>
-                                                            Stok
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                id="price"
-                                                                placeholder="Harga.."
-                                                                type="text"
-                                                                className="placeholder:opacity-50"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-red-500 font-normal" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
+                                    <div className="space-y-2">
+                                        <FormField
+                                            control={form.control}
+                                            name='price'
+                                            render={({ field }) => (
+                                                <FormItem className='flex flex-col gap-1'>
+                                                    <FormLabel>
+                                                        Harga
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id="price"
+                                                            placeholder="Harga.."
+                                                            type="text"
+                                                            className="placeholder:opacity-50"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-red-500 font-normal" />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
                                     <div className='grid grid-cols-2 gap-2'>
                                         <div className="space-y-2">
@@ -425,9 +395,7 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                 />
                             </div>
                             <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                <Loading isLoading={isLoading} type='line'>
-                                    Tambah
-                                </Loading>
+                                {isLoading == "loading" ? "Loading" : "Ubah"}
                             </Button>
                         </form>
                     </Form>
@@ -438,4 +406,4 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
     )
 }
 
-export default CreateMedicineForm
+export default UpdateMedicineForm

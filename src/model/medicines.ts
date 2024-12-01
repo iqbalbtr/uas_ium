@@ -3,7 +3,7 @@ export interface Medicine {
     name: string;
     dosage?: string;
     active_ingredients: string;
-    expired: Date;
+    expired: number;
     indication: string;
     price: number;
     stock: number;

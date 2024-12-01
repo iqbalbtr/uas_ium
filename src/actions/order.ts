@@ -6,7 +6,7 @@ import { getCountData } from "./helper";
 import { ResponseList } from "@/model/response";
 import { Item } from "@/app/dashboard/kasir/page";
 import { getMedicineById } from "./medicine";
-import { generateCode } from "@libs/utils";
+import { generateCode, ObjectValidation } from "@libs/utils";
 import { order_medicine, orders } from "@db/schema";
 
 export type MedicineOrder = {
@@ -24,6 +24,27 @@ export const getOrderById = async (id: number) => {
                 order_medicines: {
                     with: {
                         medicine: true
+                    }
+                }
+            }
+        })
+
+    if (!isExist) {
+        throw new Error("Order is not found")
+    }
+
+    return isExist
+}
+
+export const getOrderMedicineById = async (id: number) => {
+    const isExist = await db
+        .query.order_medicine.findFirst({
+            where: (order, { eq }) => (eq(order.id, id)),
+            with: {
+                medicine: {
+                    columns: {
+                        stock: true,
+                        name: true
                     }
                 }
             }
@@ -62,12 +83,23 @@ export const createOrder = async (
         supplier: string;
         orderStatus: "cancelled" | "completed" | "pending",
         tax: number;
-        discount: number
+        discount: number,
+        payment_method: "cash" | "installment",
+        payment_expire?: Date
     }
 ) => {
 
     if (!medicine.length)
         throw new Error("Medicine minimum is one");
+
+
+    if (order.payment_method == "installment" && !order.payment_expire) {
+        throw new Error("Payment expred required");
+    }
+    if (order.payment_method == "installment" && order.payment_expire && new Date(order.payment_expire).getTime() - new Date().getTime() < 0)
+        throw new Error("Date is not valid")
+
+    const expired = order.payment_expire ? new Date(order.payment_expire) : new Date()
 
     const isValidate = medicine.map(async (m) => {
         const isExist = await getMedicineById(m.medicineId);
@@ -92,29 +124,38 @@ export const createOrder = async (
 
     const totalDisc = (order.discount / 100) * totalOrder;
 
+    const totalItem = requestMedicine.reduce((acc, pv) => acc += pv.payload.qty, 0)
+
     const total = (totalOrder - totalDisc + totalTax)
 
     if (total < 0)
         throw new Error("Total is not valid")
 
-    // await db.transaction(async tx => {
+    await db.transaction(async tx => {
 
-    const newOrder = await db.insert(orders).values({
-        ...order,
-        order_code: code,
-        total: total
-    }).returning()
+        const newOrder = await tx.insert(orders).values({
+            ...order,
+            total_item_received: 0,
+            total_item: totalItem,
+            order_code: code,
+            total: total,
+            request_status: "not_yet",
+            payment_method: order.payment_method,
+            payment_expired: expired,
+            payment_status: order.payment_method == "cash" ? "completed" : "pending"
+        }).returning()
 
-    for (const med of requestMedicine) {
-        await db.insert(order_medicine).values({
-            order_id: newOrder[0].id,
-            quantity: med.payload.qty,
-            sub_total: med.payload.qty * med.medicine.price,
-            price: med.medicine.price,
-            medicine_id: med.medicine.id
-        })
-    }
-    // })
+        for (const med of requestMedicine) {
+            await tx.insert(order_medicine).values({
+                order_id: newOrder[0].id,
+                quantity: med.payload.qty,
+                sub_total: med.payload.qty * med.medicine.price,
+                received_total: 0,
+                price: med.medicine.price,
+                medicine_id: med.medicine.id
+            })
+        }
+    })
 
     return "Order succesfully added"
 }
@@ -143,22 +184,36 @@ export const updateOrder = async (
         supplier: string;
         orderStatus: "cancelled" | "completed" | "pending",
         tax: number;
-        discount: number
+        discount: number;
+        date: Date,
+        payment_method: "cash" | "installment",
+        payment_expire?: Date
     }
 ) => {
 
+    ObjectValidation(order)
+
+    if (order.payment_method == "installment" && !order.payment_expire) {
+        throw new Error("Payment expred required");
+    }
+    if (order.payment_method == "installment" && order.payment_expire && new Date(order.payment_expire).getTime() - new Date().getTime() < 0)
+        throw new Error("Date is not valid")
+
     const isOrder = await getOrderById(id);
 
-    const totalTax = order.tax * isOrder.tax;
+    const total = isOrder.order_medicines.reduce((acc, pv) => acc += (pv.quantity * pv.price), 0)
 
-    const totalDisc = order.discount * isOrder.total;
+    const totalTax = (order.tax / 100) * total;
+
+    const totalDisc = (order.discount / 100) * total;
 
     if ((isOrder.total - totalDisc - totalTax) < 0)
         throw new Error("Total is not valid")
 
     await db.update(orders).set({
         ...order,
-        total: isOrder.total - totalDisc - totalTax
+        order_date: order.date,
+        total: total - totalDisc + totalTax
     })
 
     return "Update order successfully"
@@ -167,7 +222,9 @@ export const updateOrder = async (
 export const getOrder = async (
     page: number = 1,
     limit: number = 15,
-    query?: string
+    query?: string,
+    status_received?: "not_yet" | "partial" | "full",
+    status_payment?: "pending" | "cancelled" | "completed"
 ) => {
 
     const skip = (page - 1) * page
@@ -183,19 +240,33 @@ export const getOrder = async (
         },
         limit,
         offset: skip,
-        orderBy: ({order_date}, {desc}) => (desc(order_date)),
-        where({order_code}, {like}) {
-            return (
-                like(sql`LOWER(${order_code})`, `%${query?.toLocaleLowerCase()}%`)
+        orderBy: ({ order_date }, { desc }) => (desc(order_date)),
+        where({ order_code, request_status, payment_status }, { like, eq, and, ne }) {
+            return and(
+                query ? like(sql`LOWER(${order_code})`, `%${query?.toLocaleLowerCase()}%`) : undefined,
+                status_received ? ne(request_status, status_received) : undefined,
+                status_payment ? eq(payment_status, status_payment) : undefined
             )
         },
     })
 
     return {
-        limit,
-        page,
-        total_item: count,
-        total_page: Math.ceil(count / limit),
+        pagging: {
+            limit,
+            page,
+            total_item: count,
+            total_page: Math.ceil(count / limit),
+        },
         data: result
-    } as ResponseList<any>
+    }
+}
+
+export async function updatePaymentStatus(id: number){
+    await getOrderById(id)
+
+    await db.update(orders).set({
+        payment_status: "completed"
+    }).where(eq(orders.id, id))
+
+    return "Payment successfully"
 }

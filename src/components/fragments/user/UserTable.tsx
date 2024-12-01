@@ -1,10 +1,11 @@
 "use client"
 import { User } from '@/model/users';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import React from 'react'
 import UpdateUserForm from './UpdateUserForm';
 import { TableView } from '@/model/view';
 import DeleteUser from './DeleteUser';
+import Loading from '@components/ui/loading';
 
 function UserTable({
     data,
@@ -26,7 +27,7 @@ function UserTable({
                 </TableRow>
             </TableHeader>
             <TableBody>
-                { isLoading !== "loading" ?
+                { isLoading !== "loading" &&
                     data.map((fo, i) => (
                         <TableRow key={i}>
                             <TableCell>{i + 1}</TableCell>
@@ -40,13 +41,12 @@ function UserTable({
                                 <UpdateUserForm handleFetch={handleFetch} data={fo} />  
                             </TableCell>
                         </TableRow>
-                    )) : (
-                        <TableRow>
-                            <TableCell>Loading</TableCell>
-                        </TableRow>
-                    )
+                    ))
                 }
             </TableBody>
+            <TableCaption>
+                <Loading isLoading={isLoading} />
+            </TableCaption>
         </Table>
     )
 }

@@ -73,17 +73,14 @@ function Kasir() {
     <DashboardLayout>
       <DashboardLayoutHeader title='Kasir' />
       <div>
-        <div className='grid grid-cols-2 gap-2'>
+        <div className='grid md:grid-cols-2 gap-2'>
           <SearchMedicine handleAdd={handleAdd} />
 
           <div className='flex flex-col gap-2'>
-
             <div>
               <Input value={total} disabled className='text-xl text-left' />
             </div>
-
             <OrderTable variant='transaction' items={items} setItem={setItems} />
-
             <div className='p-3 rounded-md bg-card shadow border-foreground'>
               <TrasnsactionForm items={items} setTotal={setTotal} setItem={setItems} />
             </div>

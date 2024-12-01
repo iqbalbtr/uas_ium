@@ -3,32 +3,38 @@ import { Button } from '@components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import { Minus, Plus } from 'lucide-react'
-import { Item } from '@/app/dashboard/kasir/page'
+import { ItemReceived } from './CreateReceiptForm'
 
 
-function OrderTable({
+function ReceiptOrderTable({
     items,
     setItem,
-    variant = "transaction"
+    isUpdate = false
 }: {
-    items: Item[],
-    setItem: React.Dispatch<SetStateAction<Item[]>>
-    variant: "receipt" | "transaction"
+    items: ItemReceived[],
+    setItem: React.Dispatch<SetStateAction<ItemReceived[]>>,
+    isUpdate: boolean
 }) {
 
-    function handleMutation(type: "plus" | "minus", medicine: Item) {
 
-        if (variant == "transaction" && type == "plus" && medicine.stock - (medicine.qty + 1) < 0)
-            return
-
-        if (type == "minus" && medicine.qty <= 1)
-            return setItem(pv => pv.filter(fo => fo.medicineId !== medicine.medicineId))
-
-        setItem(pv => pv.map((item) =>
-            item.medicineId === medicine.medicineId
-                ? { ...item, qty: type == "minus" ? --item.qty : ++item.qty }
-                : item
-        ))
+    function handleMutation(type: "plus" | "minus", medicine: ItemReceived) {
+        if (type === "minus" && medicine.received === 0) return;
+    
+        if (!isUpdate && type === "plus" && (medicine.received + 1) > medicine.max_qty) return;
+    
+        if (isUpdate && type === "plus" && medicine.total_request - medicine.received  === 0) return;
+    
+        setItem((pv) =>
+            pv.map((item) =>
+                item.order_medicine_id === medicine.order_medicine_id
+                    ? {
+                          ...item,
+                          received: type === "minus" ? item.received - 1 : item.received + 1,
+                          ...(isUpdate && { max_qty: item.total_request - (type === "minus" ? item.received - 1 : item.received + 1) }),
+                      }
+                    : item
+            )
+        );
     }
 
     return (
@@ -43,10 +49,11 @@ function OrderTable({
                     <TableHeader>
                         <TableRow>
                             <TableHead>No</TableHead>
-                            <TableHead>Nama</TableHead>
-                            <TableHead>harga</TableHead>
-                            <TableHead>jumlah</TableHead>
-                            <TableHead>Sub total</TableHead>
+                            <TableHead>nama</TableHead>
+                            <TableHead>Kode Obat</TableHead>
+                            <TableHead>Jummlah di pesan</TableHead>
+                            <TableHead>Jummlah belum di terima</TableHead>
+                            <TableHead>Diterima</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -55,10 +62,11 @@ function OrderTable({
                             items.length ? items.map((fo, i) => (
                                 <TableRow key={i}>
                                     <TableCell>{++i}</TableCell>
-                                    <TableCell>{fo.name}</TableCell>
-                                    <TableCell>{fo.price}</TableCell>
-                                    <TableCell>{fo.qty}</TableCell>
-                                    <TableCell>{fo.qty * fo.price}</TableCell>
+                                    <TableCell>{fo.medicine.name}</TableCell>
+                                    <TableCell>{fo.medicine.medicine_code}</TableCell>
+                                    <TableCell>{fo.total_request}</TableCell>
+                                    <TableCell>{fo.max_qty}</TableCell>
+                                    <TableCell>{fo.received}</TableCell>
                                     <TableCell className='flex gap-2 items-center'>
                                         <Button onClick={() => handleMutation("plus", fo)} variant={"default"}><Plus /></Button>
                                         <Button onClick={() => handleMutation("minus", fo)} variant={"destructive"}><Minus /></Button>
@@ -77,4 +85,4 @@ function OrderTable({
     )
 }
 
-export default OrderTable
+export default ReceiptOrderTable

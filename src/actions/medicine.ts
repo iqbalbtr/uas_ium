@@ -1,7 +1,7 @@
 "use server"
 
 import db from "@/db"
-import {  eq, sql } from "drizzle-orm"
+import { eq, sql } from "drizzle-orm"
 import { getCountData } from "./helper"
 import { ResponseList } from "@/model/response"
 import { ObjectValidation } from "@libs/utils"
@@ -40,7 +40,7 @@ export const createMedicine = async (
         min: number,
         max: number
     }
-) => {    
+) => {
 
     ObjectValidation(medicine)
     ObjectValidation(reminder)
@@ -51,15 +51,15 @@ export const createMedicine = async (
         throw new Error("Medicine code already exist")
 
     // await db.transaction(async tx => {
-        const id = await db.insert(medicines).values({
-            ...medicine
-        }).returning()
+    const id = await db.insert(medicines).values({
+        ...medicine
+    }).returning()
 
-        await db.insert(medicine_reminder).values({
-            max_stock: reminder.max,
-            min_stock: reminder.min,
-            medicine_id: id[0].id
-        })
+    await db.insert(medicine_reminder).values({
+        max_stock: reminder.max,
+        min_stock: reminder.min,
+        medicine_id: id[0].id
+    })
     // })
 
     return "Success added"
@@ -81,15 +81,15 @@ export const removeMedicine = async (
 export const updateMedicine = async (
     id: number,
     medicine: {
-        activeIngredients: string,
+        active_ingredients: string,
         indication: string,
-        medicineCategory: string,
-        medicineCode: string,
-        medicineType: string,
+        medicine_category: string,
+        medicine_code: string,
+        medicine_type: string,
         name: string,
         dosage: string,
-        expired: number ,
-        sideEffect: string,
+        expired: number,
+        side_effect: string,
         price: number
     },
     reminder: {
@@ -98,7 +98,7 @@ export const updateMedicine = async (
     }
 ) => {
     if (
-        !id 
+        !id
     )
         throw new Error("all fields must be filled")
 
@@ -109,17 +109,17 @@ export const updateMedicine = async (
     if (isExist[0].count == 0)
         throw new Error("Medicine is not found")
 
-    // await db.transaction(async tx => {
+    await db.transaction(async tx => {
         await db.update(medicines).set({
             ...medicine,
-            expired: medicine.expired ,
+            expired: medicine.expired,
         }).where(eq(medicines.id, id))
 
         await db.update(medicine_reminder).set({
             max_stock: reminder.max,
             min_stock: reminder.min,
         }).where(eq(medicine_reminder.medicine_id, id))
-    // })
+    })
 
     return "Success update medicine"
 }
@@ -132,27 +132,29 @@ export const getMedicine = async (
 
     const skip = (page - 1) * page
 
-    const count =  await getCountData(medicines)
+    const count = await getCountData(medicines)
     const result = await db.query.medicines.findMany({
         with: {
             medicine_reminder: true
         },
         limit,
         offset: skip,
-        where({name, medicine_code}, {or, like}) {
+        where({ name, medicine_code }, { or, like }) {
             return query ? or(
                 like(sql`LOWER(${name})`, `%${query.toLowerCase()}%`),
                 like(sql`LOWER(${medicine_code})`, `%${query.toLowerCase()}%`),
             ) : undefined
         },
         orderBy: (med, { desc }) => (desc(med.dosage))
-    });    
+    });
 
     return {
-        limit,
-        page,
-        total_page: Math.ceil(count / limit),
-        total_item: count,
+        pagging: {
+            limit,
+            page,
+            total_page: Math.ceil(count / limit),
+            total_item: count,
+        },
         data: result
-    } as ResponseList<any>
+    }
 }

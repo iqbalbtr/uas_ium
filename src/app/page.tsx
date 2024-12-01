@@ -1,9 +1,9 @@
+import { useRouter } from "next/navigation";
+
 const App = () => {
-  return (
-    <div>
-      {" "}
-      <h1>Home</h1>
-    </div>
-  );
+
+  const navigate = useRouter()
+
+  return navigate.push("/dashboard")
 };
 export default App;

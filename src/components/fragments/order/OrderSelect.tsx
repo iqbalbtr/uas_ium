@@ -40,7 +40,7 @@ export function OrderSelect({
     const getData = async (name?: string) => {
         setLoading("loading");
         try {
-            const get = await getOrder(1, 5, name);
+            const get = await getOrder(1, 5, name, "full");
             const data = get?.data || [];
             setSelect(data);
         } catch (error: any) {
