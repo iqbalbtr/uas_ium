@@ -1,3 +1,4 @@
+"use client"
 import { getOrder } from '@/actions/order';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import usePagination from '@hooks/use-paggination';

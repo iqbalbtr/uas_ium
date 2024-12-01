@@ -1,3 +1,4 @@
+"use client"
 import React, { ReactNode, Suspense } from 'react'
 
 function Layout({children}:{children: ReactNode}) {

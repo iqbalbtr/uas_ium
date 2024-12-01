@@ -92,7 +92,6 @@ export const createOrder = async (
     if (!medicine.length)
         throw new Error("Medicine minimum is one");
 
-
     if (order.payment_method == "installment" && !order.payment_expire) {
         throw new Error("Payment expred required");
     }

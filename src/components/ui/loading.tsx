@@ -1,3 +1,4 @@
+"use client"
 import { LoadingType } from '@hooks/use-loading'
 import React from 'react'
 

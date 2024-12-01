@@ -1,3 +1,4 @@
+"use sever"
 import db from "@/db";
 import { getOrderByCode, getOrderById, getOrderMedicineById } from "./order";
 import { medicines, order_medicine, orders, receipt_medicine, receipts } from "@/db/schema";

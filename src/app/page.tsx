@@ -5,7 +5,7 @@ const App = () => {
 
   const navigate = useRouter()
 
-  return navigate.push("/dashboard")
+  return "Halo"
 };
 
 export default App;
