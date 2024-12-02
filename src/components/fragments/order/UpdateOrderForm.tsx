@@ -252,13 +252,13 @@ function UpdateOrderForm({ data, handleFetch }: TableMutation<Order>) {
                                             Status penerimaan
                                         </FormLabel>
                                         <FormControl>
-                                            <Select value={field.value} onOpenChange={field.onChange}>
+                                            <Select value={field.value} onValueChange={field.onChange}>
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectGroup>
-                                                        <SelectItem value='not_yet`'>
+                                                        <SelectItem value='not_yet'>
                                                             Belum ada
                                                         </SelectItem>
                                                         <SelectItem value='partial'>

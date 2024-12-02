@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import usePagination from '@hooks/use-paggination';
 import { getDateFormat, getRupiahFormat } from '@libs/utils';
 import { Order } from '@models/orders';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import UpdateStatusPayment from './UpdateStatusPayment';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
 import { Button } from '@components/ui/button';
@@ -12,6 +12,7 @@ import { Button } from '@components/ui/button';
 function InstallmentOrder() {
 
     const [orders, setOrder] = useState<Order[]>([])
+    const [isOpen, setOpen] = useState(false)
 
     const { handleFetch, Paggination, isLoading } = usePagination({
         handleGet: async (page, setPage) => {
@@ -24,10 +25,14 @@ function InstallmentOrder() {
         initialize: true,
     });
 
+    useEffect(() => {
+        handleFetch()
+    }, [isOpen])
+
 
 
     return (
-        <Drawer>
+        <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button>
                     Cek pembayaran
