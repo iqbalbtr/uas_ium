@@ -1,3 +1,4 @@
+"use client"
 import { getMedicine } from '@/actions/medicine'
 import { Button } from '@components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'

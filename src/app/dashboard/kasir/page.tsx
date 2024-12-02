@@ -6,7 +6,7 @@ import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/Dash
 import { Input } from '@components/ui/input'
 import { toast } from '@hooks/use-toast'
 import { Medicine } from '@models/medicines'
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 
 export type Item = {
   medicineId: number;
@@ -24,10 +24,10 @@ function Kasir() {
 
   function handleAdd(val: Medicine, qty: number) {
 
-    if(!qty)
+    if (!qty)
       return
 
-    if(val.stock == 0)
+    if (val.stock == 0)
       return
 
     if (qty > val.stock)
@@ -70,24 +70,27 @@ function Kasir() {
   }
 
   return (
-    <DashboardLayout>
-      <DashboardLayoutHeader title='Kasir' />
-      <div>
-        <div className='grid md:grid-cols-2 gap-2'>
-          <SearchMedicine handleAdd={handleAdd} />
+    <Suspense>
+      <DashboardLayout>
+        <DashboardLayoutHeader title='Kasir' />
+        <div>
+          <div className='grid md:grid-cols-2 gap-2'>
+            <SearchMedicine handleAdd={handleAdd} />
 
-          <div className='flex flex-col gap-2'>
-            <div>
-              <Input value={total} disabled className='text-xl text-left' />
-            </div>
-            <OrderTable variant='transaction' items={items} setItem={setItems} />
-            <div className='p-3 rounded-md bg-card shadow border-foreground'>
-              <TrasnsactionForm items={items} setTotal={setTotal} setItem={setItems} />
+            <div className='flex flex-col gap-2'>
+              <div>
+                <Input value={total} disabled className='text-xl text-left' />
+              </div>
+              <OrderTable variant='transaction' items={items} setItem={setItems} />
+              <div className='p-3 rounded-md bg-card shadow border-foreground'>
+                <TrasnsactionForm items={items} setTotal={setTotal} setItem={setItems} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </DashboardLayout>
+      </DashboardLayout>
+    </Suspense>
+
   )
 }
 

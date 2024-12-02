@@ -1,3 +1,4 @@
+"use sever"
 import db from "@/db";
 import { getOrderByCode, getOrderById, getOrderMedicineById } from "./order";
 import { medicines, order_medicine, orders, receipt_medicine, receipts } from "@/db/schema";
@@ -6,7 +7,7 @@ import { getCountData } from "./helper";
 import { generateCode } from "@libs/utils";
 import { ItemReceived } from "@components/fragments/receipt/CreateReceiptForm";
 import { UpdateItemReceived } from "@components/fragments/receipt/UpdateReceiptForm";
-import { getMedicine, getMedicineById } from "./medicine";
+import {  getMedicineById } from "./medicine";
 
 export const getReceiptById = async (id: number) => {
     const getReceipt = await db.query.receipts.findFirst({
@@ -75,8 +76,6 @@ export const createReceipt = async (
     }))
 
     const request_status = total_received + orderExist.total_item_received == orderExist.total_item ? "full" : "partial"
-
-
 
     await db.transaction(async tx => {
         const receipt = await tx.insert(receipts).values({
