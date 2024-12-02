@@ -35,8 +35,6 @@ export const getPresciptionById = async (id: number) => {
 export const createPresciption = async (
     presciption: {
         name: string;
-        presciptionDate: Date | number;
-        patient: string;
         doctor: string;
         description: string;
         intructions: string;
@@ -63,7 +61,7 @@ export const createPresciption = async (
 
     const total = allMediicine.reduce((acc, pv) => acc += pv.price, 0)
     const tax = presciption.tax * total;
-    const discount = presciption.discount * total;
+    const discount = (presciption.discount / 100) * total;
 
     await db.transaction(async tx => {
         const newPresciption = await tx.insert(prescriptions).values({

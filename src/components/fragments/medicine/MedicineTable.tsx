@@ -7,6 +7,7 @@ import { Medicine } from '@models/medicines';
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover';
 import UpdateMedicineForm from './UpdateMedicineForm';
 import DeleteMedicine from './DeleteMedicine';
+import TableLayout from '@components/layouts/TableLayout';
 
 function MedicineTable({
     data,
@@ -15,8 +16,8 @@ function MedicineTable({
 }: TableView<Medicine>) {
 
     return (
-        <div className='max-w-[86vw] overflow-x-auto'>
-            <Table className='w-full'>
+        <TableLayout>
+            <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>No</TableHead>
@@ -87,7 +88,7 @@ function MedicineTable({
                     }
                 </TableBody>
             </Table>
-        </div>
+        </TableLayout>
     )
 }
 
