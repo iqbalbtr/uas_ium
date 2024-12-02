@@ -106,7 +106,7 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                 <div className='overflow-y-auto md:px-32 p-6'>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleCreate)} className="">
-                            <div className='grid grid-cols-2 items-center gap-2'>
+                            <div className='grid md:grid-cols-2 items-center gap-2'>
                                 <div className='flex flex-col gap-2'>
                                     <div className="space-y-2">
                                         <FormField

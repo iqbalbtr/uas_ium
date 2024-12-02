@@ -3,7 +3,6 @@
 import db from "@/db"
 import { eq, sql } from "drizzle-orm"
 import { getCountData } from "./helper"
-import { ResponseList } from "@/model/response"
 import { ObjectValidation } from "@libs/utils"
 import { medicine_reminder, medicines } from "@db/schema"
 

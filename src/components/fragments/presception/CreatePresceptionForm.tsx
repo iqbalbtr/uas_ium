@@ -18,19 +18,15 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover';
 import { Calendar } from '@components/ui/calendar';
 import { cn, getDateFormat } from '@libs/utils';
+import { TextArea } from '@components/ui/textarea';
+import PresciptionMedicineTable, { ItemPresciption } from './PresciptionMedicineTable';
+import { createPresciption } from '@/actions/prescription';
 
-export type ItemOrder = {
-    medicineId: number;
-    qty: number;
-    name: string;
-    price: number;
-    stock: number;
-}
 
-function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>}) {
+function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
 
     const { isLoading, setLoading } = useLoading()
-    const [items, setItems] = useState<ItemOrder[]>([])
+    const [items, setItems] = useState<ItemPresciption[]>([])
     const [isOpen, setOpen] = useState(false)
     const [effectted, setEffect] = useState(false)
     const [total, setTotal] = useState(0)
@@ -71,7 +67,8 @@ function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>})
                         price: val.price,
                         qty: qty,
                         stock: val.stock,
-                        max: val.medicine_reminder?.max_stock ?? 0
+                        max: val.medicine_reminder?.max_stock ?? 0,
+                        notes: ""
                     },
                     ...prevItems,
                 ];
@@ -79,25 +76,42 @@ function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>})
         });
     }
 
+    //     code_prescription: varchar("code_prescription", { length: 100 })
+    //     .unique()
+    //     .notNull(),
+    //   prescription_date: timestamp("prescription_date").notNull(),
+    //   name: varchar("name", { length: 55 }).notNull(),
+    //   doctor_name: varchar("doctor_name", { length: 50 }),
+    //   description: text("description"),
+    //   price: integer("price").notNull(),
+    //   discount: integer("discount").default(0),
+    //   fee: integer("fee").default(0),
+    //   tax: integer("tax").default(0),
+    //   instructions: text("instructions"),
+
 
     const orderSchema = z.object({
-        supplier: z.string().min(3).max(55),
-        order_status: z.string().min(2).max(255),
-        tax: z.number().min(0).max(100),
+        name: z.string().min(3).max(55),
+        code_presciption: z.string().min(2).max(55),
+        doctor_name: z.string().min(2).max(55),
+        instructions: z.string().min(2),
+        description: z.string().min(0),
         discount: z.number().min(0).max(100),
-        payment_method: z.enum(["cash", "installment", ""]),
-        payment_expire: z.date().optional()
+        fee: z.number().min(0),
+        tax: z.number().min(0).max(100),
     })
 
     const form = useForm<z.infer<typeof orderSchema>>({
         resolver: zodResolver(orderSchema),
         defaultValues: {
-            supplier: "",
+            code_presciption: "",
+            description: "",
             discount: 0,
-            tax: 0,
-            order_status: "",
-            payment_method: "",
-            payment_expire: new Date()
+            doctor_name: "",
+            fee: 0,
+            instructions: "",
+            name: "",
+            tax: 0
         },
     })
 
@@ -114,7 +128,15 @@ function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>})
     const handleCreate = async (values: z.infer<typeof orderSchema>) => {
         try {
             setLoading("loading")
-            const res = await createOrder(items, { ...values, payment_method: values.payment_method as any, orderStatus: values.order_status as "cancelled" | "completed" | "pending" });
+            const res = await createPresciption({
+                description: values.description,
+                discount: values.discount,
+                doctor: values.doctor_name,
+                fee: values.fee,
+                intructions: values.instructions,
+                name: values.name,
+                tax: values.tax
+            }, items)
             if (res) {
                 toast({
                     title: "Success",
@@ -141,29 +163,71 @@ function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>})
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="default">
-                    Tambah
+                    Buat racikan
                     <UserPlus />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
                 <DrawerHeader>
-                    <DrawerTitle>Pesan obat</DrawerTitle>
+                    <DrawerTitle>Racik obat</DrawerTitle>
                 </DrawerHeader>
 
                 <div className='grid grid-cols-2 gap-6'>
                     <SearchMedicine handleAdd={handleAdd} />
                     <div>
                         <Input className='mb-6' disabled value={`Rp. ${total}`} />
-                        <OrderTable items={items} setItem={setItems} variant='receipt' />
+                        <PresciptionMedicineTable items={items} setItem={setItems}  />
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 p-6 bg-background shadow border-2 rounded-lg border-border mt-6">
                                 <FormField
                                     control={form.control}
-                                    name='supplier'
+                                    name='name'
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-1'>
                                             <FormLabel>
-                                                Supplier
+                                                Nama
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    id="name"
+                                                    placeholder="nama.."
+                                                    type="text"
+                                                    className="placeholder:opacity-50"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage className="text-red-500 font-normal" />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='doctor_name'
+                                    render={({ field }) => (
+                                        <FormItem className='flex flex-col gap-1'>
+                                            <FormLabel>
+                                                Nama Dokter
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    id="doctor_name"
+                                                    placeholder="Nama dokter.."
+                                                    type="text"
+                                                    className="placeholder:opacity-50"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage className="text-red-500 font-normal" />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name='code_presciption'
+                                    render={({ field }) => (
+                                        <FormItem className='flex flex-col gap-1'>
+                                            <FormLabel>
+                                                Kode Racikan
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -178,28 +242,52 @@ function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>})
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name='discount'
-                                    render={({ field }) => (
-                                        <FormItem className='flex flex-col gap-1'>
-                                            <FormLabel>
-                                                Diskon
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    id="discount"
-                                                    placeholder="discount.."
-                                                    type="text"
-                                                    className="placeholder:opacity-50"
-                                                    {...field}
-                                                    onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value); setEffect(pv => !pv) }}
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-red-500 font-normal" />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className='grid grid-cols-2 gap-2 items-center'>
+                                    <FormField
+                                        control={form.control}
+                                        name='discount'
+                                        render={({ field }) => (
+                                            <FormItem className='flex flex-col gap-1'>
+                                                <FormLabel>
+                                                    Diskon
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id="discount"
+                                                        placeholder="discount.."
+                                                        type="text"
+                                                        className="placeholder:opacity-50"
+                                                        {...field}
+                                                        onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value); setEffect(pv => !pv) }}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage className="text-red-500 font-normal" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name='fee'
+                                        render={({ field }) => (
+                                            <FormItem className='flex flex-col gap-1'>
+                                                <FormLabel>
+                                                    jasa
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        id="discount"
+                                                        placeholder="discount.."
+                                                        type="text"
+                                                        className="placeholder:opacity-50"
+                                                        {...field}
+                                                        onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value); setEffect(pv => !pv) }}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage className="text-red-500 font-normal" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
                                 <FormField
                                     control={form.control}
                                     name='tax'
@@ -224,32 +312,20 @@ function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>})
                                 />
                                 <FormField
                                     control={form.control}
-                                    name='order_status'
+                                    name='description'
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-1'>
                                             <FormLabel>
-                                                Status Pemesanan
+                                                Deskripsi
                                             </FormLabel>
                                             <FormControl>
-                                                <Select value={field.value} onValueChange={field.onChange}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Pilih status" />
-                                                    </SelectTrigger>
-
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectItem value='cancelled'>
-                                                                Dibatalkan
-                                                            </SelectItem>
-                                                            <SelectItem value='pending'>
-                                                                Di Tangguhkan
-                                                            </SelectItem>
-                                                            <SelectItem value='completed'>
-                                                                Selesai
-                                                            </SelectItem>
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
+                                                <TextArea
+                                                    rows={4}
+                                                    id="tax"
+                                                    placeholder="tax.."
+                                                    className="placeholder:opacity-50"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage className="text-red-500 font-normal" />
                                         </FormItem>
@@ -257,90 +333,26 @@ function CreatePresceptionForm({handleFetch}:{handleFetch: () => Promise<void>})
                                 />
                                 <FormField
                                     control={form.control}
-                                    name='payment_method'
+                                    name='instructions'
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-1'>
                                             <FormLabel>
-                                                Metode pembayaran
+                                                Instruksi
                                             </FormLabel>
                                             <FormControl>
-                                                <Select value={field.value} onValueChange={(e) => {
-                                                    field.onChange(e)
-                                                    if(e == "cash") {
-                                                        setExpire(false)
-                                                        form.setValue("payment_expire", new Date())
-                                                    } else {
-                                                        setExpire(true)
-                                                    }
-                                                }}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Pilih metode" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectItem value='cash'>
-                                                                Tunai
-                                                            </SelectItem>
-                                                            <SelectItem value='installment'>
-                                                                Jatuh tempo
-                                                            </SelectItem>
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
+                                                <TextArea
+                                                    rows={4}
+                                                    id="tax"
+                                                    placeholder="tax.."
+                                                    className="placeholder:opacity-50"
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage className="text-red-500 font-normal" />
                                         </FormItem>
                                     )}
                                 />
-                                {
-                                    isExpire && (
-                                        <FormField
-                                            control={form.control}
-                                            name='payment_expire'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Jatuh Tempo
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Popover>
-                                                            <PopoverTrigger asChild>
-                                                                <FormControl>
-                                                                    <Button
-                                                                        variant={"outline"}
-                                                                        className={cn(
-                                                                            "w-[240px] pl-3 text-left font-normal",
-                                                                            !field.value && "text-muted-foreground"
-                                                                        )}
-                                                                    >
-                                                                        {field.value ? (
-                                                                            getDateFormat(field.value)
-                                                                        ) : (
-                                                                            <span>Pick a date</span>
-                                                                        )}
-                                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                                    </Button>
-                                                                </FormControl>
-                                                            </PopoverTrigger>
-                                                            <PopoverContent className="w-auto p-0" align="start">
-                                                                <Calendar
-                                                                    mode="single"
-                                                                    selected={field.value}
-                                                                    onSelect={field.onChange}
-                                                                    disabled={(date) =>
-                                                                        date < new Date()
-                                                                    }
-                                                                    initialFocus
-                                                                />
-                                                            </PopoverContent>
-                                                        </Popover>
-                                                    </FormControl>
-                                                    <FormMessage className="text-red-500 font-normal" />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    )
-                                }
+
                                 <Button disabled={isLoading == "loading"} type='submit' className="w-full">
                                     {isLoading == "loading" ? "Loading" : "Pesan"}
                                 </Button>

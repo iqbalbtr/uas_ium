@@ -1,14 +1,12 @@
 "use client"
+import Loading from "@components/ui/loading";
 import { useRouter } from "next/navigation";
 
 const App = () => {
-
-  if(typeof window == "undefined")
-    return
-
   const navigate = useRouter()
 
-  return navigate.replace("/login")
+  if(typeof window !== "undefined")
+    return navigate.replace("/login")
 };
 
 export default App;
