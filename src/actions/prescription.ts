@@ -2,10 +2,11 @@
 
 import db from "@/db";
 import { getMedicineById } from "./medicine";
-import { prescription_medicine, prescriptions } from "@/db/schema";
+import { medicines, prescription_medicine, prescriptions } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { getCountData } from "./helper";
 import { ObjectValidation } from "@/lib/utils";
+import { ItemPresciption } from "@components/fragments/presception/PresciptionMedicineTable";
 
 export type MedicinePresciption = {
     medicineId: number;
@@ -31,6 +32,18 @@ export const getPresciptionById = async (id: number) => {
 
     return get;
 }
+export const getPresciptionCode = async (id: string) => {
+
+    try {
+        const get = await db.query.prescriptions.findFirst({
+            where: (pres, { eq }) => (eq(pres.code_prescription, id)),
+        })
+
+        return get;
+    } catch (error) {
+        return undefined
+    }
+}
 
 export const createPresciption = async (
     presciption: {
@@ -41,10 +54,11 @@ export const createPresciption = async (
         discount: number;
         tax: number;
         fee: number;
+        code_presciption: string;
     },
     medicines: MedicinePresciption[]
 ) => {
-    
+
     ObjectValidation(presciption)
 
     if (medicines.length == 0)
@@ -57,7 +71,10 @@ export const createPresciption = async (
 
     const allMediicine = await Promise.all(isItem);
 
-    const code = await db.select({count: sql`COUNT(*)`}).from(prescriptions);
+    const code = await getPresciptionCode(presciption.code_presciption)
+
+    if (code)
+        throw new Error("Code already exist")
 
     const total = allMediicine.reduce((acc, pv) => acc += pv.price, 0)
     const tax = presciption.tax * total;
@@ -65,7 +82,7 @@ export const createPresciption = async (
 
     await db.transaction(async tx => {
         const newPresciption = await tx.insert(prescriptions).values({
-            code_prescription: "PR" + String(code[0].count as number),
+            code_prescription: presciption.code_presciption,
             name: presciption.name,
             prescription_date: new Date(),
             description: presciption.description,
@@ -75,6 +92,7 @@ export const createPresciption = async (
             discount: presciption.discount,
             fee: presciption.fee,
             tax: presciption.tax,
+            stock: 0
         }).returning()
 
         for (const item of medicines) {
@@ -94,9 +112,21 @@ export const removePresciption = async (
     id: number
 ) => {
 
-    await getPresciptionById(id);
+    const isExist = await getPresciptionById(id);
 
-    await db.delete(prescriptions).where(eq(prescriptions.id, id))
+    await db.transaction(async tx => {
+        for (const fo of isExist.prescription_medicines) {
+
+            if (!fo.medicine)
+                continue;
+
+            await tx.update(medicines).set({
+                stock: (fo.medicine?.stock ?? 0) + (fo.quantity * isExist.stock)
+            }).where(eq(medicines.id, fo.medicine_id!))
+        }
+        await tx.delete(prescriptions).where(eq(prescriptions.id, id))
+    })
+
 
     return "Remove presciption successfully"
 }
@@ -105,15 +135,18 @@ export const updatePresciption = async (
     id: number,
     presciption: {
         name: string;
-        presciptionDate: Date | number;
+        code_presciption: string;
+        discount: number;
+        fee: number;
+        tax: number;
         doctor: string;
         description: string;
         intructions: string;
     },
-    medicnes: MedicinePresciption[]
+    medicnes: ItemPresciption[]
 ) => {
 
-    if(!id)
+    if (!id)
         throw new Error("Id is requierd")
 
     ObjectValidation(presciption)
@@ -126,16 +159,31 @@ export const updatePresciption = async (
         return existing;
     })
 
-    await Promise.all(isItem);
+    const allMediicine = await Promise.all(isItem);
+
+    const total = allMediicine.reduce((acc, pv) => acc += pv.price, 0)
+    const tax = presciption.tax * total;
+    const discount = (presciption.discount / 100) * total;
+
+    if (total + tax - discount < 0) {
+        throw new Error("Price must more than equal 0")
+    }
 
     await db.transaction(async tx => {
         await tx.update(prescriptions).set({
             name: presciption.name,
-            prescription_date: new Date(presciption.presciptionDate),
+            prescription_date: new Date(),
             description: presciption.description,
             doctor_name: presciption.doctor,
             instructions: presciption.intructions,
+            code_prescription: presciption.code_presciption,
+            discount: presciption.discount,
+            fee: presciption.fee,
+            price: total + tax - discount,
+            tax: presciption.tax
         }).where(eq(prescriptions.id, id))
+
+        await presciptionMutation(id, 0)
 
         await tx.delete(prescription_medicine).where(eq(prescription_medicine.prescription_id, id))
 
@@ -173,10 +221,59 @@ export const getPresciption = async (
     })
 
     return {
-        limit,
-        page,
-        total_item: count,
-        total_page: Math.ceil(count / limit),
+        pagging: {
+            limit,
+            page,
+            total_item: count,
+            total_page: Math.ceil(count / limit),
+        },
         data: result
     }
 }
+export const presciptionMutation = async (id: number, qty: number) => {
+    const isExist = await getPresciptionById(id);
+    if (!isExist) {
+        throw new Error("Prescription not found");
+    }
+
+    if (qty < 0) {
+        throw new Error("Quantity must be greater than 0");
+    }
+
+    const isPlus = isExist.stock > qty ? "plus" : "minus";
+    const totalQty = Math.abs(isExist.stock - qty);
+
+    await db.transaction(async (tx) => {
+        for (const fo of isExist.prescription_medicines) {
+
+            if (!fo.medicine) {
+                throw new Error(`Medicine data for prescription item ${fo.id} is missing`);
+            }
+
+            let total = 0;
+
+            switch (isPlus) {
+                case "plus":
+                    total = fo.medicine.stock + (fo.quantity * totalQty);
+                    break;
+                case "minus":
+                    total = fo.medicine.stock - (fo.quantity * totalQty);
+                    break;
+            }
+
+            if (total < 0) {
+                throw new Error(`Total stock of ${fo.medicine.name} is less than zero`);
+            }
+
+            await tx.update(medicines)
+                .set({ stock: qty == 0 ? (fo.medicine.stock + (fo.quantity * isExist.stock)) : total })
+                .where(eq(medicines.id, fo.medicine_id!));
+        }
+
+        await tx.update(prescriptions)
+            .set({ stock: qty })
+            .where(eq(prescriptions.id, id));
+    });
+
+    return "Update successfully";
+};

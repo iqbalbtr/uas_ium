@@ -210,6 +210,7 @@ export const prescriptions = pgTable("prescriptions", {
   fee: integer("fee").default(0),
   tax: integer("tax").default(0),
   instructions: text("instructions"),
+  stock: integer("stock").notNull()
 });
 
 export const prescription_medicine = pgTable("prescription_medicine", {
