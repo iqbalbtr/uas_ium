@@ -69,6 +69,7 @@ function CreateTransactionForm({
 
 
     const handleCreate = async (values: z.infer<typeof transactionSchema>) => {
+        setCurrent("")
         try {
             if (!items.length)
                 throw new Error("1 item min")

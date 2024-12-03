@@ -12,6 +12,9 @@ import { getTransactionByCode } from '@/actions/transaction'
 import { printPdf } from '@components/pdf/lib'
 import Invoice from '@components/pdf/Invoice'
 import useLoading from '@hooks/use-loading'
+import { getApotek } from '@/actions/apotek'
+import { apotek } from '@db/schema'
+import { Apotek } from '@models/apotek'
 
 export type Item = {
   medicineId: number;
@@ -27,14 +30,16 @@ function Kasir() {
   const [items, setItems] = useState<Item[]>([]);
   const [total, setTotal] = useState(0);
   const [current, setCurrent] = useState("")
-  const {isLoading, setLoading} = useLoading()
+  const { isLoading, setLoading } = useLoading()
 
   async function handlePrint() {
     setLoading("loading")
     try {
+      const toko = await getApotek();
       const trans = await getTransactionByCode(current);
-      if(trans){
-        await printPdf(await Invoice({transaksi: trans as any}), "Invoice")
+      if (trans && toko) {
+        await printPdf(await Invoice({ transaksi: trans as any, toko: toko as Apotek }), "Invoice")
+        
       }
     } catch (error: any) {
       toast({
@@ -42,7 +47,7 @@ function Kasir() {
         description: error.message,
         variant: "destructive"
       })
-    } finally{
+    } finally {
       setLoading("idle")
     }
   }

@@ -7,21 +7,21 @@ import React from "react";
 
 export default function InformasiApotek() {
   return (
-    <Card className="w-full min-h-screen max-w-md mx-auto ">
-      <div className="relative w-full h-48">
+    <Card className="w-full h-[90vh] ">
+      <div className="relative w-full h-[35%]">
         <Image
           src="/images/apotek.jpg"
           alt="Pharmacy storefront"
           layout="fill"
           objectFit="cover"
-          className="transition-opacity opacity-0 duration-[1s] rounded-t-lg"
+          className=" rounded-t-lg"
           onLoadingComplete={(image: any) =>
             image.classList.remove("opacity-0")
           }
         />
       </div>
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">
+        <CardTitle className="text-4xl font-bold text-center">
           Empat Husada
         </CardTitle>
       </CardHeader>

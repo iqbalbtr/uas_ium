@@ -23,17 +23,17 @@ import useLoading from "@hooks/use-loading"
 export function PrescriptionStock({ data, handleFetch }: TableMutation<Prescription>) {
   const [qty, setQty] = React.useState(data.stock)
   const [isOpen, setOpen] = React.useState(false)
-  const {isLoading, setLoading} = useLoading()
+  const { isLoading, setLoading } = useLoading()
 
   function onClick(adjustment: number) {
-    setQty(pv => pv +adjustment)
+    setQty(pv => pv + adjustment)
   }
 
   async function handleUpdate() {
     setLoading("loading")
     try {
       const res = await presciptionMutation(data.id, qty)
-      if(res){
+      if (res) {
         toast({
           title: "Success",
           description: res
@@ -47,7 +47,7 @@ export function PrescriptionStock({ data, handleFetch }: TableMutation<Prescript
         description: error.message,
         variant: "destructive"
       })
-    } finally{
+    } finally {
       setLoading("idle")
     }
   }
@@ -55,8 +55,8 @@ export function PrescriptionStock({ data, handleFetch }: TableMutation<Prescript
   return (
     <Drawer open={isOpen} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <button className="flex gap-2 items-center">
-          {data.stock}
+        <button className="flex bg-yellow-500/40 border border-yellow-600/40 px-2 gap-1 rounded-md items-center">
+          <span> {data.stock}</span>
           <Pen size={12} />
         </button>
       </DrawerTrigger>

@@ -1,39 +1,66 @@
 import { getApotek } from "@/actions/apotek";
 import { getDateFormat } from "@libs/utils";
+import { Apotek } from "@models/apotek";
 import { Transaction } from "@models/transactions";
 import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 const Invoice = async ({
-    transaksi
+    transaksi,
+    toko
 }: {
-    transaksi: Transaction
+    transaksi: Transaction,
+    toko: Apotek
 }) => {
 
-    const toko = await getApotek();
 
     function letterFixes(input: string, num: number) {
 
-        if(input.length > num){
+        if (input.length > num) {
             return input.slice(0, num) + ".."
         }
 
         return input
     }
 
+    console.log(transaksi);
+    
+
+    const total = transaksi.items?.reduce((sum, pv) => sum += pv.sub_total, 0)
+
+    const total_tax = (transaksi.tax! / 100) * total;
+
+    const total_discount = (transaksi.discount! / 100) * total
+
+    // id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    // transaction_date: timestamp("transaction_date").defaultNow(),
+    // code_transaction: varchar("code_transaction", { length: 50 })
+    //   .unique()
+    //   .notNull(),
+    // buyer: varchar("buyer", { length: 100 }).default("guest").notNull(),
+    // user_id: integer("user_id").references(() => users.id, {
+    //   onDelete: "set null",
+    // }),
+    // total: integer("total").notNull(),
+    // payment_method: payment_method_enum().default("cash"),
+    // payment_expired: timestamp("payment_expired"),
+    // payment_status: payment_status_enum().default("pending"),
+    // transaction_status: transaction_status_enum().default("completed"),
+    // tax: integer("tax").default(0),
+    // discount: integer("discount").default(0),
+
     return (
         <Document>
             <Page size={{ height: "auto", width: 350 }} style={styles.body}>
                 <View>
-
                     <View>
                         <Text style={styles.title}>
-                            {toko?.name}
+                            {toko?.name!}
                         </Text>
                         <Text style={styles.subTitle}>
-                            {toko?.alamat}
+                            {toko?.alamat!}
                         </Text>
                         <Text style={styles.subTitle}>
-                            {toko?.email}
+                            {toko?.email!}
                         </Text>
                     </View>
 
@@ -50,10 +77,10 @@ const Invoice = async ({
                     </View>
                     <View style={styles.labelContent}>
                         <Text>
-                            Tipe
+                            Kasir
                         </Text>
                         <Text>
-                            : 
+                            : {transaksi.user?.name}
                         </Text>
                     </View>
                     <View style={styles.labelContent}>
@@ -83,7 +110,7 @@ const Invoice = async ({
                         {
                             transaksi.items?.map((foo, i) => (
                                 <View style={styles.barangContent} key={i}>
-                                    <Text style={styles.text}>{`${letterFixes(foo.medicine.name, 8)}}`}</Text>
+                                    <Text style={styles.text}>{`${letterFixes(foo.medicine.name, 8)}`}</Text>
                                     <Text style={styles.text}>x{foo.quantity}</Text>
                                     <Text style={styles.text}>Rp. {foo.medicine.price}</Text>
                                     <Text style={styles.text}>Rp. {foo.sub_total}</Text>
@@ -113,7 +140,7 @@ const Invoice = async ({
                             <Text></Text>
                             <Text></Text>
                             <Text style={styles.text}>Pajak</Text>
-                            <Text style={styles.text}>{transaksi.tax}%</Text>
+                            <Text style={styles.text}>Rp. {total_tax}-{transaksi.tax}% </Text>
                         </View>
                         <View style={styles.barangContent}>
                             <Text></Text>
@@ -123,14 +150,14 @@ const Invoice = async ({
                                 ...styles.text,
                                 borderTop: .5,
                                 margin: "1px 0"
-                            }}>Rp. {transaksi.total + transaksi.tax!}</Text>
+                            }}>Rp. {total + total_tax!}</Text>
                         </View>
 
                         <View style={styles.barangContent}>
                             <Text></Text>
                             <Text></Text>
                             <Text style={styles.text}>Potongan Harga</Text>
-                            <Text style={styles.text}>Rp. {transaksi.discount}</Text>
+                            <Text style={styles.text}>Rp. {total_discount}-{transaksi.discount}%</Text>
                         </View>
 
                         <View style={{
@@ -144,7 +171,7 @@ const Invoice = async ({
                             <Text style={{
                                 ...styles.text,
                                 borderTop: .5
-                            }}>Rp. </Text>
+                            }}>Rp. {total + total_tax - total_discount}</Text>
                         </View>
 
                     </View>
@@ -161,18 +188,22 @@ const Invoice = async ({
                             {transaksi.payment_method}
                         </Text>
                     </View>
-                    <View style={styles.labelContent}>
-                        <Text>
-                            Deskripsi :
-                        </Text>
-                        <Text
-                            style={{
-                                maxWidth: 150
-                            }}
-                        >
-                        
-                        </Text>
-                    </View>
+                    {
+                        transaksi.payment_method == "installment" && (
+                            <View style={styles.labelContent}>
+                                <Text>
+                                    Jatuh tempo :
+                                </Text>
+                                <Text
+                                    style={{
+                                        maxWidth: 150
+                                    }}
+                                >
+                                    {getDateFormat(transaksi.payment_expired!)}
+                                </Text>
+                            </View>
+                        )
+                    }
 
                     <View style={styles.line}>
                     </View>
