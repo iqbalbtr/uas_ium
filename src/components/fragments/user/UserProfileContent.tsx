@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, User } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useSession } from "next-auth/react";
 
 const avatars = [
   "/placeholder.svg",
@@ -14,12 +15,15 @@ const avatars = [
   "https://source.unsplash.com/random/200x200?face=4",
 ];
 
-const UserProfile = () => {
+const UserProfileContent = () => {
   const [avatarIndex, setAvatarIndex] = useState(0);
 
   const changeAvatar = () => {
     setAvatarIndex((prevIndex) => (prevIndex + 1) % avatars.length);
   };
+
+  const { data} = useSession()
+
   return (
     <Card className="w-full max-w-2xl">
       <CardContent className="p-6">
@@ -42,13 +46,13 @@ const UserProfile = () => {
           <div className="flex-1 space-y-3">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-lg">Iqbal Bahtiar</h3>
+                <h3 className="font-semibold text-lg">{data?.user.name}</h3>
                 <Badge variant="outline" className="bg-green-300 font-semibold">
-                  Admin
+                  {data?.user.roleId}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                An admin at a pharmacy{" "}
+                An {data?.user.roleId} at a pharmacy{" "}
                 <span className="font-semibold">Empat Husada</span>
               </p>
             </div>
@@ -59,4 +63,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default UserProfileContent;

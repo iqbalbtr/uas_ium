@@ -1,6 +1,7 @@
 import { Button } from "@components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -9,7 +10,7 @@ import {
 } from "@components/ui/dialog";
 import { BadgeCheck } from "lucide-react";
 import React, { useState } from "react";
-import UserProfile from "../../layouts/UserProfile";
+import UserProfileContent from "./UserProfileContent";
 
 function UserProfileDialog() {
   return (
@@ -21,7 +22,10 @@ function UserProfileDialog() {
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <UserProfile />
+        <DialogHeader>
+          <DialogTitle />
+        </DialogHeader>
+        <UserProfileContent />
       </DialogContent>
     </Dialog>
   );
