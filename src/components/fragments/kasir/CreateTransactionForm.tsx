@@ -21,10 +21,12 @@ function CreateTransactionForm({
     items,
     setTotal,
     setItem,
+    setCurrent,
 }: {
     items: Item[],
     setTotal: React.Dispatch<SetStateAction<number>>
     setItem: React.Dispatch<SetStateAction<Item[]>>
+    setCurrent: React.Dispatch<SetStateAction<string>>
 }) {
     
     const { data: user } = useSession()
@@ -67,6 +69,7 @@ function CreateTransactionForm({
 
 
     const handleCreate = async (values: z.infer<typeof transactionSchema>) => {
+        setCurrent("")
         try {
             if (!items.length)
                 throw new Error("1 item min")
@@ -83,10 +86,11 @@ function CreateTransactionForm({
             if (res) {
                 toast({
                     title: "Success",
-                    description: res,
+                    description: "Transalsi berhasil",
                 })
                 form.reset()
                 setItem([])
+                setCurrent(res)
             }
         } catch (error: any) {
             toast({

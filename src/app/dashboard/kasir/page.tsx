@@ -7,6 +7,14 @@ import { Input } from '@components/ui/input'
 import { toast } from '@hooks/use-toast'
 import { Medicine } from '@models/medicines'
 import React, { Suspense, useState } from 'react'
+import { Button } from '@components/ui/button'
+import { getTransactionByCode } from '@/actions/transaction'
+import { printPdf } from '@components/pdf/lib'
+import Invoice from '@components/pdf/Invoice'
+import useLoading from '@hooks/use-loading'
+import { getApotek } from '@/actions/apotek'
+import { apotek } from '@db/schema'
+import { Apotek } from '@models/apotek'
 
 export type Item = {
   medicineId: number;
@@ -21,6 +29,28 @@ function Kasir() {
 
   const [items, setItems] = useState<Item[]>([]);
   const [total, setTotal] = useState(0);
+  const [current, setCurrent] = useState("")
+  const { isLoading, setLoading } = useLoading()
+
+  async function handlePrint() {
+    setLoading("loading")
+    try {
+      const toko = await getApotek();
+      const trans = await getTransactionByCode(current);
+      if (trans && toko) {
+        await printPdf(await Invoice({ transaksi: trans as any, toko: toko as Apotek }), "Invoice")
+        
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      })
+    } finally {
+      setLoading("idle")
+    }
+  }
 
   function handleAdd(val: Medicine, qty: number) {
 
@@ -83,7 +113,8 @@ function Kasir() {
               </div>
               <OrderTable variant='transaction' items={items} setItem={setItems} />
               <div className='p-3 rounded-md bg-card shadow border-foreground'>
-                <TrasnsactionForm items={items} setTotal={setTotal} setItem={setItems} />
+                <TrasnsactionForm items={items} setCurrent={setCurrent} setTotal={setTotal} setItem={setItems} />
+                {current && <Button disabled={isLoading == "loading"} variant={'destructive'} className='w-full mt-2' onClick={handlePrint}>Cetak</Button>}
               </div>
             </div>
           </div>

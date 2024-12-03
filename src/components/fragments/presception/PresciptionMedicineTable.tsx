@@ -7,8 +7,13 @@ import { Minus, Plus } from 'lucide-react'
 import { Item } from '@/app/dashboard/kasir/page'
 import PresciptionMedicineNote from './PresciptionMedicineNote'
 
-export type ItemPresciption = Item & {
-    notes: string
+export type ItemPresciption =  {
+    medicineId: number;
+    qty: number;
+    name: string;
+    price: number;
+    notes: string;
+    presciption_medicine_id?: number
 }
 
 function PresciptionMedicineTable({

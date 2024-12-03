@@ -9,22 +9,30 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
-import { UserPlus } from 'lucide-react';
+import { Pen, UserPlus } from 'lucide-react';
 import SearchMedicine from '@components/fragments/medicine/SearchMedicine';
 import { Medicine } from '@models/medicines';
 import { TextArea } from '@components/ui/textarea';
 import PresciptionMedicineTable, { ItemPresciption } from './PresciptionMedicineTable';
-import { createPresciption } from '@/actions/prescription';
+import { createPresciption, updatePresciption } from '@/actions/prescription';
+import { TableMutation } from '@models/view';
+import { Prescription } from '@models/prescription';
 
 
-function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
+function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription>) {
 
     const { isLoading, setLoading } = useLoading()
-    const [items, setItems] = useState<ItemPresciption[]>([])
+    const [items, setItems] = useState<ItemPresciption[]>(data.prescription_medicines.map(fo => ({
+        medicineId: fo.medicine_id!,
+        name: fo.medicine.name!,
+        notes: fo.notes!,
+        price: fo.medicine.price,
+        qty: fo.quantity,
+        presciption_medicine_id: fo.id
+    })))
     const [isOpen, setOpen] = useState(false)
     const [effectted, setEffect] = useState(false)
     const [total, setTotal] = useState(0)
-    const [isExpire, setExpire] = useState(false)
 
 
     function handleAdd(val: Medicine, qty: number) {
@@ -70,20 +78,6 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
         });
     }
 
-    //     code_prescription: varchar("code_prescription", { length: 100 })
-    //     .unique()
-    //     .notNull(),
-    //   prescription_date: timestamp("prescription_date").notNull(),
-    //   name: varchar("name", { length: 55 }).notNull(),
-    //   doctor_name: varchar("doctor_name", { length: 50 }),
-    //   description: text("description"),
-    //   price: integer("price").notNull(),
-    //   discount: integer("discount").default(0),
-    //   fee: integer("fee").default(0),
-    //   tax: integer("tax").default(0),
-    //   instructions: text("instructions"),
-
-
     const orderSchema = z.object({
         name: z.string().min(3).max(55),
         code_presciption: z.string().min(2).max(55),
@@ -98,14 +92,14 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
     const form = useForm<z.infer<typeof orderSchema>>({
         resolver: zodResolver(orderSchema),
         defaultValues: {
-            code_presciption: "",
-            description: "",
-            discount: 0,
-            doctor_name: "",
-            fee: 0,
-            instructions: "",
-            name: "",
-            tax: 0
+            code_presciption: data.code_prescription,
+            description: data.description,
+            discount: data.discount,
+            doctor_name: data.doctor_name,
+            fee: data.fee,
+            instructions: data.instructions,
+            name: data.name,
+            tax: data.tax
         },
     })
 
@@ -122,16 +116,20 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
     const handleCreate = async (values: z.infer<typeof orderSchema>) => {
         try {
             setLoading("loading")
-            const res = await createPresciption({
-                description: values.description,
-                discount: values.discount,
-                doctor: values.doctor_name,
-                fee: values.fee,
-                intructions: values.instructions,
-                name: values.name,
-                tax: values.tax,
-                code_presciption: values.code_presciption
-            }, items)
+            const res = await updatePresciption(
+                data.id,
+                {
+                    description: values.description,
+                    discount: values.discount,
+                    doctor: values.doctor_name,
+                    fee: values.fee,
+                    intructions: values.instructions,
+                    name: values.name,
+                    tax: values.tax,
+                    code_presciption: values.code_presciption
+                }, 
+                items
+            )
             if (res) {
                 toast({
                     title: "Success",
@@ -157,10 +155,9 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="default">
-                    Buat racikan
-                    <UserPlus />
-                </Button>
+                <button>
+                    <Pen size={15} />
+                </button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
                 <DrawerHeader>
@@ -171,7 +168,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                     <SearchMedicine handleAdd={handleAdd} />
                     <div>
                         <Input className='mb-6' disabled value={`Rp. ${total}`} />
-                        <PresciptionMedicineTable items={items} setItem={setItems}  />
+                        <PresciptionMedicineTable items={items} setItem={setItems} />
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 p-6 bg-background shadow border-2 rounded-lg border-border mt-6">
                                 <FormField
@@ -362,4 +359,4 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
     )
 }
 
-export default CreatePresceptionForm
+export default UpdatePresciptionForm

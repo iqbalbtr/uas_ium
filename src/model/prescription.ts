@@ -11,6 +11,7 @@ export interface Prescription {
     discount: number;
     fee: number;
     tax: number;
+    stock: number;
     instructions?: string;
     prescription_medicines: PrescriptionMedicine[]
   }

@@ -30,7 +30,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { signOut, useSession } from "next-auth/react"
-import UserProfile from "@components/fragments/user/UserProfile"
+import UserProfileDialog from "@components/fragments/user/UserProfileDialog"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -77,7 +77,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               {/* <DropdownMenuItem> */}
-                <UserProfile />                
+                <UserProfileDialog />                
               {/* </DropdownMenuItem> */}
               <DropdownMenuItem>
                 <Bell />

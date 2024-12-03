@@ -56,12 +56,6 @@ function CreateReceiptForm() {
     const handleCreate = async (values: z.infer<typeof receiptSchema>) => {
         try {
             setLoading("loading")
-            const itemRequest = received.filter(fo => fo.received >= 1)
-
-            if (!itemRequest.length) {
-                throw new Error("Barang tidak ada yang di terima")
-            }
-
             const res = await createReceipt(
                 values.order_code,
                 values.delivery_name,

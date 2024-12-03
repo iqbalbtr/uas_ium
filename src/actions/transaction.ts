@@ -31,6 +31,25 @@ export const getTransactionById = async (id: number) => {
     return get
 }
 
+export const getTransactionByCode = async (id: string) => {
+    const get = await db.query.transactions.findFirst({
+        where: (trans, { eq }) => (eq(trans.code_transaction, id)),
+        with: {
+            items: {
+                with: {
+                    medicine: true
+                }
+            },
+            user: true
+        }
+    })
+
+    if (!get)
+        throw new Error("Transaction is not found")
+
+    return get
+}
+
 
 export const createTransaction = async (
     userId: number,
@@ -141,7 +160,7 @@ export const createTransaction = async (
         }
     })
 
-    return "transaction successfully"
+    return  "TS" + String(code[0].count as number)
 }
 
 export const removeTransaction = async (

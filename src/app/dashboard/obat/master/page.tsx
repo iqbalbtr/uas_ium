@@ -25,7 +25,7 @@ function ObatMaster() {
 
   return (
     <DashboardLayout>
-      <DashboardLayoutHeader title="Master User">
+      <DashboardLayoutHeader title="Master Obat">
         <CreateMedicineForm handleFetch={handleFetch} />
       </DashboardLayoutHeader>
       <MedicineTable
