@@ -1,11 +1,12 @@
-import React from 'react'
+import InformasiApotek from "@components/layouts/InformasiApotek";
+import React from "react";
 
 function ApotekInformasi() {
   return (
     <div>
-      apotek informasi
+      <InformasiApotek />
     </div>
-  )
+  );
 }
 
-export default ApotekInformasi
+export default ApotekInformasi;

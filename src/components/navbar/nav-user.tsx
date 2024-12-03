@@ -30,7 +30,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { signOut, useSession } from "next-auth/react"
-import UserProfile from "@components/fragments/user/UserProfile"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
