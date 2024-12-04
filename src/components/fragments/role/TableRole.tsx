@@ -4,7 +4,6 @@ import React from 'react'
 import AccessView from './AccessView';
 import UpdateRoleForm from './UpdateRoleForm';
 import DeleteRole from './DeleteRole';
-import { LoadingType } from '@hooks/use-loading';
 import { TableView } from '@/model/view';
 import { Role } from '@/model/roles';
 
@@ -26,7 +25,7 @@ function TableRole({ data, isLoading, handleFetch }: TableView<Role>) {
                         <TableRow key={i}>
                             <TableCell>{i + 1}</TableCell>
                             <TableCell>{fo.name}</TableCell>
-                            <TableCell><AccessView data={fo.access_rights as string[] ?? []} /></TableCell>
+                            <TableCell><AccessView data={fo.access_rights ?? []} /></TableCell>
                             <TableCell>
                                 <UpdateRoleForm handleFetch={handleFetch} data={fo ?? {}} />
                                 <DeleteRole handleFetch={handleFetch} data={fo} />

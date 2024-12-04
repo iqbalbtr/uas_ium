@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, Icon, type LucideIcon, icons } from "lucide-react"
 
 import {
   Collapsible,
@@ -18,22 +18,21 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { NavType } from "@components/app/app-sidebar"
 
 export function NavMain({
   items,
 }: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    isParent?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+  items: NavType[]
 }) {
+
+  function Icon({ name }: { name: keyof typeof icons }) {
+    const Res = icons[name]
+
+    return <Res />
+  }
+
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -48,7 +47,7 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
+                  {item.icon && <Icon name={item.icon as keyof typeof icons} />}
                   {
                     item.isParent ?
                       <Link href={item.url}>{item.title}</Link> :

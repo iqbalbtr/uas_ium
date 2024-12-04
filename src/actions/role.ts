@@ -4,8 +4,9 @@ import db from "@/db"
 import { roles, users } from "@/db/schema"
 import { eq, sql } from "drizzle-orm"
 import { getCountData } from "./helper"
+import { NavType } from "@components/app/app-sidebar"
 
-export type RoleAssignts = string[]
+export type RoleAssignts = NavType[]
 
 export const getRoleById = async (id: number) => {
 

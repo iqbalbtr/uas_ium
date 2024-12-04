@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   BriefcaseMedical,
@@ -11,7 +9,7 @@ import {
   ScrollText,
   UserCog,
 } from "lucide-react";
-
+import nav_content from "@/assets/json/nav.json"
 import { NavMain } from "@components/navbar/nav-main";
 import { NavUser } from "@components/navbar/nav-user";
 import {
@@ -22,106 +20,47 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
-import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { getRoleById } from "@/actions/role";
 
-// This is sample data.
+
+export interface NavType {
+  title: string;
+  icon: string;
+  url: string;
+  isParent?: boolean;
+  isActive?: boolean;
+  items?: Item[];
+}
+
+export interface Item {
+  title: string;
+  url: string;
+}
+
 const data = {
   user: {
     name: "Admin tester",
     email: "admin@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
-    {
-      title: "Dashboard",
-      icon: LayoutDashboard,
-      url: "/dashboard",
-      isParent: true,
-    },
-    {
-      title: "Kasir",
-      icon: Computer,
-      url: "/dashboard/kasir",
-      isParent: true,
-    },
-    {
-      title: "Obat",
-      url: "/dashboard/obat",
-      icon: BriefcaseMedical,
-      isActive: false,
-      items: [
-        {
-          title: "Obat Master",
-          url: "/dashboard/obat/master",
-        },
-        {
-          title: "Pemesanan",
-          url: "/dashboard/obat/pemesanan",
-        },
-        {
-          title: "Penerimaan",
-          url: "/dashboard/obat/penerimaan",
-        },
-        {
-          title: "Racikan",
-          url: "/dashboard/obat/racikan",
-        },
-      ],
-    },
-    {
-      title: "Laporan",
-      url: "/dashboard/laporan",
-      icon: ScrollText,
-      items: [
-        {
-          title: "Penjualan",
-          url: "/dashboard/laporan/penjualan",
-        },
-        {
-          title: "Pembelian",
-          url: "/dashboard/laporan/pembelian",
-        },
-        {
-          title: "Laba Rugi",
-          url: "/dashboard/laporan/laba-rugi",
-        },
-      ],
-    },
-    {
-      title: "User",
-      url: "/dashboard/user",
-      icon: UserCog,
-      items: [
-        {
-          title: "User Master",
-          url: "/dashboard/user/master",
-        },
-        {
-          title: "Role Master",
-          url: "/dashboard/user/role",
-        },
-      ],
-    },
-    {
-      title: "Apotek",
-      url: "/dashboard/apotek",
-      icon: HousePlus,
-      items: [
-        {
-          title: "Informasi",
-          url: "/dashboard/apotek/informasi",
-        },
-        {
-          title: "Ubah",
-          url: "/dashboard/apotek/ubah",
-        },
-      ],
-    },
-  ],
+  navMain: nav_content
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const [sideData, setSideData] = React.useState<NavType[]>([])
+
+  console.log(sideData);
+  
+
+  const { data } = useSession()
+
+  React.useEffect(() => {
+    if (data?.user.roleId)
+      getRoleById(data?.user.roleId!).then(res => setSideData(res.access_rights as NavType[]))
+  }, [data])
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -142,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={sideData} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

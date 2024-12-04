@@ -1,97 +1,87 @@
 [
     {
-        "id": 1,
-        "path": "/dashboard",
-        "label": "Dashboard",
-        "child_path": []
+      "title": "Dashboard",
+      "icon": "LayoutDashboard",
+      "url": "/dashboard",
+      "isParent": true
     },
     {
-        "id": 2,
-        "path": "/dashboard/kasir",
-        "label": "kasir",
-        "child_path": []
+      "title": "Kasir",
+      "icon": "Computer",
+      "url": "/dashboard/kasir",
+      "isParent": true
     },
     {
-        "id": 3,
-        "label": "User",
-        "path": "/dashboard/user",
-        "child_path": [
-            {
-                "id": 1,
-                "label": "Master User",
-                "path": "/dashboard/user/master"
-            },
-            {
-                "id": 1,
-                "label": "Master Role",
-                "path": "/dashboard/user/role"
-            }
-        ]
+      "title": "Obat",
+      "url": "/dashboard/obat",
+      "icon": "BriefcaseMedical",
+      "isActive": false,
+      "items": [
+        {
+          "title": "Obat Master",
+          "url": "/dashboard/obat/master"
+        },
+        {
+          "title": "Pemesanan",
+          "url": "/dashboard/obat/pemesanan"
+        },
+        {
+          "title": "Penerimaan",
+          "url": "/dashboard/obat/penerimaan"
+        },
+        {
+          "title": "Racikan",
+          "url": "/dashboard/obat/racikan"
+        }
+      ]
     },
     {
-        "id": 4,
-        "label": "Obat",
-        "path": "/dashboard/obat",
-        "child_path": [
-            {
-                "id": 1,
-                "path": "/dashboard/obat/master",
-                "label": "Master Obat"
-            },
-            {
-                "id": 2,
-                "path": "/dashboard/obat/pemesanan",
-                "label": "Pemesanan"
-            },
-            {
-                "id": 3,
-                "path": "/dashboard/obat/penerimaan",
-                "label": "Penerimaan"
-            },
-            {
-                "id": 4,
-                "path": "/dashboard/obat/racikan",
-                "label": "Racikan"
-            }
-        ]
+      "title": "Laporan",
+      "url": "/dashboard/laporan",
+      "icon": "ScrollText",
+      "items": [
+        {
+          "title": "Penjualan",
+          "url": "/dashboard/laporan/penjualan"
+        },
+        {
+          "title": "Pembelian",
+          "url": "/dashboard/laporan/pembelian"
+        },
+        {
+          "title": "Laba Rugi",
+          "url": "/dashboard/laporan/laba-rugi"
+        }
+      ]
     },
     {
-        "id": 5,
-        "label": "Laporan",
-        "path": "/dashboard/laporan",
-        "child_path": [
-            {
-                "id": 1,
-                "label": "Daftar penjualan",
-                "path": "/dashboard/laporan/penjualan"
-            },
-            {
-                "id": 3,
-                "label": "Daftar pembelian",
-                "path": "/dashboard/laporan/pembelian"
-            },
-            {
-                "id": 3,
-                "label": "Laba rugi",
-                "path": "/dashboard/laporan/laba-rugi"
-            }
-        ]
+      "title": "User",
+      "url": "/dashboard/user",
+      "icon": "UserCog",
+      "items": [
+        {
+          "title": "User Master",
+          "url": "/dashboard/user/master"
+        },
+        {
+          "title": "Role Master",
+          "url": "/dashboard/user/role"
+        }
+      ]
     },
     {
-        "id": 6,
-        "label": "Apotek",
-        "path": "/dashboard/apotek",
-        "child_path": [
-            {
-                "id": 1,
-                "label": "Informasi apotek",
-                "path": "/dashboard/apotek/infomasi"
-            },
-            {
-                "id": 2,
-                "label": "Ubah apotek",
-                "path": "/dashboard/apotek/ubah"
-            }
-        ]
+      "title": "Apotek",
+      "url": "/dashboard/apotek",
+      "icon": "HousePlus",
+      "items": [
+        {
+          "title": "Informasi",
+          "url": "/dashboard/apotek/informasi"
+        },
+        {
+          "title": "Ubah",
+          "url": "/dashboard/apotek/ubah"
+        }
+      ]
     }
-]
+  ]

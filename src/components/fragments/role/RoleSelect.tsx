@@ -32,7 +32,7 @@ export function RoleSelect({
     value: string
 }) {
     const [open, setOpen] = React.useState(false)
-    const [roles, setRoles] = React.useState<{ value: number, label: string }[]>([])
+    const [roles, setRoles] = React.useState<{ value: string, label: string }[]>([])
     const { isLoading, setLoading } = useLoading()
 
     const getData = async (name?: string) => {
@@ -40,7 +40,7 @@ export function RoleSelect({
         try {
             const get = await getRole(1, 5, name || "");
             const data = get?.data || [];
-            setRoles(data.map(role => ({ value: role.id, label: role.name })));
+            setRoles(data.map(role => ({ value: role.name, label: role.name })));
             setLoading("success");
         } catch (error: any) {
             console.error("Error fetching roles:", error);

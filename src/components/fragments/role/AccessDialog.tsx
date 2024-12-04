@@ -1,16 +1,83 @@
 "use client"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
-import React, {  ReactNode } from 'react'
+import React, { Dispatch, ReactNode, SetStateAction } from 'react'
 import nav from "@assets/json/nav.json"
 import { Checkbox } from '@components/ui/checkbox'
+import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
+import { Switch } from '@components/ui/switch'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import nav_content from "@/assets/json/nav.json"
+import AccessCard from './AccessCard'
+import { NavType } from '@components/app/app-sidebar'
 
-function AccessDialog({ children, access, setAccess }: { children: ReactNode, access: string[], setAccess: (arr: string[]) => void }) {
+function AccessDialog({ children, access, setAccess }: { children: ReactNode, access: NavType[], setAccess: Dispatch<SetStateAction<NavType[]>> }) {
 
-    const handleChek = (val: string) => {
-        if (access.find(fo => fo == val))
-            return setAccess([...access.filter(fi => fi !== val)])
-        return setAccess([...access, val])
-    }
+
+
+    const handleCheck = (parent: string, child?: string) => {
+        console.log(parent, child);
+      
+        if (child) {
+          setAccess((prevAccess) => {
+            const parentItem = prevAccess.find((navItem) => navItem.url === parent);
+            const childExists = parentItem?.items?.some((item) => item.url === child);
+      
+            if (parentItem) {
+              return childExists
+                ? prevAccess.map((navItem) =>
+                    navItem.url === parent
+                      ? {
+                          ...navItem,
+                          items: navItem.items?.filter((item) => item.url !== child) || [],
+                        }
+                      : navItem
+                  )
+                : prevAccess.map((navItem) =>
+                    navItem.url === parent
+                      ? {
+                          ...navItem,
+                          items: [
+                            ...(navItem.items ?? []),
+                            nav_content
+                              .find((nav) => nav.url === parent)
+                              ?.items?.find((item) => item.url === child)!,
+                          ].filter(Boolean) as NavType[],
+                        }
+                      : navItem
+                  );
+            }
+      
+            // If parent doesn't exist, add it with the child
+            const parentNav = nav_content.find((nav) => nav.url === parent);
+            if (parentNav) {
+              return [
+                ...prevAccess,
+                {
+                  ...parentNav,
+                  items: [
+                    parentNav.items?.find((item) => item.url === child)!,
+                  ].filter(Boolean),
+                },
+              ];
+            }
+      
+            return prevAccess;
+          });
+        } else {
+          setAccess((prevAccess) => {
+            const exists = prevAccess.some((navItem) => navItem.url === parent);
+            if (exists) {
+              return prevAccess.filter((navItem) => navItem.url !== parent);
+            }
+      
+            const parentNav = nav_content.find((nav) => nav.url === parent);
+            return parentNav ? [...prevAccess, { ...parentNav}] : prevAccess;
+          });
+        }
+      };
+      
+
+
 
     return (
         <Dialog>
@@ -24,27 +91,9 @@ function AccessDialog({ children, access, setAccess }: { children: ReactNode, ac
                     </DialogTitle>
                     <DialogDescription />
                 </DialogHeader>
-                <div>
+                <div className='flex flex-wrap gap-3'>
                     {
-                        nav.map((fo, i) => (
-                            <div key={i}>
-                                <div>
-                                    <label className='pr-2' htmlFor={fo.path}>{fo.label}</label>
-                                    {!fo.child_path.length && <Checkbox defaultChecked={access.includes(fo.path)} onClick={() => handleChek(fo.path)} value={fo.path} id={fo.path} />}
-                                </div>
-                                <div>
-                                    {
-                                        fo.child_path.length > 0 && fo.child_path.map((child, j) => (
-                                            <div key={j} className='pl-6'>
-                                                <label className='pr-2' htmlFor={child.path}>{child.label}</label>
-                                                <Checkbox defaultChecked={access.includes(child.path)} onClick={() => handleChek(child.path)} value={child.path} id={child.path} />
-
-                                            </div>
-                                        ))
-                                    }
-                                </div>
-                            </div>
-                        ))
+                        nav.map((fo, i) => <AccessCard key={i} access={access} data={fo} handle={handleCheck} />)
                     }
                 </div>
                 <DialogFooter />

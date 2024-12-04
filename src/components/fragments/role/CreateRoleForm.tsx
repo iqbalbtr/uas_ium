@@ -12,16 +12,17 @@ import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@components/ui/sheet';
 import { UserCog } from 'lucide-react';
+import { NavType } from '@components/app/app-sidebar';
 
 function CreateRoleForm({
     handleFetch
 }:{
     handleFetch?: () => Promise<void>
-
 }) {
 
     const { isLoading, setLoading } = useLoading();
     const [isOpen, setOpen] = useState(false)
+    const [access, setAccess] = useState<NavType[]>([])
 
     const roleScheme = z.object({
         name: z.string().min(2).max(55),
@@ -39,8 +40,8 @@ function CreateRoleForm({
 
     const handleCreate = async (values: z.infer<typeof roleScheme>) => {
         setLoading("loading")
-        try {
-            const res = await createRole(values.name, values.acces_rights)
+        try {            
+            const res = await createRole(values.name, access)
             if (res) {
                 setLoading("success")
                 toast({
@@ -49,6 +50,7 @@ function CreateRoleForm({
                 })
                 handleFetch && handleFetch()
                 setOpen(false)
+                setAccess([])
             }
         } catch (error: any) {
             toast({
@@ -59,6 +61,9 @@ function CreateRoleForm({
             setLoading("error")
         }
     }
+
+    console.log(access);
+    
 
 
     return (
@@ -107,7 +112,7 @@ function CreateRoleForm({
                                         <FormLabel>
                                             Hak Akses
                                         </FormLabel>
-                                        <AccessDialog access={form.getValues("acces_rights")} setAccess={(e: string[]) => form.setValue("acces_rights", e)}>
+                                        <AccessDialog access={access} setAccess={setAccess}>
                                             <Button variant={"outline"}>
                                                 Cek akses
                                             </Button>

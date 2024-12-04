@@ -72,7 +72,9 @@ function usePagination({
             }
         } catch (error: any) {
             toast({
-                description: error.message
+                title: "Error",
+                description: error.message,
+                variant: "destructive"
             })
         } finally {
             setLoading("idle")
