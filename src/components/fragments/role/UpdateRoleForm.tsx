@@ -14,6 +14,8 @@ import { Edit } from "lucide-react";
 import { toast } from "@hooks/use-toast";
 import { TableMutation } from "@/model/view";
 import { Role } from "@/model/roles";
+import { NavType } from "@components/app/app-sidebar";
+import { useState } from "react";
 
 function UpdateRoleForm({
     data,
@@ -24,8 +26,9 @@ function UpdateRoleForm({
 
     const roleScheme = z.object({
         name: z.string().min(2).max(55),
-        acces_rights: z.any()
+        acces_rights: z.array(z.any())
     })
+    const [access, setAccess] = useState<NavType[]>(data.access_rights ?? [])
 
     const form = useForm<z.infer<typeof roleScheme>>({
         resolver: zodResolver(roleScheme),
@@ -39,7 +42,7 @@ function UpdateRoleForm({
     const handleLogin = async (values: z.infer<typeof roleScheme>) => {
         setLoading("loading")
         try {
-            const res = await updateRole(data.id, values.name, values.acces_rights)
+            const res = await updateRole(data.id, values.name, access)
             if(res){
                 setLoading("success")
                 toast({
@@ -105,7 +108,7 @@ function UpdateRoleForm({
                                         <FormLabel>
                                             Hak Akses
                                         </FormLabel>
-                                        <AccessDialog access={form.getValues("acces_rights")} setAccess={(e: string[]) => form.setValue("acces_rights", e)}>
+                                        <AccessDialog access={access} setAccess={setAccess}>
                                             <Button variant={"outline"}>
                                                 Cek akses
                                             </Button>

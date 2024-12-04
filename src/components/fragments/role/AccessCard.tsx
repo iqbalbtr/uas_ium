@@ -1,5 +1,3 @@
-"use client"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog'
 import { Item, NavType } from '@components/app/app-sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Switch } from '@components/ui/switch';
@@ -8,11 +6,21 @@ import React, { useState } from 'react';
 
 function AccessCard({
     data,
+    handle,
+    access,
 }: {
     data: NavType;
+    handle: (parent: string, child?: string) => void;
+    access: NavType[];
 }) {
     const [isOpen, setOpen] = useState(false);
     const Icon = icons[isOpen ? 'ChevronUp' : 'ChevronDown'];
+
+    const isParentActive = !!access.find((navItem) => navItem.url === data.url);
+    const getChildActive = (childUrl: string) =>
+        access
+            .find((navItem) => navItem.url === data.url)
+            ?.items?.some((item) => item.url === childUrl);
 
     return (
         <Card className="h-fit w-full">
@@ -20,6 +28,10 @@ function AccessCard({
                 <CardTitle className="flex items-center justify-between gap-2">
                     {data.title}
                     <div className="flex gap-2 items-center">
+                        <Switch
+                            checked={isParentActive}
+                            onClick={() => handle(data.url)}
+                        />
                         {data.items?.length! > 0 && (
                             <Icon
                                 className="cursor-pointer"
@@ -37,6 +49,11 @@ function AccessCard({
                         <Card className="py-2 shadow-none px-5 my-0">
                             <CardTitle className="flex items-center justify-between gap-2">
                                 {child.title}
+                                <Switch
+                                    disabled={!isParentActive}
+                                    checked={getChildActive(child.url)}
+                                    onClick={() => handle(data.url, child.url)}
+                                />
                             </CardTitle>
                         </Card>
                     </CardContent>
@@ -45,27 +62,4 @@ function AccessCard({
     );
 }
 
-
-function AccessView({ data }: { data: NavType[] }) {
-    
-    return (
-        <Dialog>
-            <DialogTrigger>
-                Cek Akses
-            </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Hak akses</DialogTitle>
-                    <DialogDescription />
-                </DialogHeader>
-                <div>
-                {
-                        data.map((fo, i) => <AccessCard data={fo} key={i} />)
-                    }
-                </div>
-            </DialogContent>
-        </Dialog>
-    )
-}
-
-export default AccessView
+export default AccessCard;

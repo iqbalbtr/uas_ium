@@ -47,7 +47,7 @@ function UpdateUserForm({ data, handleFetch }: TableMutation<User>) {
 
     const handleUpdate = async (values: z.infer<typeof userSchema>) => {
         try {
-            setLoading("loading")
+            setLoading("loading")            
             const res = await updateUser(values.id, values.name, values.email, values.phone, values.role, values.password);
             if (res) {
                 toast({

@@ -2,8 +2,27 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import db from './db';
 import { cookies } from 'next/headers';
+import { NavType } from '@components/app/app-sidebar';
 
 const authRoute = ['/login'];
+
+function getPath(data: NavType[]){
+    let path: string[] = [];
+
+    data.forEach(fo => {
+        if(fo.url){
+            path.push(fo.url)
+        }
+
+        if(fo.items) {
+            fo.items.forEach(fa => {
+                path.push(fa.url)
+            })
+        }
+    })
+
+    return path
+}
 
 export default async function middleware(req: NextRequest) {
     const cookie = await cookies();
@@ -25,14 +44,14 @@ export default async function middleware(req: NextRequest) {
     if (isProtectedRoute && session) {
         const getRole = await db.query.roles.findFirst({
             where: (role, { eq }) => eq(role.id, session.roleId),
-        });
+        });        
 
         if (!getRole) {
             cookie.delete('next-auth.session-token');
             return NextResponse.redirect(new URL('/login', req.nextUrl));
         }
 
-        if (!(getRole.access_rights as string[]).includes(path)) {
+        if (!getPath(getRole.access_rights as NavType[]).includes(path)) {
             return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
         }
     }

@@ -6,7 +6,7 @@ import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
 import { Order } from '@models/orders'
 import { TableMutation } from '@models/view'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 function UpdateStatusPayment({ data, handleFetch }: TableMutation<Order>) {
 

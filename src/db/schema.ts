@@ -306,3 +306,12 @@ export const apotek = pgTable("apotek", {
   phone: varchar("phone", { length: 30 }),
   alamat: text("alamat"),
 });
+
+export const shift = pgTable("shift", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  start_shift: timestamp("start_shift").defaultNow(),
+  end_shift: timestamp("end_shift"),
+  begining_balance: integer("begining_balanca").notNull(),
+  receivable_total: integer("receivable_total").notNull(),
+  income_total: integer("income_total").notNull(),
+})
