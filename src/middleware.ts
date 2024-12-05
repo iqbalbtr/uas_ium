@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import db from './db';
-import { cookies } from 'next/headers';
 import { NavType } from '@components/app/app-sidebar';
 
 const authRoute = ['/login'];
@@ -25,7 +24,6 @@ function getPath(data: NavType[]){
 }
 
 export default async function middleware(req: NextRequest) {
-    const cookie = await cookies();
     const path = req.nextUrl.pathname;
 
     const isProtectedRoute = path.startsWith('/dashboard');
@@ -47,7 +45,6 @@ export default async function middleware(req: NextRequest) {
         });        
 
         if (!getRole) {
-            cookie.delete('next-auth.session-token');
             return NextResponse.redirect(new URL('/login', req.nextUrl));
         }
 
