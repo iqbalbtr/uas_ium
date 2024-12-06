@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { TableView } from "@/model/view";
 import ModalTable from "./modal-table";
 import { Order } from "@models/orders";
+import DetailItemOrder from "./DetailItemOrder";
 
 function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
   return (
@@ -18,16 +19,17 @@ function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
       <TableHeader>
         <TableRow>
           <TableHead>No</TableHead>
+          <TableHead>Kode</TableHead>
           <TableHead>Tanggal Pesan</TableHead>
           <TableHead>Supplier</TableHead>
           <TableHead>Status Pesanan</TableHead>
           <TableHead>Pajak</TableHead>
           <TableHead>Diskon</TableHead>
           <TableHead>Total</TableHead>
-          <TableHead>Status Penerimaan</TableHead>
+          <TableHead>Penerimaan</TableHead>
+          <TableHead>Obat dibeli</TableHead>
           <TableHead>Metode Pembayaran</TableHead>
           <TableHead>Pembayaran Kadaluarsa</TableHead>
-          <TableHead>Aksi</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -35,20 +37,21 @@ function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
           data.map((fo, i) => (
             <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
+              <TableCell>{fo.order_code}</TableCell>
               <TableCell>{fo.order_date?.toLocaleString()}</TableCell>
               <TableCell>{fo.supplier}</TableCell>
               <TableCell>{fo.order_status}</TableCell>
               <TableCell>{fo.tax}</TableCell>
               <TableCell>{fo.discount}</TableCell>
               <TableCell>{fo.total}</TableCell>
-              {/* Drg bener */}
               <TableCell>
-                <ModalTable />
+                <ModalTable id={fo.id} />
+              </TableCell>
+              <TableCell>
+                <DetailItemOrder id={fo.id} />
               </TableCell>
               <TableCell>{fo.payment_method}</TableCell>
               <TableCell>{fo.payment_expired?.toLocaleString()}</TableCell>
-              <TableCell>
-              </TableCell>
             </TableRow>
           ))
         ) : (

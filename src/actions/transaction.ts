@@ -291,10 +291,12 @@ export const getTransaction = async (
     })
 
     return {
-        limit,
-        page,
-        total_item: totalItem[0].count,
-        total_page: Math.ceil(totalItem[0].count as number / limit),
-        data: result
-    } as ResponseList<any>
+        pagging: {
+            limit,
+            page,
+            total_item: totalItem[0].count as number,
+            total_page: Math.ceil(totalItem[0].count as number / limit),
+        },
+        data: result as any[]
+    } 
 }

@@ -1,5 +1,6 @@
 "use client"
 import { getUser } from '@/actions/auth'
+import { getOrder } from '@/actions/order'
 import TablePembelian from '@components/fragments/laporan/ReceiptTable'
 import TablePenjualan from '@components/fragments/laporan/SellinTable'
 import CreateUserForm from '@components/fragments/user/CreateUserForm'
@@ -13,7 +14,7 @@ function Pembelian() {
 
   const { handleFetch, Paggination, isLoading } = usePagination({
     handleGet: async (page, setPage) => {
-      const get = await getUser(page.page, page.limit)
+      const get = await getOrder(page.page, page.limit)
       if (get) {
         setPembelian(get.data)
         setPage(get.pagging)

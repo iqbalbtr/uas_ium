@@ -16,7 +16,7 @@ export const getLatestShift = async() => {
     return shift
 }
 
-export const createShift = async(balance_holder: string, balance: number) => {
+export const createShift = async(balance_holder: string, balance: number, method_balance: boolean) => {
 
     const latestShift = await getLatestShift();
 
@@ -25,10 +25,12 @@ export const createShift = async(balance_holder: string, balance: number) => {
     if(latestShift?.status_shift === "pending")
         throw new Error("There are shift is pending")
 
+    const totalBalance = (method_balance ? latestShift?.cashier_balance! : 0) + balance
+
     await db.insert(shift).values({
         balance_holder: user.id,
-        begining_balance: latestShift?.cashier_balance! + balance,
-        cashier_balance: latestShift?.cashier_balance! + balance,
+        begining_balance: totalBalance,
+        cashier_balance: totalBalance,
         income_total: 0,
         balance_different: 0,
         ending_balance: 0,

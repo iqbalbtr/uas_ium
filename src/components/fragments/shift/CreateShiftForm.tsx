@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@com
 import { UserPlus } from 'lucide-react';
 import { createShift } from '@/actions/shift';
 import { UserSelect } from './UserSelect';
+import { Switch } from '@components/ui/switch';
 
 function CreateShiftForm() {
 
@@ -22,6 +23,7 @@ function CreateShiftForm() {
 
     const userSchema = z.object({
         balance: z.number().min(0),
+        method_balance: z.boolean(),
         balance_holder: z.string().min(1),
     })
 
@@ -29,6 +31,7 @@ function CreateShiftForm() {
         resolver: zodResolver(userSchema),
         defaultValues: {
             balance: 0,
+            method_balance: true,
             balance_holder: ""
         },
     })
@@ -37,7 +40,7 @@ function CreateShiftForm() {
     const handleCreate = async (values: z.infer<typeof userSchema>) => {
         try {
             setLoading("loading")
-            const res = await createShift(values.balance_holder, values.balance);
+            const res = await createShift(values.balance_holder, values.balance, values.method_balance);
             if (res) {
                 toast({
                     title: "Success",
@@ -89,6 +92,23 @@ function CreateShiftForm() {
                                                 {...field}
                                                 onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
                                             />
+                                        </FormControl>
+                                        <FormMessage className="text-red-500 font-normal" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <FormField
+                                control={form.control}
+                                name='method_balance'
+                                render={({ field }) => (
+                                    <FormItem className='flex items-center gap-4'>
+                                        <FormLabel>
+                                            Tambah saldo shift sebelumnya
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
                                         <FormMessage className="text-red-500 font-normal" />
                                     </FormItem>

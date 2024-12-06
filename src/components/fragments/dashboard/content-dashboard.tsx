@@ -1,3 +1,4 @@
+"use client"
 import { Activity, DollarSign, Package, Users, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -21,6 +22,11 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { getAnalisytStatisticTransaction, getAnalisytTypeTransaction, getData, getLatestTransaction } from "@/actions/dashboard";
+import CategoryChart from "./CategoryChart";
+import useFetch from "@hooks/use-fetch";
+import { Transaction } from "@models/transactions";
+import { getRupiahFormat } from "@libs/utils";
 
 // Sample data for the line chart
 const lineChartData = [
@@ -31,16 +37,38 @@ const lineChartData = [
   { name: "May", Sales: 1890, Orders: 4800 },
 ];
 
-// Sample data for the pie chart
-const pieChartData = [
-  { name: "Sale", value: 400 },
-  { name: "Distribute", value: 300 },
-  { name: "Return", value: 300 },
-];
-
 const COLORS = ["#8884d8", "#ffc658", "#ff8042"];
 
 export default function DashboardContent() {
+
+  const { data: total } = useFetch<{
+    totalMedicine: number;
+    totalOrder: number;
+    totalRole: number;
+    totalTransaction: number;
+    totalUser: number
+  }>({
+    defaultValue: {
+      totalMedicine: 0,
+      totalOrder: 0,
+      totalRole: 0,
+      totalTransaction: 0,
+      totalUser: 0
+    },
+    url: getData
+  })
+
+  const statistic = useFetch({
+    defaultValue: [],
+    url: getAnalisytStatisticTransaction
+  })
+
+  const transaction = useFetch({
+    defaultValue: [],
+    url: getLatestTransaction
+  })
+
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -50,53 +78,51 @@ export default function DashboardContent() {
             <Users className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">178+</div>
-            <p className="text-xs text-purple-600/80">Active Projects</p>
+            <div className="text-2xl font-bold text-purple-600">{total.totalUser}</div>
           </CardContent>
         </Card>
         <Card className="bg-blue-100 dark:bg-blue-900/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Stock Products
+              Obat
             </CardTitle>
             <Package className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">20+</div>
-            <p className="text-xs text-blue-600/80">In warehouse</p>
+            <div className="text-2xl font-bold text-blue-600">{total.totalMedicine}</div>
           </CardContent>
         </Card>
         <Card className="bg-rose-100 dark:bg-rose-900/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Sales Products
+              Pembelian
             </CardTitle>
             <DollarSign className="h-4 w-4 text-rose-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-rose-600">190+</div>
+            <div className="text-2xl font-bold text-rose-600">{total.totalOrder}</div>
             <p className="text-xs text-rose-600/80">This month</p>
           </CardContent>
         </Card>
         <Card className="bg-orange-100 dark:bg-orange-900/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Total Applications
+              Total Role
             </CardTitle>
             <Activity className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">12+</div>
+            <div className="text-2xl font-bold text-orange-600">{total.totalRole}</div>
             <p className="text-xs text-orange-600/80">New today</p>
           </CardContent>
         </Card>
         <Card className="bg-green-100 dark:bg-green-900/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+            <CardTitle className="text-sm font-medium">Total transaksi</CardTitle>
             <Zap className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">82</div>
+            <div className="text-2xl font-bold text-green-600">{total.totalTransaction}</div>
             <p className="text-xs text-green-600/80">Current users</p>
           </CardContent>
         </Card>
@@ -109,18 +135,19 @@ export default function DashboardContent() {
           <CardContent>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={lineChartData}>
+                <LineChart data={statistic.data}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
                   <Line
+                    name="Total penjualan"
                     type="monotone"
-                    dataKey="Sales"
+                    dataKey="sellingTotal"
                     stroke="#8884d8"
                     activeDot={{ r: 8 }}
                   />
-                  <Line type="monotone" dataKey="Orders" stroke="#82ca9d" />
+                  <Line type="monotone" name="Total Pembelian" dataKey="orderTotal" stroke="#82ca9d" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -132,27 +159,7 @@ export default function DashboardContent() {
           </CardHeader>
           <CardContent>
             <div className="h-[200px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieChartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <CategoryChart />
             </div>
           </CardContent>
         </Card>
@@ -209,22 +216,18 @@ export default function DashboardContent() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell>12398</TableCell>
-                  <TableCell>Charity Joan</TableCell>
-                  <TableCell>$2450</TableCell>
-                  <TableCell>
-                    <Badge className="bg-rose-500">Process</Badge>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>12399</TableCell>
-                  <TableCell>Charity Joan</TableCell>
-                  <TableCell>$2450</TableCell>
-                  <TableCell>
-                    <Badge className="bg-purple-500">Done</Badge>
-                  </TableCell>
-                </TableRow>
+                {
+                  transaction.data.map((fo, i) => (
+                    <TableRow>
+                      <TableCell>{fo.code_transaction}</TableCell>
+                      <TableCell>{fo.buyer}</TableCell>
+                      <TableCell>{getRupiahFormat(fo.total)}</TableCell>
+                      <TableCell>
+                        <Badge className="bg-rose-500">{fo.transaction_status}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                }
               </TableBody>
             </Table>
           </CardContent>

@@ -269,3 +269,19 @@ export async function updatePaymentStatus(id: number){
 
     return "Payment successfully"
 }
+
+export const getAllMedicineOrderById = async(id: number) => {
+    const get = await db.query.order_medicine.findMany({
+        where: (od, {eq}) => (eq(od.order_id, id)),
+        with: {
+            medicine: {
+                columns: {
+                    name: true,
+                    medicine_code: true
+                }
+            }
+        }
+    })
+
+    return get
+}

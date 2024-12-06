@@ -1,5 +1,6 @@
 "use client"
 import { getUser } from '@/actions/auth'
+import { getTransaction } from '@/actions/transaction'
 import TablePenjualan from '@components/fragments/laporan/SellinTable'
 import CreateUserForm from '@components/fragments/user/CreateUserForm'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
@@ -12,9 +13,11 @@ function Penjualan() {
 
   const { handleFetch, Paggination, isLoading } = usePagination({
     handleGet: async (page, setPage) => {
-      const get = await getUser(page.page, page.limit)
+      const get = await getTransaction(page.page, page.limit)
       if (get) {
         setPenjualan(get.data)
+        console.log(get);
+        
         setPage(get.pagging)
       }
     },
