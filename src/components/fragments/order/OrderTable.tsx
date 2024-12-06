@@ -10,11 +10,13 @@ import { Item } from '@/app/dashboard/kasir/page'
 function OrderTable({
     items,
     setItem,
-    variant = "transaction"
+    variant = "transaction",
+    disabled
 }: {
     items: Item[],
     setItem: React.Dispatch<SetStateAction<Item[]>>
     variant: "receipt" | "transaction"
+    disabled?: boolean
 }) {
 
     function handleMutation(type: "plus" | "minus", medicine: Item) {
@@ -48,7 +50,7 @@ function OrderTable({
                             <TableHead>harga</TableHead>
                             <TableHead>jumlah</TableHead>
                             <TableHead>Sub total</TableHead>
-                            <TableHead></TableHead>
+                            {!disabled && <TableHead></TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -60,10 +62,12 @@ function OrderTable({
                                     <TableCell>{fo.price}</TableCell>
                                     <TableCell>{fo.qty}</TableCell>
                                     <TableCell>{fo.qty * fo.price}</TableCell>
-                                    <TableCell className='flex gap-2 items-center'>
-                                        <Button onClick={() => handleMutation("plus", fo)} variant={"default"}><Plus /></Button>
-                                        <Button onClick={() => handleMutation("minus", fo)} variant={"destructive"}><Minus /></Button>
-                                    </TableCell>
+                                    {!disabled && (
+                                        <TableCell className='flex gap-2 items-center'>
+                                            <Button onClick={() => handleMutation("plus", fo)} variant={"default"}><Plus /></Button>
+                                            <Button onClick={() => handleMutation("minus", fo)} variant={"destructive"}><Minus /></Button>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             )) : (
                                 <TableRow>

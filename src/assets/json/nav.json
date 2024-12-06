@@ -49,8 +49,8 @@
           "url": "/dashboard/laporan/pembelian"
         },
         {
-          "title": "Laba Rugi",
-          "url": "/dashboard/laporan/laba-rugi"
+          "title": "Shift",
+          "url": "/dashboard/laporan/shift"
         }
       ]
     },
@@ -81,6 +81,10 @@
         {
           "title": "Ubah",
           "url": "/dashboard/apotek/ubah"
+        },
+        {
+          "title": "Shift",
+          "url": "/dashboard/apotek/shift"
         }
       ]
     }

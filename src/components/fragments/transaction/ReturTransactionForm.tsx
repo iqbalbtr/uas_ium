@@ -27,7 +27,7 @@ export type ItemOrder = {
     stock: number;
 }
 
-function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
+function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) {
 
     const { isLoading, setLoading } = useLoading()
     const [items, setItems] = useState<ItemOrder[]>([])
@@ -114,17 +114,17 @@ function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
     const handleCreate = async (values: z.infer<typeof orderSchema>) => {
         try {
             setLoading("loading")
-            const res = await createOrder(items, { ...values, payment_method: values.payment_method as any, orderStatus: values.order_status as "cancelled" | "completed" | "pending" });
-            if (res) {
-                toast({
-                    title: "Success",
-                    description: res
-                })
-                setOpen(false)
-                form.reset()
-                setItems([])
-                handleFetch && handleFetch()
-            }
+            // const res = await (items, { ...values, payment_method: values.payment_method as any, orderStatus: values.order_status as "cancelled" | "completed" | "pending" });
+            // if (res) {
+            //     toast({
+            //         title: "Success",
+            //         description: res
+            //     })
+            //     setOpen(false)
+            //     form.reset()
+            //     setItems([])
+            //     handleFetch && handleFetch()
+            // }
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -141,13 +141,13 @@ function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="default">
-                    Tambah
+                    Retur
                     <UserPlus />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
                 <DrawerHeader>
-                    <DrawerTitle>Pesan obat</DrawerTitle>
+                    <DrawerTitle>Retur obat</DrawerTitle>
                 </DrawerHeader>
 
                 <div className='grid md:grid-cols-2 gap-6'>
@@ -355,4 +355,4 @@ function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
     )
 }
 
-export default CreateOrderForm
+export default ReturTransactionForm

@@ -3,7 +3,7 @@ import React from 'react'
 function LabaRugi() {
   return (
     <div>
-      laba rugi
+      Shift
     </div>
   )
 }

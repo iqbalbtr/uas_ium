@@ -76,7 +76,7 @@ export const createPresciption = async (
     if (code)
         throw new Error("Code already exist")
 
-    const total = allMediicine.reduce((acc, pv) => acc += pv.price, 0)
+    const total = allMediicine.reduce((acc, pv) => acc += pv.selling_price, 0)
     const tax = presciption.tax * total;
     const discount = (presciption.discount / 100) * total;
 
@@ -161,7 +161,7 @@ export const updatePresciption = async (
 
     const allMediicine = await Promise.all(isItem);
 
-    const total = allMediicine.reduce((acc, pv) => acc += pv.price, 0)
+    const total = allMediicine.reduce((acc, pv) => acc += pv.selling_price, 0)
     const tax = presciption.tax * total;
     const discount = (presciption.discount / 100) * total;
 

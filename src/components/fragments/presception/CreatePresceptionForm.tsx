@@ -58,7 +58,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                     {
                         medicineId: val.id,
                         name: val.name,
-                        price: val.price,
+                        price: val.selling_price,
                         qty: qty,
                         stock: val.stock,
                         max: val.medicine_reminder?.max_stock ?? 0,
@@ -168,7 +168,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                 </DrawerHeader>
 
                 <div className='grid md:grid-cols-2 gap-6'>
-                    <SearchMedicine handleAdd={handleAdd} />
+                    <SearchMedicine variant='selling' handleAdd={handleAdd} />
                     <div>
                         <Input className='mb-6' disabled value={`Rp. ${total}`} />
                         <PresciptionMedicineTable items={items} setItem={setItems}  />

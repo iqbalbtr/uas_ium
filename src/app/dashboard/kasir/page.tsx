@@ -1,12 +1,12 @@
 "use client"
 import OrderTable from '@components/fragments/order/OrderTable'
 import SearchMedicine from '@components/fragments/medicine/SearchMedicine'
-import TrasnsactionForm from '@components/fragments/kasir/CreateTransactionForm'
+import TrasnsactionForm from '@components/fragments/transaction/CreateTransactionForm'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
 import { Input } from '@components/ui/input'
 import { toast } from '@hooks/use-toast'
 import { Medicine } from '@models/medicines'
-import React, { Suspense, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { Button } from '@components/ui/button'
 import { getTransactionByCode } from '@/actions/transaction'
 import { printPdf } from '@components/pdf/util'
@@ -15,6 +15,10 @@ import useLoading from '@hooks/use-loading'
 import { getApotek } from '@/actions/apotek'
 import { apotek } from '@db/schema'
 import { Apotek } from '@models/apotek'
+import UpdateInstallmentPayment from '@components/fragments/transaction/UpdateInstallmentPayment'
+import ReturTransactionForm from '@components/fragments/transaction/ReturTransactionForm'
+import { getLatestShift } from '@/actions/shift'
+import Link from 'next/link'
 
 export type Item = {
   medicineId: number;
@@ -31,6 +35,7 @@ function Kasir() {
   const [total, setTotal] = useState(0);
   const [current, setCurrent] = useState("")
   const { isLoading, setLoading } = useLoading()
+  const [shift, setShift] = useState<any | null>(null)
 
   async function handlePrint() {
     setLoading("loading")
@@ -39,7 +44,7 @@ function Kasir() {
       const trans = await getTransactionByCode(current);
       if (trans && toko) {
         await printPdf(await Invoice({ transaksi: trans as any, toko: toko as Apotek }), "Invoice")
-        
+
       }
     } catch (error: any) {
       toast({
@@ -89,7 +94,7 @@ function Kasir() {
           {
             medicineId: val.id,
             name: val.name,
-            price: val.price,
+            price: val.selling_price,
             qty: qty,
             stock: val.stock
           },
@@ -99,14 +104,34 @@ function Kasir() {
     });
   }
 
+  useEffect(() => {
+    getLatestShift().then(res => {
+      if (res)
+        setShift(res)
+    })
+  }, [])
+
   return (
     <Suspense>
       <DashboardLayout>
-        <DashboardLayoutHeader title='Kasir' />
-        <div>
-          <div className='grid md:grid-cols-2 gap-2'>
-            <SearchMedicine handleAdd={handleAdd} />
+        {(shift === null || (shift && shift.status_shift !== "pending")) && (
+          <div className="absolute top-0 left-0 bg-black/50 z-[9999] w-full h-screen flex justify-center items-center">
+            <Button>
+              <Link href={"/dashboard/apotek/shift"}>Buka shift</Link>
+            </Button>
+          </div>
+        )}
 
+        <DashboardLayoutHeader title='Kasir'>
+          <ReturTransactionForm handleFetch={async () => { }} />
+          <UpdateInstallmentPayment />
+        </DashboardLayoutHeader>
+        <div className='relative'>
+          <div className='grid md:grid-cols-2 gap-2'>
+            <div>
+              <Input disabled value={shift?.cashier_balance ?? 0} />
+              <SearchMedicine variant='selling' handleAdd={handleAdd} />
+            </div>
             <div className='flex flex-col gap-2'>
               <div>
                 <Input value={total} disabled className='text-xl text-left' />
@@ -120,7 +145,7 @@ function Kasir() {
           </div>
         </div>
       </DashboardLayout>
-    </Suspense>
+    </Suspense >
 
   )
 }
