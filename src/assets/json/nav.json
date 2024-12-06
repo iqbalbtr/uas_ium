@@ -70,21 +70,6 @@
       ]
     },
     {
-      "title": "Shift",
-      "url": "/dashboard/shift",
-      "icon": "Calendar",
-      "items": [
-        {
-          "title": "Buka Shift",
-          "url": "/dashboard/shift/buka-shift"
-        },
-        {
-          "title": "Tutup Shift",
-          "url": "/dashboard/shift/tutup-shift"
-        }
-      ]
-    },
-    {
       "title": "Apotek",
       "url": "/dashboard/apotek",
       "icon": "HousePlus",
