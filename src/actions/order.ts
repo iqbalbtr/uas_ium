@@ -148,9 +148,9 @@ export const createOrder = async (
             await tx.insert(order_medicine).values({
                 order_id: newOrder[0].id,
                 quantity: med.payload.qty,
-                sub_total: med.payload.qty * med.medicine.price,
+                sub_total: med.payload.qty * med.medicine.purchase_price,
                 received_total: 0,
-                price: med.medicine.price,
+                price: med.medicine.purchase_price,
                 medicine_id: med.medicine.id
             })
         }

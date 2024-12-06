@@ -18,6 +18,11 @@ export const payment_status_enum = pgEnum("payment_status", [
   "completed",
   "cancelled",
 ]);
+export const shift_status_enum = pgEnum("shift_status", [
+  "pending",
+  "completed",
+  "cancelled",
+]);
 export const order_status_enum = pgEnum("order_status", [
   "pending",
   "completed",
@@ -82,7 +87,8 @@ export const medicines = pgTable("medicines", {
   active_ingredients: varchar("active_ingredients", { length: 255 }).notNull(),
   expired: integer("expired").notNull(),
   indication: text("indication").notNull(),
-  price: integer("price").notNull(),
+  purchase_price: integer("purchase_price").notNull(),
+  selling_price: integer("selling_price").notNull(),
   stock: integer("stock").default(0).notNull(),
   side_effect: text("side_effect"),
   medicine_code: varchar("medicine_code", { length: 255 }).notNull().unique(),
@@ -247,8 +253,8 @@ export const transactions = pgTable("transactions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   transaction_date: timestamp("transaction_date").defaultNow(),
   code_transaction: varchar("code_transaction", { length: 50 })
-    .unique()
-    .notNull(),
+  .unique()
+  .notNull(),
   buyer: varchar("buyer", { length: 100 }).default("guest").notNull(),
   user_id: integer("user_id").references(() => users.id, {
     onDelete: "set null",
@@ -257,15 +263,37 @@ export const transactions = pgTable("transactions", {
   payment_method: payment_method_enum().default("cash"),
   payment_expired: timestamp("payment_expired"),
   payment_status: payment_status_enum().default("pending"),
+  payment_date: timestamp("payment_date"),
   transaction_status: transaction_status_enum().default("completed"),
   tax: integer("tax").default(0),
   discount: integer("discount").default(0),
 });
 
+export const retur_transactions = pgTable("retur_transactions", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  retur_date: timestamp("retur_date").defaultNow(),
+  buyer: varchar("buyer", { length: 100 }).default("guest").notNull(),
+  total_item: integer("total_item").default(0),
+  total_retur: integer("total_item").default(0),
+})
+
+export const retur_transaction_item = pgTable("retur_transactions_item", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  qty: integer("total_item").default(0),
+  medicine_id: integer("medicine_id").references(() => medicines.id, {
+    onDelete: "set null",
+  }),
+  retur_transaction_id: integer("retur_transaction_id")
+    .references(() => retur_transactions.id, { onDelete: "cascade" })
+    .notNull(),
+})
+
+
 export const transaction_item = pgTable("transaction_item", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   quantity: integer("quantity").notNull(),
   sub_total: integer("sub_total").notNull(),
+  difference_sub_total: integer("difference_sub_total").notNull(),
   medicine_id: integer("medicine_id").references(() => medicines.id, {
     onDelete: "set null",
   }),
@@ -307,11 +335,36 @@ export const apotek = pgTable("apotek", {
   alamat: text("alamat"),
 });
 
+export const activity_log = pgTable("activity_log", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  title: varchar("title", { length: 55 }).notNull(),
+  description: text("description"),
+  date: timestamp("date").defaultNow(),
+  user_id: integer("user_id").references(() => users.id, { onDelete: "cascade" }),
+  action_type: varchar("action_type").notNull(),
+  action_name: varchar("action_name", { length: 55 }).notNull()
+})
+
+export const activity_log_relations = relations(activity_log, ({ one }) => ({
+  user: one(users, {
+    fields: [activity_log.user_id],
+    references: [users.id]
+  })
+}))
+
 export const shift = pgTable("shift", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   start_shift: timestamp("start_shift").defaultNow(),
   end_shift: timestamp("end_shift"),
   begining_balance: integer("begining_balanca").notNull(),
-  receivable_total: integer("receivable_total").notNull(),
+  retur_item_total: integer("retur_item_total").notNull(),
+  retur_total: integer("retur_total").notNull(),
+  notes: text("notes"),
+  ending_balance: integer("ending_balance").notNull(),
+  balance_different: integer("balance_different").notNull(),
   income_total: integer("income_total").notNull(),
+  transaction_total: integer("transaction_total").notNull(),
+  status_shift: shift_status_enum().default("pending"),
+  cashier_balance: integer("cahsier_balance").notNull(),
+  balance_holder: integer("balance_holder").references(() => users.id, { onDelete: "no action" }).notNull()
 })

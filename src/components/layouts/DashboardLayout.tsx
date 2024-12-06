@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 
 function DashboardLayout({ children }: { children: ReactNode }) {
     return (
-        <main className="w-full p-4">
+        <main className="w-full p-4 relative">
             {children}
         </main>
     )

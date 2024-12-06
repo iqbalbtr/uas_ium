@@ -32,7 +32,8 @@ export const createMedicine = async (
         dosage: string,
         expired: number,
         side_effect: string,
-        price: number
+        purchase_price: number
+        selling_price: number
         stock: number
     },
     reminder: {
@@ -49,17 +50,17 @@ export const createMedicine = async (
     if (isExist[0].count == 1)
         throw new Error("Medicine code already exist")
 
-    // await db.transaction(async tx => {
-    const id = await db.insert(medicines).values({
-        ...medicine
-    }).returning()
+    await db.transaction(async tx => {
+        const id = await tx.insert(medicines).values({
+            ...medicine
+        }).returning()
 
-    await db.insert(medicine_reminder).values({
-        max_stock: reminder.max,
-        min_stock: reminder.min,
-        medicine_id: id[0].id
+        await tx.insert(medicine_reminder).values({
+            max_stock: reminder.max,
+            min_stock: reminder.min,
+            medicine_id: id[0].id
+        })
     })
-    // })
 
     return "Success added"
 }
@@ -89,7 +90,8 @@ export const updateMedicine = async (
         dosage: string,
         expired: number,
         side_effect: string,
-        price: number
+        selling_price: number
+        purchase_price: number
     },
     reminder: {
         min: number,
@@ -109,12 +111,12 @@ export const updateMedicine = async (
         throw new Error("Medicine is not found")
 
     await db.transaction(async tx => {
-        await db.update(medicines).set({
+        await tx.update(medicines).set({
             ...medicine,
             expired: medicine.expired,
         }).where(eq(medicines.id, id))
 
-        await db.update(medicine_reminder).set({
+        await tx.update(medicine_reminder).set({
             max_stock: reminder.max,
             min_stock: reminder.min,
         }).where(eq(medicine_reminder.medicine_id, id))

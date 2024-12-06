@@ -26,7 +26,7 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
         medicineId: fo.medicine_id!,
         name: fo.medicine.name!,
         notes: fo.notes!,
-        price: fo.medicine.price,
+        price: fo.medicine.selling_price,
         qty: fo.quantity,
         presciption_medicine_id: fo.id
     })))
@@ -66,7 +66,7 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
                     {
                         medicineId: val.id,
                         name: val.name,
-                        price: val.price,
+                        price: val. selling_price,
                         qty: qty,
                         stock: val.stock,
                         max: val.medicine_reminder?.max_stock ?? 0,
@@ -165,7 +165,7 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
                 </DrawerHeader>
 
                 <div className='grid md:grid-cols-2 gap-6'>
-                    <SearchMedicine handleAdd={handleAdd} />
+                    <SearchMedicine variant='selling' handleAdd={handleAdd} />
                     <div>
                         <Input className='mb-6' disabled value={`Rp. ${total}`} />
                         <PresciptionMedicineTable items={items} setItem={setItems} />
