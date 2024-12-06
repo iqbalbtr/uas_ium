@@ -74,12 +74,9 @@ export const updateRole = async (
 
     await getRoleById(id);
 
-    const isExisting = await db.query.roles.findFirst({
+    const isExisting = await db.query.roles.findMany({
         where: (role, { eq }) => (eq(role.name, name))
     })
-
-    if (isExisting)
-        throw new Error("Role name already exist")
 
     await db.update(roles).set({
         name,

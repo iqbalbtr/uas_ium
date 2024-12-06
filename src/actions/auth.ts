@@ -4,7 +4,7 @@ import db from "@/db";
 import { users } from "@/db/schema";
 import bcrypt from "bcrypt";
 import { getRoleByName } from "./role";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, like, sql } from "drizzle-orm";
 import { ObjectValidation } from "@/lib/utils";
 import { User } from "@/model/users";
 
@@ -13,6 +13,21 @@ export const getUserById = async (id: number) => {
 
   const get = await db.query.users.findFirst({
     where: (user, { eq }) => eq(user.id, id),
+    with: {
+      role: true,
+    },
+  });
+
+  if (!get) throw new Error("User is not found");
+
+  return get;
+};
+
+export const getUserByUsername = async (id: string) => {
+  if (!id) throw new Error("id required");
+
+  const get = await db.query.users.findFirst({
+    where: (user, { eq }) => eq(user.username, id),
     with: {
       role: true,
     },
@@ -55,10 +70,13 @@ export const createUser = async (data: {
     return "Created user successfully"
 }
 
-export const getUser = async (page: number = 1, limit: number = 15) => {
+export const getUser = async (page: number = 1, limit: number = 15, query?: string) => {
   const skip = (page - 1) * limit;
 
-  const count = await db.select({ count: sql`COUNT(*)` }).from(users);
+  const count = await db.select({ count: sql`COUNT(*)` }).from(users).where(and(
+    query ? like(users.username, `%${query}%`) : undefined,
+    query ? like(users.name, `%${query}%`) : undefined
+  ));
 
   const result = await db.query.users.findMany({
     limit,
@@ -66,6 +84,10 @@ export const getUser = async (page: number = 1, limit: number = 15) => {
     with: {
       role: true,
     },
+    where: (user, {like, and}) => and(
+      query ? like(user.username, `%${query}%`) : undefined,
+      query ? like(user.name, `%${query}%`) : undefined
+    ),
     columns: {
       id: true,
       username: true,

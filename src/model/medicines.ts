@@ -5,7 +5,8 @@ export interface Medicine {
     active_ingredients: string;
     expired: number;
     indication: string;
-    price: number;
+    purchase_price: number;
+    selling_price: number;
     stock: number;
     side_effect?: string;
     medicine_code: string;

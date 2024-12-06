@@ -30,7 +30,8 @@ function MedicineTable({
                         <TableHead>Masa Kadaluarsa</TableHead>
                         <TableHead>Indication</TableHead>
                         <TableHead>Stok</TableHead>
-                        <TableHead>Harga</TableHead>
+                        <TableHead>Harga Jual</TableHead>
+                        <TableHead>Harga Beli</TableHead>
                         <TableHead>Side Effect</TableHead>
                         <TableHead>Pengingat</TableHead>
                         <TableHead>Aksi</TableHead>
@@ -50,7 +51,8 @@ function MedicineTable({
                                 <TableCell>{fo.expired?.toLocaleString()} hari</TableCell>
                                 <TableCell>{fo.indication}</TableCell>
                                 <TableCell>{fo.stock}</TableCell>
-                                <TableCell>{fo.price}</TableCell>
+                                <TableCell>{fo.selling_price}</TableCell>
+                                <TableCell>{fo.purchase_price}</TableCell>
                                 <TableCell>{fo.side_effect}</TableCell>
                                 <TableCell>
                                     <Popover>

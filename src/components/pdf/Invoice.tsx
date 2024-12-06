@@ -112,7 +112,7 @@ const Invoice = async ({
                                 <View style={styles.barangContent} key={i}>
                                     <Text style={styles.text}>{`${letterFixes(foo.medicine.name, 8)}`}</Text>
                                     <Text style={styles.text}>x{foo.quantity}</Text>
-                                    <Text style={styles.text}>Rp. {foo.medicine.price}</Text>
+                                    <Text style={styles.text}>Rp. {foo.medicine.selling_price}</Text>
                                     <Text style={styles.text}>Rp. {foo.sub_total}</Text>
                                 </View>
                             ))

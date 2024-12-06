@@ -11,7 +11,7 @@ import { Plus } from 'lucide-react'
 import React, { useState } from 'react'
 
 
-function SearchMedicine({ handleAdd }: { handleAdd: (val: Medicine, qty: number) => void }) {
+function SearchMedicine({ handleAdd, variant = "order" }: { handleAdd: (val: Medicine, qty: number) => void, variant: "order" | "selling" }) {
 
     const [result, setResult] = useState<Medicine[]>([]);
     const [selected, setSelect] = useState<Medicine | null>(null)
@@ -84,7 +84,7 @@ function SearchMedicine({ handleAdd }: { handleAdd: (val: Medicine, qty: number)
                                         <TableCell>{fo.medicine_code}</TableCell>
                                         <TableCell>{fo.name}</TableCell>
                                         <TableCell>{fo.stock}</TableCell>
-                                        <TableCell>{fo.price}</TableCell>
+                                        <TableCell>{variant == "order" ? fo.purchase_price : fo.selling_price}</TableCell>
                                     </TableRow>
                                 )) : (
                                     <TableRow >

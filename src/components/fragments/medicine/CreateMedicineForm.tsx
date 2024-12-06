@@ -25,7 +25,8 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
         name: z.string().min(2).max(255),
         active_ingredients: z.string().min(2).max(255),
         indication: z.string().min(2).max(255),
-        price: z.number().min(0),
+        purchase_price: z.number().min(0),
+        selling_price: z.number().min(0),
         stock: z.number().min(0),
         min: z.number().min(0),
         expired: z.number().min(0),
@@ -43,7 +44,8 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
             name: "",
             active_ingredients: "",
             indication: "",
-            price: 0,
+            purchase_price: 0,
+            selling_price: 0,
             expired: 0,
             side_effect: "",
             stock: 0,
@@ -135,15 +137,15 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                         <div className="">
                                             <FormField
                                                 control={form.control}
-                                                name='price'
+                                                name='purchase_price'
                                                 render={({ field }) => (
                                                     <FormItem className='flex flex-col gap-1'>
                                                         <FormLabel>
-                                                            Harga
+                                                            Harga Beli
                                                         </FormLabel>
                                                         <FormControl>
                                                             <Input
-                                                                id="price"
+                                                                id="purchase_price"
                                                                 placeholder="Harga.."
                                                                 type="text"
                                                                 className="placeholder:opacity-50"
@@ -160,16 +162,16 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                         <div className="">
                                             <FormField
                                                 control={form.control}
-                                                name='stock'
+                                                name='selling_price'
                                                 render={({ field }) => (
                                                     <FormItem className='flex flex-col gap-1'>
                                                         <FormLabel>
-                                                            Stok
+                                                            Harga Jual
                                                         </FormLabel>
                                                         <FormControl>
                                                             <Input
-                                                                id="price"
-                                                                placeholder="Harga.."
+                                                                id="selling_price"
+                                                                placeholder="Harga jual.."
                                                                 type="text"
                                                                 className="placeholder:opacity-50"
                                                                 {...field}
@@ -181,6 +183,30 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                                 )}
                                             />
                                         </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <FormField
+                                            control={form.control}
+                                            name='stock'
+                                            render={({ field }) => (
+                                                <FormItem className='flex flex-col gap-1'>
+                                                    <FormLabel>
+                                                        Stok
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id="price"
+                                                            placeholder="Harga.."
+                                                            type="text"
+                                                            className="placeholder:opacity-50"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-red-500 font-normal" />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
                                     <div className='grid grid-cols-2 gap-2'>
                                         <div className="space-y-2">
