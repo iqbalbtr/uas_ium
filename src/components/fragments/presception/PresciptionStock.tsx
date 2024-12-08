@@ -18,6 +18,7 @@ import { Prescription } from "@models/prescription"
 import { presciptionMutation } from "@/actions/prescription"
 import { toast } from "@hooks/use-toast"
 import useLoading from "@hooks/use-loading"
+import Loading from "@components/ui/loading"
 
 
 export function PrescriptionStock({ data, handleFetch }: TableMutation<Prescription>) {
@@ -98,7 +99,11 @@ export function PrescriptionStock({ data, handleFetch }: TableMutation<Prescript
             </div>
           </div>
           <DrawerFooter>
-            <Button onClick={handleUpdate} disabled={isLoading == "loading"}>Submit</Button>
+            <Button onClick={handleUpdate} disabled={isLoading == "loading"}>
+              <Loading isLoading={isLoading}>
+                Ubah
+              </Loading>
+            </Button>
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>

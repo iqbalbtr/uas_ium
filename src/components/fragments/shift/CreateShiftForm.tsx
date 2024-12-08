@@ -15,6 +15,7 @@ import { UserPlus } from 'lucide-react';
 import { createShift } from '@/actions/shift';
 import { UserSelect } from './UserSelect';
 import { Switch } from '@components/ui/switch';
+import Loading from '@components/ui/loading';
 
 function CreateShiftForm() {
 
@@ -133,7 +134,9 @@ function CreateShiftForm() {
                             />
                         </div>
                         <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                            {isLoading == "loading" ? "Loading" : "Tambah"}
+                            <Loading isLoading={isLoading}>
+                                Buka
+                            </Loading>
                         </Button>
                     </form>
                 </Form>

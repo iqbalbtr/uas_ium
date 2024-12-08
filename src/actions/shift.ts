@@ -56,29 +56,26 @@ export const updateBalanceShift = async(balance: number) => {
     return "Update balance successfully"
 }
 
-export const updateEndShift = async() => {
+export const updateEndShift = async(note: string) => {
 
     const latestShift = await getLatestShift()
     
     if(latestShift?.status_shift == "completed")
         throw new Error("Current shift is not found");
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
     
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    const currentDate = new Date();
     
     const transactions = await db.query.transactions.findMany({
         where: (tr, { and, gte, lte, eq }) => and(
-            gte(tr.transaction_date, startOfDay),
-            lte(tr.transaction_date, endOfDay),
+            gte(tr.transaction_date, latestShift?.start_shift!),
+            lte(tr.transaction_date, currentDate),
         )
     });    
 
     const retur_transactions = await db.query.retur_transactions.findMany({
         where: (tr, { and, gte, lte, eq }) => and(
-            gte(tr.retur_date, startOfDay),
-            lte(tr.retur_date, endOfDay),
+            gte(tr.retur_date, latestShift?.start_shift!),
+            lte(tr.retur_date, currentDate),
         )
     });
 
@@ -90,6 +87,7 @@ export const updateEndShift = async() => {
         end_shift: new Date(),
         status_shift: "completed",
         income_total,
+        notes: note,
         retur_total,
         retur_item_total,
         balance_different: (income_total - retur_total) - latestShift?.cashier_balance!,

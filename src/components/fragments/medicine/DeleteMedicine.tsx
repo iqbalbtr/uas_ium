@@ -7,6 +7,8 @@ import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { Medicine } from '@models/medicines';
 import { removeMedicine } from '@/actions/medicine';
+import useLoading from '@hooks/use-loading';
+import Loading from '@components/ui/loading';
 
 function DeleteMedicine({
     data,
@@ -14,9 +16,11 @@ function DeleteMedicine({
 }: TableMutation<Medicine>) {
 
     const [isOpen, setOpen] = useState(false)
+    const {isLoading, setLoading} = useLoading()
 
     const handleDelete = async () => {
         try {
+            setLoading("loading")
             const get = await removeMedicine(data.id);
             if (get) {
                 toast({
@@ -26,13 +30,15 @@ function DeleteMedicine({
                 handleFetch && handleFetch()
                 setOpen(false)
             }
-
+            
         } catch (error: any) {
             toast({
                 title: "Error",
                 description: error.message,
                 variant: "destructive"
             })
+        } finally{
+            setLoading("idle")
         }
     }
 
@@ -52,7 +58,11 @@ function DeleteMedicine({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button onClick={handleDelete}>Hapus</Button>
+                    <Button disabled={isLoading == "loading"} onClick={handleDelete}>
+                        <Loading isLoading={isLoading}>
+                            Hapus
+                        </Loading>
+                    </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

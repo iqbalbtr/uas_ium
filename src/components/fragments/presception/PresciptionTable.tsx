@@ -108,9 +108,17 @@ function PresciptionTable({ data, handleFetch, isLoading }: TableView<Prescripti
                             ))
                         }
                     </TableBody>
-                    {isLoading == "loading" && (
-                        <TableCaption><Loading isLoading={isLoading} /></TableCaption>
-                    )}
+                    {
+                        isLoading == "loading" ? (
+                            <TableCaption className='w-full '>
+                                <Loading type='loader' isLoading='loading' />
+                            </TableCaption>
+                        ) : data.length == 0 && (
+                            <TableCaption className='w-full '>
+                                Data kosong
+                            </TableCaption>
+                        )
+                    }
                 </Table>
             </TableLayout>
         </TableLayout>

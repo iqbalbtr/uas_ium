@@ -4,6 +4,7 @@ import { getTransaction } from '@/actions/transaction'
 import TablePenjualan from '@components/fragments/laporan/SellinTable'
 import CreateUserForm from '@components/fragments/user/CreateUserForm'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
+import { Button } from '@components/ui/button'
 import usePagination from '@hooks/use-paggination'
 import React, { useState } from 'react'
 
@@ -27,6 +28,7 @@ function Penjualan() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title='Penjualan'>
+      <Button>Export excel</Button>
       </DashboardLayoutHeader>
       <TablePenjualan data={penjualan} isLoading={isLoading} handleFetch={handleFetch} />
       <Paggination />

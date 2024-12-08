@@ -12,6 +12,7 @@ import {
 import {
     Table,
     TableBody,
+    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -21,17 +22,22 @@ import { getAllReceiptByIdOrder, getAllReceiptItemByIdOrder, getReceipt, getRece
 import { Receipt, ReceiptMedicine } from "@models/receipts";
 import { getAllMedicineOrderById, getOrderMedicineById } from "@/actions/order";
 import { OrderMedicine } from "@models/orders";
+import useFetch from "@hooks/use-fetch";
+import Loading from "@components/ui/loading";
 
 export default function DetailItemOrder({ id }: { id: number }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [receipts, setReceipts] = useState<OrderMedicine[]>()
+
+    const { data, isLoading, refresh } = useFetch({
+        url: async () => getAllMedicineOrderById(id),
+        defaultValue: [],
+        initialize: false
+    })
 
     useEffect(() => {
-        getAllMedicineOrderById(id).then(res => setReceipts(res as OrderMedicine[]))
-    }, [])
-    console.log(receipts);
-    
-
+        if(isOpen)
+            refresh()
+    },[isOpen])
 
     return (
         <div className="flex items-center justify-center ">
@@ -55,10 +61,10 @@ export default function DetailItemOrder({ id }: { id: number }) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {receipts?.map((receipt) => (
+                            {data?.map((receipt) => (
                                 <TableRow key={receipt.id}>
-                                    <TableCell>{receipt.medicine.name}</TableCell>
-                                    <TableCell>{receipt.medicine.medicine_code}</TableCell>
+                                    <TableCell>{receipt.medicine?.name}</TableCell>
+                                    <TableCell>{receipt.medicine?.medicine_code}</TableCell>
                                     <TableCell>{receipt.quantity}</TableCell>
                                     <TableCell>{receipt.received_total}</TableCell>
                                     <TableCell>{receipt.price}</TableCell>
@@ -66,6 +72,17 @@ export default function DetailItemOrder({ id }: { id: number }) {
                                 </TableRow>
                             ))}
                         </TableBody>
+                        {
+                            isLoading == "loading" ? (
+                                <TableCaption className='w-full '>
+                                    <Loading type='loader' isLoading='loading' />
+                                </TableCaption>
+                            ) : data.length == 0 && (
+                                <TableCaption className='w-full '>
+                                    Data kosong
+                                </TableCaption>
+                            )
+                        }
                     </Table>
                 </DialogContent>
             </Dialog>

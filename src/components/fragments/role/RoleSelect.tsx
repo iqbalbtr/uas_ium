@@ -22,6 +22,7 @@ import { getRole } from "@/actions/role"
 import useLoading from "@hooks/use-loading"
 import { toast } from "@hooks/use-toast"
 import { Role } from "@/model/roles"
+import Loading from "@components/ui/loading"
 
 
 export function RoleSelect({
@@ -88,7 +89,7 @@ export function RoleSelect({
                     <CommandList>
                         {
                             isLoading == "loading" ?
-                                <span className="px-3 py-2">Loading</span> :
+                                <button className="px-3 py-2"><Loading isLoading="loading" type="line" /></button> :
                                 <CommandEmpty>No role found.</CommandEmpty>
                         }
                         <CommandGroup>

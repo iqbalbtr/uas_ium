@@ -62,3 +62,24 @@ export const createActivityLog = async (
         throw new Error("Error while update activity log")
     }
 }
+
+export const getLatestActivity = async (limit: number = 5) => {
+    const get = await db.query.activity_log.findMany({
+        orderBy(fields, operators) {
+            return (
+                operators.desc(fields.date)
+            )
+        },
+        with: {
+            user: {
+                columns: {
+                    name: true,
+                    username: true
+                }
+            }
+        },
+        limit
+    })
+
+    return get
+}

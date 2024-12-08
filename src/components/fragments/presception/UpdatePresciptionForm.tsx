@@ -17,6 +17,7 @@ import PresciptionMedicineTable, { ItemPresciption } from './PresciptionMedicine
 import { createPresciption, updatePresciption } from '@/actions/prescription';
 import { TableMutation } from '@models/view';
 import { Prescription } from '@models/prescription';
+import Loading from '@components/ui/loading';
 
 
 function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription>) {
@@ -346,7 +347,9 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
                                 />
 
                                 <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                    {isLoading == "loading" ? "Loading" : "Pesan"}
+                                    <Loading isLoading={isLoading}>
+                                        Ubah
+                                    </Loading>
                                 </Button>
                             </form>
                         </Form>

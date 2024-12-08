@@ -5,6 +5,7 @@ import TablePembelian from '@components/fragments/laporan/ReceiptTable'
 import TablePenjualan from '@components/fragments/laporan/SellinTable'
 import CreateUserForm from '@components/fragments/user/CreateUserForm'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
+import { Button } from '@components/ui/button'
 import usePagination from '@hooks/use-paggination'
 import React, { useState } from 'react'
 
@@ -26,6 +27,7 @@ function Pembelian() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title='Pembelian'>
+        <Button>Export excel</Button>
       </DashboardLayoutHeader>
       <TablePembelian data={pembelian} isLoading={isLoading} handleFetch={handleFetch} />
       <Paggination />

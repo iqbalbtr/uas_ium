@@ -13,16 +13,24 @@ import { toast } from '@hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@components/ui/sheet';
 import { UserCog } from 'lucide-react';
 import { NavType } from '@components/app/app-sidebar';
+import Loading from '@components/ui/loading';
 
 function CreateRoleForm({
     handleFetch
-}:{
+}: {
     handleFetch?: () => Promise<void>
 }) {
 
     const { isLoading, setLoading } = useLoading();
     const [isOpen, setOpen] = useState(false)
-    const [access, setAccess] = useState<NavType[]>([])
+    const [access, setAccess] = useState<NavType[]>([
+        {
+            "title": "Dashboard",
+            "icon": "LayoutDashboard",
+            "url": "/dashboard",
+            "isParent": true
+        },
+    ])
 
     const roleScheme = z.object({
         name: z.string().min(2).max(55),
@@ -40,7 +48,7 @@ function CreateRoleForm({
 
     const handleCreate = async (values: z.infer<typeof roleScheme>) => {
         setLoading("loading")
-        try {            
+        try {
             const res = await createRole(values.name, access)
             if (res) {
                 setLoading("success")
@@ -61,9 +69,6 @@ function CreateRoleForm({
             setLoading("error")
         }
     }
-
-    console.log(access);
-    
 
 
     return (
@@ -122,7 +127,9 @@ function CreateRoleForm({
                             />
                         </div>
                         <Button type='submit' disabled={isLoading == "loading"} className="w-full bg-[#2A2B27] text-white hover:bg-[#3F403B]">
-                            {isLoading == "loading" ? "Loading" : "Tambah"}
+                            <Loading isLoading={isLoading}>
+                                Tambah
+                            </Loading>
                         </Button>
                     </form>
                 </Form>

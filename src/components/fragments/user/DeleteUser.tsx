@@ -6,6 +6,8 @@ import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { deleteUser } from '@/actions/auth';
 import { User } from '@/model/users';
+import useLoading from '@hooks/use-loading';
+import Loading from '@components/ui/loading';
 
 function DeleteUser({
     data,
@@ -13,8 +15,10 @@ function DeleteUser({
 }: TableMutation<User>) {
 
     const [isOpen, setOpen] = useState(false)
+    const {isLoading, setLoading} = useLoading()
 
     const handleDelete = async () => {
+        setLoading("loading")
         try {
             const get = await deleteUser(data.id);
             if (get) {
@@ -25,13 +29,15 @@ function DeleteUser({
                 handleFetch && handleFetch()
                 setOpen(false)
             }
-
+            
         } catch (error: any) {
             toast({
                 title: "Error",
                 description: error.message,
                 variant: "destructive"
             })
+        } finally {
+            setLoading("idle")
         }
     }
 
@@ -51,7 +57,11 @@ function DeleteUser({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button onClick={handleDelete}>Hapus</Button>
+                    <Button disabled={isLoading == "loading"} onClick={handleDelete}>
+                        <Loading isLoading={isLoading}>
+                            Hapus
+                        </Loading>
+                    </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

@@ -23,6 +23,7 @@ import useLoading from "@hooks/use-loading"
 import { toast } from "@hooks/use-toast"
 import { Role } from "@/model/roles"
 import { getUser } from "@/actions/auth"
+import Loading from "@components/ui/loading"
 
 
 export function UserSelect({
@@ -89,7 +90,7 @@ export function UserSelect({
                     <CommandList>
                         {
                             isLoading == "loading" ?
-                                <span className="px-3 py-2">Loading</span> :
+                                <button className="px-3 py-2"><Loading isLoading="loading" type="line" /></button> :
                                 <CommandEmpty>No user found.</CommandEmpty>
                         }
                         <CommandGroup>

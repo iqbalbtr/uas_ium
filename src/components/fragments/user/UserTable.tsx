@@ -27,7 +27,7 @@ function UserTable({
                 </TableRow>
             </TableHeader>
             <TableBody>
-                { isLoading !== "loading" &&
+                {isLoading !== "loading" &&
                     data.map((fo, i) => (
                         <TableRow key={i}>
                             <TableCell>{i + 1}</TableCell>
@@ -38,15 +38,23 @@ function UserTable({
                             <TableCell>{fo.role?.name}</TableCell>
                             <TableCell>
                                 <DeleteUser data={fo} handleFetch={handleFetch} />
-                                <UpdateUserForm handleFetch={handleFetch} data={fo} />  
+                                <UpdateUserForm handleFetch={handleFetch} data={fo} />
                             </TableCell>
                         </TableRow>
                     ))
                 }
             </TableBody>
-            <TableCaption>
-                <Loading isLoading={isLoading} />
-            </TableCaption>
+            {
+                isLoading == "loading" ? (
+                    <TableCaption className='w-full '>
+                        <Loading type='loader' isLoading='loading' />
+                    </TableCaption>
+                ) : data.length == 0 && (
+                    <TableCaption className='w-full '>
+                        Data kosong
+                    </TableCaption>
+                )
+            }
         </Table>
     )
 }

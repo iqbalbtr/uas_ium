@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Medicine } from '@models/medicines';
 import ReceiptOrderTable from './ReceiptOrderTable';
 import { Input } from '@components/ui/input';
+import Loading from '@components/ui/loading';
 
 export type ItemReceived = {
     medicine_id: number,
@@ -29,11 +30,10 @@ export type ItemReceived = {
     total_request: number
 }
 
-function CreateReceiptForm() {
+function CreateReceiptForm({ handlefetch }: { handlefetch: () => Promise<void> }) {
 
     const { isLoading, setLoading } = useLoading()
     const [isOpen, setOpen] = useState(false)
-    const [method, setMethod] = useState(false);
     const [order, setOrder] = useState<Order | null>(null)
     const [received, setReceived] = useState<ItemReceived[]>([])
 
@@ -70,6 +70,7 @@ function CreateReceiptForm() {
                 form.reset()
                 setOrder(null)
                 setOpen(false)
+                handlefetch()
             }
         } catch (error: any) {
             toast({
@@ -252,7 +253,9 @@ function CreateReceiptForm() {
                                 )}
                             />
                             < Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                {isLoading == "loading" ? "Loading" : "Pesan"}
+                                <Loading isLoading={isLoading}>
+                                    Terima
+                                </Loading>
                             </Button>
                         </form>
                     </Form>

@@ -1,6 +1,6 @@
 "use client"
 import { Button } from '@components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import React from 'react'
 import { TableView } from '@/model/view';
 import { Medicine } from '@models/medicines';
@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import UpdateMedicineForm from './UpdateMedicineForm';
 import DeleteMedicine from './DeleteMedicine';
 import TableLayout from '@components/layouts/TableLayout';
+import Loading from '@components/ui/loading';
 
 function MedicineTable({
     data,
@@ -38,7 +39,7 @@ function MedicineTable({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {isLoading !== "loading" ?
+                    {
                         data.map((fo, i) => (
                             <TableRow key={i}>
                                 <TableCell>{i + 1}</TableCell>
@@ -82,13 +83,20 @@ function MedicineTable({
                                     <DeleteMedicine data={fo} handleFetch={handleFetch} />
                                 </TableCell>
                             </TableRow>
-                        )) : (
-                            <TableRow>
-                                <TableCell>Loading</TableCell>
-                            </TableRow>
-                        )
+                        ))
                     }
                 </TableBody>
+                {
+                    isLoading == "loading" ? (
+                        <TableCaption className='w-full '>
+                            <Loading type='loader' isLoading='loading' />
+                        </TableCaption>
+                    ) : data.length == 0 && (
+                        <TableCaption className='w-full '>
+                            Data kosong
+                        </TableCaption>
+                    )
+                }
             </Table>
         </TableLayout>
     )

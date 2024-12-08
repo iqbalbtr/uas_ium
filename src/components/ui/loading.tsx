@@ -2,7 +2,7 @@
 import { LoadingType } from '@hooks/use-loading'
 import React from 'react'
 
-function Loading({ isLoading, type = "line", className, ...props }: { isLoading: LoadingType, type?: "loader" | "line" } & React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>) {
+function Loading({ children, isLoading, type = "line", className, ...props }: { isLoading: LoadingType, type?: "loader" | "line" } & React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>) {
 
     function getType() {
         switch (type) {
@@ -17,7 +17,7 @@ function Loading({ isLoading, type = "line", className, ...props }: { isLoading:
 
     return isLoading === "loading" ? (
         <span className={getType()} {...props} />
-    ) : props.children
+    ) : children ?? null
 }
 
 export default Loading

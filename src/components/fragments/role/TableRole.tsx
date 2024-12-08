@@ -1,11 +1,12 @@
 "use client"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import React from 'react'
 import AccessView from './AccessView';
 import UpdateRoleForm from './UpdateRoleForm';
 import DeleteRole from './DeleteRole';
 import { TableView } from '@/model/view';
 import { Role } from '@/model/roles';
+import Loading from '@components/ui/loading';
 
 function TableRole({ data, isLoading, handleFetch }: TableView<Role>) {
 
@@ -20,7 +21,7 @@ function TableRole({ data, isLoading, handleFetch }: TableView<Role>) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {isLoading !== "loading" ?
+                {
                     data.map((fo, i) => (
                         <TableRow key={i}>
                             <TableCell>{i + 1}</TableCell>
@@ -31,15 +32,16 @@ function TableRole({ data, isLoading, handleFetch }: TableView<Role>) {
                                 <DeleteRole handleFetch={handleFetch} data={fo} />
                             </TableCell>
                         </TableRow>
-                    )) : (
-                        <TableRow >
-                            <TableCell className='text-center' rowSpan={4}>
-                                Loading
-                            </TableCell>
-                        </TableRow>
-                    )
+                    ))
                 }
             </TableBody>
+            {
+                isLoading == "loading" && (
+                    <TableCaption className='w-full '>
+                        <Loading type='loader' isLoading='loading' />
+                    </TableCaption>
+                )
+            }
         </Table>
     )
 }

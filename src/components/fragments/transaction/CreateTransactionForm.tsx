@@ -16,6 +16,7 @@ import { Calendar } from '@components/ui/calendar';
 import { Item } from '@/app/dashboard/kasir/page';
 import { createTransaction } from '@/actions/transaction';
 import { useSession } from 'next-auth/react';
+import Loading from '@components/ui/loading';
 
 function CreateTransactionForm({
     items,
@@ -28,7 +29,7 @@ function CreateTransactionForm({
     setItem: React.Dispatch<SetStateAction<Item[]>>
     setCurrent: React.Dispatch<SetStateAction<string>>
 }) {
-    
+
     const { data: user } = useSession()
     const [effectted, setEffect] = useState(false)
     const [method, setMethod] = useState(false)
@@ -148,7 +149,7 @@ function CreateTransactionForm({
                                             type="text"
                                             className="placeholder:opacity-50"
                                             {...field}
-                                            onChange={(e) => {field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value);setEffect(pv => !pv)}}
+                                            onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value); setEffect(pv => !pv) }}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-red-500 font-normal" />
@@ -172,7 +173,7 @@ function CreateTransactionForm({
                                             type="text"
                                             className="placeholder:opacity-50"
                                             {...field}
-                                            onChange={(e) => {field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value);setEffect(pv => !pv)}}
+                                            onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value); setEffect(pv => !pv) }}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-red-500 font-normal" />
@@ -307,33 +308,40 @@ function CreateTransactionForm({
                         )}
                     />
                 </div>
-                <div className="space-y-2">
-                    <FormField
-                        control={form.control}
-                        name='cash'
-                        render={({ field }) => (
-                            <FormItem className='flex flex-col gap-1'>
-                                <FormLabel>
-                                    Pembayaran
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        id="cash"
-                                        placeholder="cash.."
-                                        type="text"
-                                        className="placeholder:opacity-50"
-                                        {...field}
-                                        onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-red-500 font-normal" />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                {
+                    !method && (
+                        <div className="space-y-2">
+                            <FormField
+                                control={form.control}
+                                name='cash'
+                                render={({ field }) => (
+                                    <FormItem className='flex flex-col gap-1'>
+                                        <FormLabel>
+                                            Pembayaran
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                id="cash"
+                                                placeholder="cash.."
+                                                type="text"
+                                                className="placeholder:opacity-50"
+                                                {...field}
+                                                onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
+                                            />
+                                        </FormControl>
+                                        <FormMessage className="text-red-500 font-normal" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    )
+                }
 
                 <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                    {isLoading == "loading" ? "Loading" : "Tambah"}
+                    <Loading isLoading={isLoading}>
+                        Bayar
+                    </Loading>
+
                 </Button>
             </form>
         </Form>

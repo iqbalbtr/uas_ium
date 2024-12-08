@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover';
 import { cn, getDateFormat } from '@libs/utils';
 import { Calendar } from '@components/ui/calendar';
+import Loading from '@components/ui/loading';
 
 function UpdateOrderForm({ data, handleFetch }: TableMutation<Order>) {
 
@@ -363,7 +364,9 @@ function UpdateOrderForm({ data, handleFetch }: TableMutation<Order>) {
                                     )
                                 }
                         <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                            {isLoading == "loading" ? "Loading" : "Tambah"}
+                            <Loading isLoading={isLoading}>
+                                Ubah
+                            </Loading>
                         </Button>
                     </form>
                 </Form>

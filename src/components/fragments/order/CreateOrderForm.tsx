@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover';
 import { Calendar } from '@components/ui/calendar';
 import { cn, getDateFormat } from '@libs/utils';
+import Loading from '@components/ui/loading';
 
 export type ItemOrder = {
     medicineId: number;
@@ -342,7 +343,9 @@ function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
                                     )
                                 }
                                 <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                    {isLoading == "loading" ? "Loading" : "Pesan"}
+                                    <Loading isLoading={isLoading}>
+                                        Pesan
+                                    </Loading>
                                 </Button>
                             </form>
                         </Form>

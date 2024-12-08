@@ -12,6 +12,7 @@ import {
 import {
     Table,
     TableBody,
+    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -19,16 +20,22 @@ import {
 } from "@/components/ui/table";
 import { getAllReceiptByIdOrder, getAllReceiptItemByIdOrder, getReceipt, getReceiptById } from "@/actions/receipts";
 import { Receipt, ReceiptMedicine } from "@models/receipts";
+import useFetch from "@hooks/use-fetch";
+import Loading from "@components/ui/loading";
 
 export default function DetailItemRceived({ id }: { id: number }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [receipts, setReceipts] = useState<ReceiptMedicine[]>()
+
+    const { data, isLoading, refresh } = useFetch({
+        url: async () => getAllReceiptItemByIdOrder(id),
+        defaultValue: [],
+        initialize: false
+    })
 
     useEffect(() => {
-        getAllReceiptItemByIdOrder(id).then(res => setReceipts(res as ReceiptMedicine[]))
-    }, [])
-    console.log(receipts);
-    
+        if (isOpen)
+            refresh()
+    }, [isOpen])
 
 
     return (
@@ -51,15 +58,27 @@ export default function DetailItemRceived({ id }: { id: number }) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {receipts?.map((receipt) => (
+                            {data?.map((receipt) => (
                                 <TableRow key={receipt.id}>
-                                    <TableCell>{receipt.order_medicine.medicine.name}</TableCell>
-                                    <TableCell>{receipt.order_medicine.medicine.medicine_code}</TableCell>
+                                    <TableCell>{receipt.order_medicine?.medicine?.name}</TableCell>
+                                    <TableCell>{receipt.order_medicine?.medicine?.medicine_code}</TableCell>
                                     <TableCell>{receipt.received}</TableCell>
-                                    <TableCell>{receipt.order_medicine.quantity}</TableCell>
+                                    <TableCell>{receipt.order_medicine?.quantity}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
+
+                        {
+                            isLoading == "loading" ? (
+                                <TableCaption className='w-full '>
+                                    <Loading type='loader' isLoading='loading' />
+                                </TableCaption>
+                            ) : data.length == 0 && (
+                                <TableCaption className='w-full '>
+                                    Data kosong
+                                </TableCaption>
+                            )
+                        }
                     </Table>
                 </DialogContent>
             </Dialog>

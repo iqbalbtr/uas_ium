@@ -20,6 +20,7 @@ import useLoading from "@hooks/use-loading"
 import { toast } from "@hooks/use-toast"
 import { Order } from "@models/orders"
 import { getOrder } from "@/actions/order"
+import Loading from "@components/ui/loading"
 
 
 
@@ -88,9 +89,9 @@ export function OrderSelect({
                     <CommandInput onInput={(e: any) => HandleSearch()(e.target.value)} placeholder="Search role..." className="h-9" />
                     <CommandList>
                         {isLoading === "loading" ? (
-                            <div>
-                                Loading
-                            </div>
+                            <button>
+                                <Loading isLoading="loading" />
+                            </button>
                         ) : (
                             <>
                                 <CommandEmpty>Order tidak ditemukan.</CommandEmpty>

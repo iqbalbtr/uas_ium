@@ -20,6 +20,13 @@ const handler = NextAuth({
             
                 const existingUser = await db.query.users.findFirst({
                     where: (user, { eq }) => eq(user.username, credentials.username),
+                    with: {
+                        role: {
+                            columns: {
+                                name: true
+                            }
+                        }
+                    }
                 });
             
                 if (!existingUser) return null;
@@ -40,6 +47,7 @@ const handler = NextAuth({
                     email: existingUser.email,
                     phone: existingUser.phone,
                     roleId: existingUser.role_id,
+                    roleName: existingUser.role.name,
                     status: existingUser.status,
                 } as any
             }
@@ -58,6 +66,7 @@ const handler = NextAuth({
                 token.phone = user.phone;
                 token.roleId = user.roleId;
                 token.status = user.status;
+                token.roleName = user.roleName
             }
             return token;
         },
@@ -70,6 +79,7 @@ const handler = NextAuth({
                 session.user.phone = token.phone as string;
                 session.user.roleId = token.roleId as number;
                 session.user.status = token.status as string;
+                session.user.roleName = token.roleName as string;
             }
             return session;
         }

@@ -1,6 +1,6 @@
 "use client"
 import { getOrder } from '@/actions/order';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import usePagination from '@hooks/use-paggination';
 import { getDateFormat, getRupiahFormat } from '@libs/utils';
 import { Order } from '@models/orders';
@@ -8,6 +8,8 @@ import React, { useEffect, useState } from 'react'
 import UpdateStatusPayment from './UpdateStatusPayment';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
 import { Button } from '@components/ui/button';
+import { Input } from '@components/ui/input';
+import Loading from '@components/ui/loading';
 
 function InstallmentOrder() {
 
@@ -43,6 +45,10 @@ function InstallmentOrder() {
                     <DrawerTitle>List pembayaran</DrawerTitle>
                     <DrawerDescription>list pembayaran yang belum di bayar</DrawerDescription>
                 </DrawerHeader>
+                <div className='max-w-md flex items-center gap-2'>
+                    <Input />
+                    <Button>Cari</Button>
+                </div>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -60,7 +66,7 @@ function InstallmentOrder() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {isLoading !== "loading" ?
+                        {
                             orders.map((fo, i) => (
                                 <TableRow key={i}>
                                     <TableCell>{i + 1}</TableCell>
@@ -77,13 +83,20 @@ function InstallmentOrder() {
                                         <UpdateStatusPayment data={fo} handleFetch={handleFetch} />
                                     </TableCell>
                                 </TableRow>
-                            )) : (
-                                <TableRow>
-                                    <TableCell>Loading</TableCell>
-                                </TableRow>
-                            )
+                            ))
                         }
                     </TableBody>
+                    {
+                        isLoading == "loading" ? (
+                            <TableCaption className='w-full '>
+                                <Loading type='loader' isLoading='loading' />
+                            </TableCaption>
+                        ) : orders.length == 0 && (
+                            <TableCaption className='w-full '>
+                                Data kosong
+                            </TableCaption>
+                        )
+                    }
                 </Table>
 
                 <Paggination />

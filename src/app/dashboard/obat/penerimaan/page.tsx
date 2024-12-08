@@ -30,7 +30,7 @@ function Penerimaan() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title="Penerimaan barang">
-        <CreateReceiptForm />
+        <CreateReceiptForm handlefetch={handleFetch} />
       </DashboardLayoutHeader>
       <ReceiptTable
         data={users}
