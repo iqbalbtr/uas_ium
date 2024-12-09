@@ -22,6 +22,7 @@ import { Order } from "@models/orders"
 import { getOrder } from "@/actions/order"
 import { getTransaction } from "@/actions/transaction"
 import { Transaction } from "@models/transactions"
+import Loading from "@components/ui/loading"
 
 
 
@@ -90,9 +91,9 @@ export default function TransactionSelect({
                     <CommandInput onInput={(e: any) => HandleSearch()(e.target.value)} placeholder="Search role..." className="h-9" />
                     <CommandList>
                         {isLoading === "loading" ? (
-                            <div>
-                                Loading
-                            </div>
+                            <span>
+                                <Loading isLoading="loading" />
+                            </span>
                         ) : (
                             <>
                                 <CommandEmpty>Transaksi tidak ditemukan.</CommandEmpty>

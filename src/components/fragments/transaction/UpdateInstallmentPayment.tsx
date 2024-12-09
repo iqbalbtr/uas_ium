@@ -8,20 +8,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
-import { UserPlus } from 'lucide-react';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select';
-import { OrderSelect } from '../order/OrderSelect';
+import { UserPlus } from 'lucide-react';;
 import { Table, TableBody, TableCell, TableRow } from '@components/ui/table';
-import { Order } from '@models/orders';
-import { createReceipt } from '@/actions/receipts';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Medicine } from '@models/medicines';
 import { Input } from '@components/ui/input';
-import ReceiptOrderTable from '../receipt/ReceiptOrderTable';
 import TransactionSelect from './TransactionSelect';
 import { Transaction } from '@models/transactions';
-import OrderTable from '../order/OrderTable';
 import { updatePaymentInstallment } from '@/actions/transaction';
+import Loading from '@components/ui/loading';
+import OrderTable from '../order/OrderTable';
 
 export type ItemReceived = {
     medicine_id: number,
@@ -37,9 +33,8 @@ function UpdateInstallmentPayment() {
 
     const { isLoading, setLoading } = useLoading()
     const [isOpen, setOpen] = useState(false)
-    const [method, setMethod] = useState(false);
     const [order, setOrder] = useState<Transaction | null>(null)
-    const [received, setReceived] = useState<ItemReceived[]>([])
+    
 
     const receiptSchema = z.object({
         cash: z.number().min(0),
@@ -58,7 +53,7 @@ function UpdateInstallmentPayment() {
     const handleCreate = async (values: z.infer<typeof receiptSchema>) => {
         try {
             setLoading("loading")
-            if(!order)
+            if (!order)
                 throw new Error("Pilih order")
             const res = await updatePaymentInstallment(order.id, values.cash)
             if (res) {
@@ -80,6 +75,9 @@ function UpdateInstallmentPayment() {
             setLoading("idle")
         }
     }
+
+    console.log(order?.items);
+    
 
 
     return (
@@ -160,13 +158,13 @@ function UpdateInstallmentPayment() {
                             </CardContent>
                         </Card>
                         <OrderTable
-                            items={order ?
+                            items={order?.items.length ?
                                 order.items.map(fo => ({
                                     medicineId: fo.medicine_id!,
-                                    name: fo.medicine.name!,
-                                    price: fo.medicine.selling_price!,
-                                    qty: fo.quantity!,
-                                    stock: fo.medicine.stock!
+                                    name: fo.medicine?.name!,
+                                    price: fo.medicine.selling_price ?? 0,
+                                    qty: fo.quantity ?? 0,
+                                    stock: fo.medicine.stock ?? 0
                                 })) : []
                             }
                             variant='transaction'
@@ -206,7 +204,7 @@ function UpdateInstallmentPayment() {
                                                 type="text"
                                                 className="placeholder:opacity-50"
                                                 {...field}
-                                                onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}}
+                                                onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value) }}
                                             />
                                         </FormControl>
                                         <FormMessage className="text-red-500 font-normal" />
@@ -214,7 +212,9 @@ function UpdateInstallmentPayment() {
                                 )}
                             />
                             < Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                {isLoading == "loading" ? "Loading" : "Pesan"}
+                                <Loading isLoading={isLoading}>
+                                    Ubah
+                                </Loading>
                             </Button>
                         </form>
                     </Form>

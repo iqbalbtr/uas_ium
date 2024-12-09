@@ -16,6 +16,7 @@ import { TypeMedicineSelect } from './TypeMedicineSelect';
 import {  updateMedicine } from '@/actions/medicine';
 import { TableMutation } from '@models/view';
 import { Medicine } from '@models/medicines';
+import Loading from '@components/ui/loading';
 
 function UpdateMedicineForm({ data, handleFetch }: TableMutation<Medicine>) {
 
@@ -421,7 +422,9 @@ function UpdateMedicineForm({ data, handleFetch }: TableMutation<Medicine>) {
                                 />
                             </div>
                             <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                {isLoading == "loading" ? "Loading" : "Ubah"}
+                                <Loading isLoading={isLoading}>
+                                    Ubah
+                                </Loading>
                             </Button>
                         </form>
                     </Form>

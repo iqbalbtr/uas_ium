@@ -2,15 +2,17 @@
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@components/ui/table";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TableView } from "@/model/view";
 import { Transaction } from "@models/transactions";
-import ModalTable from "./modal-table";
+import Loading from "@components/ui/loading";
+import PrintInvoice from "./PrintInvoice";
 
 function SellingTable({
   data,
@@ -27,15 +29,16 @@ function SellingTable({
           <TableHead>Karyawan</TableHead>
           <TableHead>Metode</TableHead>
           <TableHead>Kadaluarsa</TableHead>
+          <TableHead>Status Pembayaran</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Pajak</TableHead>
           <TableHead>Diskon</TableHead>
-          <TableHead>Items</TableHead>
+          <TableHead>Total</TableHead>
           <TableHead>Aksi</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {isLoading !== "loading" ? (
+        {
           data.map((fo, i) => (
             <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
@@ -44,22 +47,32 @@ function SellingTable({
               <TableCell>{fo.user?.name}</TableCell>
               <TableCell>{fo.payment_method}</TableCell>
               <TableCell>{fo.payment_expired?.toLocaleDateString()}</TableCell>
-              <TableCell>{fo.status}</TableCell>
+              <TableCell>{fo.payment_method}</TableCell>
+              <TableCell>{fo.transaction_status}</TableCell>
               <TableCell>{fo.tax}</TableCell>
               <TableCell>{fo.discount}</TableCell>
               <TableCell>
-                <ModalTable />
+                {fo.total}
               </TableCell>
               <TableCell>
+                <PrintInvoice current={fo.code_transaction} />
               </TableCell>
             </TableRow>
           ))
-        ) : (
-          <TableRow>
-            <TableCell>Loading</TableCell>
-          </TableRow>
-        )}
+        }
       </TableBody>
+
+      {
+        isLoading == "loading" ? (
+          <TableCaption className='w-full '>
+            <Loading type='loader' isLoading='loading' />
+          </TableCaption>
+        ) : data.length == 0 && (
+          <TableCaption className='w-full '>
+            Data kosong
+          </TableCaption>
+        )
+      }
     </Table>
   );
 }

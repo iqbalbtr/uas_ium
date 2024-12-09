@@ -1,10 +1,11 @@
 "use client"
-import { getUser } from '@/actions/auth'
-import TablePembelian from '@components/fragments/laporan/ReceiptTable'
-import TablePenjualan from '@components/fragments/laporan/SellinTable'
-import CreateUserForm from '@components/fragments/user/CreateUserForm'
+import { getOrder } from '@/actions/order'
+import PrintToExcel from '@components/fragments/laporan/PrintToExcel'
+import ReceiptTable from '@components/fragments/laporan/ReceiptTable'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
+import { Button } from '@components/ui/button'
 import usePagination from '@hooks/use-paggination'
+import { getOrderExcel } from '@services/reports/order'
 import React, { useState } from 'react'
 
 function Pembelian() {
@@ -13,7 +14,7 @@ function Pembelian() {
 
   const { handleFetch, Paggination, isLoading } = usePagination({
     handleGet: async (page, setPage) => {
-      const get = await getUser(page.page, page.limit)
+      const get = await getOrder(page.page, page.limit)
       if (get) {
         setPembelian(get.data)
         setPage(get.pagging)
@@ -25,8 +26,9 @@ function Pembelian() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title='Pembelian'>
+        <PrintToExcel data={getOrderExcel} fileName='data_pembelian.xlsx' />
       </DashboardLayoutHeader>
-      <TablePembelian data={pembelian} isLoading={isLoading} handleFetch={handleFetch} />
+      <ReceiptTable data={pembelian} isLoading={isLoading} handleFetch={handleFetch} />
       <Paggination />
     </DashboardLayout>
   )

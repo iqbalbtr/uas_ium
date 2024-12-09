@@ -1,11 +1,13 @@
 "use client"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import React from 'react'
 import { TableView } from '@/model/view';
 import { Receipt } from '@models/receipts';
 import DeleteReceipt from './DeleteReceipt';
 import UpdateReceiptForm from './UpdateReceiptForm';
 import TableLayout from '@components/layouts/TableLayout';
+import Loading from '@components/ui/loading';
+import { useNumberPage } from '@hooks/use-paggination';
 
 
 function ReceiptTable({
@@ -14,8 +16,7 @@ function ReceiptTable({
     handleFetch
 }: TableView<Receipt>) {
 
-    console.log(data);
-
+    const { getNumber } = useNumberPage({})
 
     return (
         <TableLayout>
@@ -32,10 +33,10 @@ function ReceiptTable({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {isLoading !== "loading" ?
+                    {
                         data.map((fo, i) => (
                             <TableRow key={i}>
-                                <TableCell>{i + 1}</TableCell>
+                                <TableCell>{getNumber(i)}</TableCell>
                                 <TableCell>{fo.receipt_code}</TableCell>
                                 <TableCell>{fo.delivery_name}</TableCell>
                                 <TableCell>{fo.order.order_code}</TableCell>
@@ -46,13 +47,20 @@ function ReceiptTable({
                                     <UpdateReceiptForm data={fo} handleFetch={handleFetch} />
                                 </TableCell>
                             </TableRow>
-                        )) : (
-                            <TableRow>
-                                <TableCell>Loading</TableCell>
-                            </TableRow>
-                        )
+                        ))
                     }
                 </TableBody>
+                {
+                    isLoading == "loading" ? (
+                        <TableCaption className='w-full '>
+                            <Loading type='loader' isLoading='loading' />
+                        </TableCaption>
+                    ) : data.length == 0 && (
+                        <TableCaption className='w-full '>
+                            Data kosong
+                        </TableCaption>
+                    )
+                }
             </Table>
         </TableLayout>
     )

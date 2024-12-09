@@ -47,7 +47,6 @@ function AccessDialog({ children, access, setAccess }: { children: ReactNode, ac
                   );
             }
       
-            // If parent doesn't exist, add it with the child
             const parentNav = nav_content.find((nav) => nav.url === parent);
             if (parentNav) {
               return [

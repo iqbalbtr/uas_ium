@@ -2,7 +2,7 @@
 import React, { SetStateAction } from 'react'
 import { Button } from '@components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import { Minus, Plus } from 'lucide-react'
 import { ItemReceived } from './CreateReceiptForm'
 
@@ -60,7 +60,7 @@ function ReceiptOrderTable({
                     </TableHeader>
                     <TableBody>
                         {
-                            items.length ? items.map((fo, i) => (
+                           items.map((fo, i) => (
                                 <TableRow key={i}>
                                     <TableCell>{++i}</TableCell>
                                     <TableCell>{fo.medicine.name}</TableCell>
@@ -73,13 +73,15 @@ function ReceiptOrderTable({
                                         <Button onClick={() => handleMutation("minus", fo)} variant={"destructive"}><Minus /></Button>
                                     </TableCell>
                                 </TableRow>
-                            )) : (
-                                <TableRow>
-                                    <TableCell>Data tidak ditemukan</TableCell>
-                                </TableRow>
-                            )
+                            ))
                         }
                     </TableBody>
+                    { items.length == 0 && (
+                        <TableCaption className='w-full '>
+                            Data kosong
+                        </TableCaption>
+                    )
+                }
                 </Table>
             </CardContent>
         </Card>

@@ -16,6 +16,7 @@ import { updateReceipt } from '@/actions/receipts';
 import ReceiptOrderTable from './ReceiptOrderTable';
 import { ItemReceived } from './CreateReceiptForm';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
+import Loading from '@components/ui/loading';
 
 export type UpdateItemReceived = ItemReceived & { receipt_medicine_id?: number }
 
@@ -157,7 +158,9 @@ function UpdateReceiptForm({ data, handleFetch }: TableMutation<Receipt>) {
                                 />
                             </div>
                             <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                {isLoading == "loading" ? "Loading" : "Tambah"}
+                                <Loading isLoading={isLoading}>
+                                    Ubah
+                                </Loading>
                             </Button>
                         </form>
                     </Form>

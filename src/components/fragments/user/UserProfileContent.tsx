@@ -48,12 +48,11 @@ const UserProfileContent = () => {
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-lg">{data?.user.name}</h3>
                 <Badge variant="outline" className="bg-green-300 font-semibold">
-                  {data?.user.roleId}
+                  {data?.user?.roleName}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                An {data?.user.roleId} at a pharmacy{" "}
-                <span className="font-semibold">Empat Husada</span>
+                Seorang {data?.user.roleName} di Apotek{" "}
               </p>
             </div>
           </div>

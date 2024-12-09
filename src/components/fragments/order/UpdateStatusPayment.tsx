@@ -2,6 +2,7 @@
 import { updatePaymentStatus } from '@/actions/order'
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@components/ui/alert-dialog'
 import { Button } from '@components/ui/button'
+import Loading from '@components/ui/loading'
 import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
 import { Order } from '@models/orders'
@@ -54,7 +55,9 @@ function UpdateStatusPayment({ data, handleFetch }: TableMutation<Order>) {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button onClick={handleUpdate} disabled={isLoading == "loading"}>Bayar</Button>
+                    <Button onClick={handleUpdate} disabled={isLoading == "loading"}>
+                        <Loading isLoading={isLoading}>Bayar</Loading>
+                    </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

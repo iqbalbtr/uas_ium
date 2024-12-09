@@ -16,6 +16,7 @@ import { TableMutation } from "@/model/view";
 import { Role } from "@/model/roles";
 import { NavType } from "@components/app/app-sidebar";
 import { useState } from "react";
+import Loading from "@components/ui/loading";
 
 function UpdateRoleForm({
     data,
@@ -118,7 +119,9 @@ function UpdateRoleForm({
                             />
                         </div>
                         <Button type='submit' disabled={isLoading == "loading"} className="w-full bg-[#2A2B27] text-white hover:bg-[#3F403B]">
-                            {isLoading == "loading" ? "Loading" : "Ubah"}
+                           <Loading isLoading={isLoading}>
+                            Ubah
+                           </Loading>
                         </Button>
                     </form>
                 </Form>

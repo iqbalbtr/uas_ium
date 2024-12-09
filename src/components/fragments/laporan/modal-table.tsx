@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,19 +17,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getAllReceiptByIdOrder, getReceipt } from "@/actions/receipts";
+import { Receipt } from "@models/receipts";
+import DetailItemRceived from "./DetailItemRceived";
 
-export default function ModalTable() {
+export default function ModalTable({id}:{id: number}) {
   const [isOpen, setIsOpen] = useState(false);
+  const [receipts, setReceipts] = useState<Receipt[]>([])
 
-  const tableData = [
-    {
-      id: "1",
-      name: "John Doe",
-      quantity: "10",
-      subtotal: "1000",
-      kode_obat: "A123",
-    },
-  ];
+  useEffect(() => {
+    getAllReceiptByIdOrder(id).then(res => setReceipts(res as Receipt[]))
+  },[])
+
 
   return (
     <div className="flex items-center justify-center ">
@@ -37,26 +36,28 @@ export default function ModalTable() {
         <DialogTrigger asChild>
           <Button variant="outline">Details</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="">
           <DialogHeader>
-            <DialogTitle>User Table</DialogTitle>
+            <DialogTitle>Data penerimaan</DialogTitle>
           </DialogHeader>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Subtotal</TableHead>
-                <TableHead>Kode Obat</TableHead>
+                <TableHead>Kode penerimaan</TableHead>
+                <TableHead>Kurir</TableHead>
+                <TableHead>Total item diterima</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Lihat item</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tableData.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.quantity}</TableCell>
-                  <TableCell>{user.subtotal}</TableCell>
-                  <TableCell>{user.kode_obat}</TableCell>
+              {receipts.map((receipt) => (
+                <TableRow key={receipt.receipt_code}>
+                  <TableCell>{receipt.receipt_code}</TableCell>
+                  <TableCell>{receipt.delivery_name}</TableCell>
+                  <TableCell>{receipt.total_received_item}</TableCell>
+                  <TableCell>{receipt.receipt_status}</TableCell>
+                  <TableCell><DetailItemRceived id={id} /></TableCell>
                 </TableRow>
               ))}
             </TableBody>

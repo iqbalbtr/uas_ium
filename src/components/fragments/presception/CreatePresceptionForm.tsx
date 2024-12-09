@@ -15,6 +15,7 @@ import { Medicine } from '@models/medicines';
 import { TextArea } from '@components/ui/textarea';
 import PresciptionMedicineTable, { ItemPresciption } from './PresciptionMedicineTable';
 import { createPresciption } from '@/actions/prescription';
+import Loading from '@components/ui/loading';
 
 
 function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
@@ -24,7 +25,6 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
     const [isOpen, setOpen] = useState(false)
     const [effectted, setEffect] = useState(false)
     const [total, setTotal] = useState(0)
-    const [isExpire, setExpire] = useState(false)
 
 
     function handleAdd(val: Medicine, qty: number) {
@@ -69,19 +69,6 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
             }
         });
     }
-
-    //     code_prescription: varchar("code_prescription", { length: 100 })
-    //     .unique()
-    //     .notNull(),
-    //   prescription_date: timestamp("prescription_date").notNull(),
-    //   name: varchar("name", { length: 55 }).notNull(),
-    //   doctor_name: varchar("doctor_name", { length: 50 }),
-    //   description: text("description"),
-    //   price: integer("price").notNull(),
-    //   discount: integer("discount").default(0),
-    //   fee: integer("fee").default(0),
-    //   tax: integer("tax").default(0),
-    //   instructions: text("instructions"),
 
 
     const orderSchema = z.object({
@@ -171,7 +158,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                     <SearchMedicine variant='selling' handleAdd={handleAdd} />
                     <div>
                         <Input className='mb-6' disabled value={`Rp. ${total}`} />
-                        <PresciptionMedicineTable items={items} setItem={setItems}  />
+                        <PresciptionMedicineTable items={items} setItem={setItems} />
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 p-6 bg-background shadow border-2 rounded-lg border-border mt-6">
                                 <FormField
@@ -349,7 +336,9 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                                 />
 
                                 <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                    {isLoading == "loading" ? "Loading" : "Pesan"}
+                                    <Loading isLoading={isLoading}>
+                                        Buat
+                                    </Loading>
                                 </Button>
                             </form>
                         </Form>

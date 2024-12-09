@@ -30,6 +30,7 @@ function AccessCard({
                     <div className="flex gap-2 items-center">
                         <Switch
                             checked={isParentActive}
+                            disabled={data.url == "/dashboard"}
                             onClick={() => handle(data.url)}
                         />
                         {data.items?.length! > 0 && (

@@ -6,12 +6,16 @@ import UpdateUserForm from './UpdateUserForm';
 import { TableView } from '@/model/view';
 import DeleteUser from './DeleteUser';
 import Loading from '@components/ui/loading';
+import { useSearchParams } from 'next/navigation';
+import { useNumberPage } from '@hooks/use-paggination';
 
 function UserTable({
     data,
     isLoading,
     handleFetch
 }: TableView<User>) {
+
+    const { getNumber } = useNumberPage({})
 
     return (
         <Table>
@@ -27,10 +31,10 @@ function UserTable({
                 </TableRow>
             </TableHeader>
             <TableBody>
-                { isLoading !== "loading" &&
+                {isLoading !== "loading" &&
                     data.map((fo, i) => (
                         <TableRow key={i}>
-                            <TableCell>{i + 1}</TableCell>
+                            <TableCell>{getNumber(i)}</TableCell>
                             <TableCell>{fo.username}</TableCell>
                             <TableCell>{fo.name}</TableCell>
                             <TableCell>{fo.status}</TableCell>
@@ -38,15 +42,23 @@ function UserTable({
                             <TableCell>{fo.role?.name}</TableCell>
                             <TableCell>
                                 <DeleteUser data={fo} handleFetch={handleFetch} />
-                                <UpdateUserForm handleFetch={handleFetch} data={fo} />  
+                                <UpdateUserForm handleFetch={handleFetch} data={fo} />
                             </TableCell>
                         </TableRow>
                     ))
                 }
             </TableBody>
-            <TableCaption>
-                <Loading isLoading={isLoading} />
-            </TableCaption>
+            {
+                isLoading == "loading" ? (
+                    <TableCaption className='w-full '>
+                        <Loading type='loader' isLoading='loading' />
+                    </TableCaption>
+                ) : data.length == 0 && (
+                    <TableCaption className='w-full '>
+                        Data kosong
+                    </TableCaption>
+                )
+            }
         </Table>
     )
 }

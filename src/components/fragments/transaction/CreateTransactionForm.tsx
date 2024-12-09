@@ -16,6 +16,7 @@ import { Calendar } from '@components/ui/calendar';
 import { Item } from '@/app/dashboard/kasir/page';
 import { createTransaction } from '@/actions/transaction';
 import { useSession } from 'next-auth/react';
+import Loading from '@components/ui/loading';
 
 function CreateTransactionForm({
     items,
@@ -28,7 +29,7 @@ function CreateTransactionForm({
     setItem: React.Dispatch<SetStateAction<Item[]>>
     setCurrent: React.Dispatch<SetStateAction<string>>
 }) {
-    
+
     const { data: user } = useSession()
     const [effectted, setEffect] = useState(false)
     const [method, setMethod] = useState(false)
@@ -39,7 +40,6 @@ function CreateTransactionForm({
         discount: z.number().min(0).max(100),
         payment_expired: z.date().optional().default(new Date()),
         payment_method: z.enum(["cash", "installment", ""]),
-        transaction_status: z.enum(["pending", "cancelled", "completed", ""]),
         tax: z.number().min(0),
         cash: z.number().min(0),
     })
@@ -54,7 +54,6 @@ function CreateTransactionForm({
             cash: 0,
             payment_expired: new Date(),
             payment_method: "",
-            transaction_status: ""
         },
     })
 
@@ -73,7 +72,7 @@ function CreateTransactionForm({
         try {
             if (!items.length)
                 throw new Error("1 item min")
-
+            console.log(items);
             setLoading("loading")
             const res = await createTransaction(user?.user.id!, {
                 discount: values.discount,
@@ -81,7 +80,6 @@ function CreateTransactionForm({
                 payment_expired: values.payment_expired!,
                 tax: values.tax,
                 payment_method: values.payment_method as "cash" | "installment",
-                transaction_status: values.transaction_status as "completed" | "pending" | "cancelled"
             }, items, values.cash);
             if (res) {
                 toast({
@@ -148,7 +146,7 @@ function CreateTransactionForm({
                                             type="text"
                                             className="placeholder:opacity-50"
                                             {...field}
-                                            onChange={(e) => {field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value);setEffect(pv => !pv)}}
+                                            onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value); setEffect(pv => !pv) }}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-red-500 font-normal" />
@@ -172,7 +170,7 @@ function CreateTransactionForm({
                                             type="text"
                                             className="placeholder:opacity-50"
                                             {...field}
-                                            onChange={(e) => {field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value);setEffect(pv => !pv)}}
+                                            onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value); setEffect(pv => !pv) }}
                                         />
                                     </FormControl>
                                     <FormMessage className="text-red-500 font-normal" />
@@ -272,68 +270,40 @@ function CreateTransactionForm({
                         )
                     }
                 </div>
-                <div className="space-y-2">
-                    <FormField
-                        control={form.control}
-                        name='transaction_status'
-                        render={({ field }) => (
-                            <FormItem className='flex flex-col gap-1'>
-                                <FormLabel>
-                                    Status Transaksi
-                                </FormLabel>
-                                <FormControl>
-                                    <Select value={field.value} onValueChange={field.onChange}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Pilih status" />
-                                        </SelectTrigger>
-
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value='cancelled'>
-                                                    Dibatalkan
-                                                </SelectItem>
-                                                <SelectItem value='pending'>
-                                                    Di Tangguhkan
-                                                </SelectItem>
-                                                <SelectItem value='completed'>
-                                                    Selesai
-                                                </SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </FormControl>
-                                <FormMessage className="text-red-500 font-normal" />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-                <div className="space-y-2">
-                    <FormField
-                        control={form.control}
-                        name='cash'
-                        render={({ field }) => (
-                            <FormItem className='flex flex-col gap-1'>
-                                <FormLabel>
-                                    Pembayaran
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        id="cash"
-                                        placeholder="cash.."
-                                        type="text"
-                                        className="placeholder:opacity-50"
-                                        {...field}
-                                        onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
-                                    />
-                                </FormControl>
-                                <FormMessage className="text-red-500 font-normal" />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                {
+                    !method && (
+                        <div className="space-y-2">
+                            <FormField
+                                control={form.control}
+                                name='cash'
+                                render={({ field }) => (
+                                    <FormItem className='flex flex-col gap-1'>
+                                        <FormLabel>
+                                            Pembayaran
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                id="cash"
+                                                placeholder="cash.."
+                                                type="text"
+                                                className="placeholder:opacity-50"
+                                                {...field}
+                                                onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
+                                            />
+                                        </FormControl>
+                                        <FormMessage className="text-red-500 font-normal" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    )
+                }
 
                 <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                    {isLoading == "loading" ? "Loading" : "Tambah"}
+                    <Loading isLoading={isLoading}>
+                        Bayar
+                    </Loading>
+
                 </Button>
             </form>
         </Form>

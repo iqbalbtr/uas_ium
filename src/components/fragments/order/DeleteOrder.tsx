@@ -6,6 +6,8 @@ import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { Order } from '@models/orders';
 import { removeOrder } from '@/actions/order';
+import useLoading from '@hooks/use-loading';
+import Loading from '@components/ui/loading';
 
 function DeleteOrder({
     data,
@@ -13,8 +15,10 @@ function DeleteOrder({
 }: TableMutation<Order>) {
 
     const [isOpen, setOpen] = useState(false)
+    const {isLoading, setLoading} = useLoading()
 
     const handleDelete = async () => {
+        setLoading("loading")
         try {
             const get = await removeOrder(data.id);
             if (get) {
@@ -32,6 +36,8 @@ function DeleteOrder({
                 description: error.message,
                 variant: "destructive"
             })
+        } finally {
+            setLoading("idle")
         }
     }
 
@@ -51,7 +57,11 @@ function DeleteOrder({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button onClick={handleDelete}>Hapus</Button>
+                    <Button onClick={handleDelete} disabled={isLoading == "loading"}>
+                        <Loading isLoading={isLoading}>
+                            Hapus
+                        </Loading>
+                    </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

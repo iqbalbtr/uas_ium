@@ -72,6 +72,7 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                     description: res
                 })
                 setOpen(false)
+                form.reset()
                 handleFetch()
             }
         } catch (error: any) {
@@ -98,12 +99,6 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                 <DrawerHeader>
                     <DrawerTitle className='text-center'>Tambah Obat</DrawerTitle>
                 </DrawerHeader>
-
-                <DrawerClose className='w-fit self-end' asChild>
-                    <Button>
-                        Tutup
-                    </Button>
-                </DrawerClose>
 
                 <div className='overflow-y-auto md:px-32 p-6'>
                     <Form {...form}>

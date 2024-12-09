@@ -1,6 +1,6 @@
 "use client"
 import { getOrder } from '@/actions/order';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import usePagination from '@hooks/use-paggination';
 import { getDateFormat, getRupiahFormat } from '@libs/utils';
 import { Order } from '@models/orders';
@@ -8,28 +8,55 @@ import React, { useEffect, useState } from 'react'
 import UpdateStatusPayment from './UpdateStatusPayment';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
 import { Button } from '@components/ui/button';
+import { Input } from '@components/ui/input';
+import Loading from '@components/ui/loading';
+import useFetch from '@hooks/use-fetch';
+import useLoading from '@hooks/use-loading';
+import { toast } from '@hooks/use-toast';
 
 function InstallmentOrder() {
 
     const [orders, setOrder] = useState<Order[]>([])
     const [isOpen, setOpen] = useState(false)
+    const [input, setInput] = useState('')
+    const [data, setData] = useState<Order[]>([])
+    const { isLoading, setLoading } = useLoading()
 
-    const { handleFetch, Paggination, isLoading } = usePagination({
-        handleGet: async (page, setPage) => {
-            const get = await getOrder(1, 10, undefined, undefined, "pending");
-            if (get) {
-                setOrder(get.data as Order[]);
-                setPage(get.pagging);
-            }
-        },
-        initialize: true,
-    });
+    const getData = async () => {
+        setLoading("loading");
+        try {
+            const get = await getOrder(1, 5, input, undefined, "pending")
+            const data = get?.data || [];
+            setData(data as Order[])
+            setLoading("success");
+        } catch (error: any) {
+            console.error("Error fetching roles:", error);
+            toast({
+                title: "Error",
+                description: error.message,
+                variant: "destructive",
+            });
+            setLoading("error");
+        }
+    };
 
+    const HandleSearch = (() => {
+        let timeout: NodeJS.Timeout | null = null;
+        return () => {
+            if (timeout) clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                getData();
+            }, 700);
+        };
+    })();
+    
     useEffect(() => {
-        handleFetch()
+        getData()
     }, [isOpen])
 
-
+    useEffect(() => {
+        HandleSearch()
+    }, [input])
 
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
@@ -43,6 +70,10 @@ function InstallmentOrder() {
                     <DrawerTitle>List pembayaran</DrawerTitle>
                     <DrawerDescription>list pembayaran yang belum di bayar</DrawerDescription>
                 </DrawerHeader>
+                <div className='max-w-md flex items-center gap-2'>
+                    <Input value={input} onChange={(e) => setInput(e.target.value)} />
+                    <Button>Cari</Button>
+                </div>
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -60,8 +91,8 @@ function InstallmentOrder() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {isLoading !== "loading" ?
-                            orders.map((fo, i) => (
+                        {
+                            data.map((fo, i) => (
                                 <TableRow key={i}>
                                     <TableCell>{i + 1}</TableCell>
                                     <TableCell>{fo.order_code}</TableCell>
@@ -74,19 +105,24 @@ function InstallmentOrder() {
                                     <TableCell>{fo.payment_method == "installment" ? getDateFormat(fo.payment_expired) : "Tidak ada"}</TableCell>
                                     <TableCell>{getRupiahFormat(fo.total)}</TableCell>
                                     <TableCell>
-                                        <UpdateStatusPayment data={fo} handleFetch={handleFetch} />
+                                        <UpdateStatusPayment data={fo} handleFetch={getData} />
                                     </TableCell>
                                 </TableRow>
-                            )) : (
-                                <TableRow>
-                                    <TableCell>Loading</TableCell>
-                                </TableRow>
-                            )
+                            ))
                         }
                     </TableBody>
+                    {
+                        isLoading == "loading" ? (
+                            <TableCaption className='w-full '>
+                                <Loading type='loader' isLoading='loading' />
+                            </TableCaption>
+                        ) : orders.length == 0 && (
+                            <TableCaption className='w-full '>
+                                Data kosong
+                            </TableCaption>
+                        )
+                    }
                 </Table>
-
-                <Paggination />
             </DrawerContent>
         </Drawer>
     )

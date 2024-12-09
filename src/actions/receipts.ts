@@ -234,7 +234,7 @@ export const getReceipt = async (
 ) => {
 
     const skip = (page - 1) * limit
-    const count = await getCountData(receipts)
+    const count = (await db.select({count: sql`COUNT(*)`}).from(orders))[0].count as number
 
     const res = await db.query.receipts.findMany({
         limit,
@@ -262,4 +262,36 @@ export const getReceipt = async (
         },
         data: res
     }
+}
+
+export const getAllReceiptByIdOrder = async(id: number) => {
+
+    const get = await db.query.receipts.findMany({
+        where: (rec, {eq}) => (eq(rec.order_id, id))
+    })
+
+    return get
+}
+export const getAllReceiptItemByIdOrder = async(id: number) => {
+
+    const get = await db.query.receipt_medicine.findMany({
+        where: (rec, {eq}) => (eq(rec.order_medicine_id, id)),
+        with: {
+            order_medicine: {
+                with: {
+                    medicine: {
+                        columns: {
+                            name: true,
+                            medicine_code: true
+                        }
+                    }
+                },
+                columns: {
+                    quantity: true
+                }
+            }
+        }
+    })
+
+    return get
 }

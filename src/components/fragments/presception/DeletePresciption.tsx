@@ -6,6 +6,8 @@ import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { Prescription } from '@models/prescription';
 import { removePresciption } from '@/actions/prescription';
+import useLoading from '@hooks/use-loading';
+import Loading from '@components/ui/loading';
 
 function DeletePresciption({
     data,
@@ -13,8 +15,10 @@ function DeletePresciption({
 }: TableMutation<Prescription>) {
 
     const [isOpen, setOpen] = useState(false)
+    const {isLoading, setLoading} = useLoading()
 
     const handleDelete = async () => {
+        setLoading("loading")
         try {
             const get = await removePresciption(data.id);
             if (get) {
@@ -32,6 +36,8 @@ function DeletePresciption({
                 description: error.message,
                 variant: "destructive"
             })
+        } finally {
+            setLoading("idle")
         }
     }
 
@@ -51,7 +57,9 @@ function DeletePresciption({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <Button onClick={handleDelete}>Hapus</Button>
+                    <Button onClick={handleDelete} disabled={isLoading == "loading"}>
+                        <Loading isLoading={isLoading}>Hapus</Loading>
+                    </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

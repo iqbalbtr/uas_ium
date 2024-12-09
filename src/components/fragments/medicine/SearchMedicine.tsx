@@ -3,7 +3,8 @@ import { getMedicine } from '@/actions/medicine'
 import { Button } from '@components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { Input } from '@components/ui/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
+import Loading from '@components/ui/loading'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
 import { Medicine } from '@models/medicines'
@@ -21,7 +22,7 @@ function SearchMedicine({ handleAdd, variant = "order" }: { handleAdd: (val: Med
     async function getData(e?: string) {
         try {
             setLoading("loading")
-            const get = await getMedicine(1,5,e)
+            const get = await getMedicine(1, 5, e)
             setResult(get.data as Medicine[])
         } catch (error) {
             toast({
@@ -40,7 +41,7 @@ function SearchMedicine({ handleAdd, variant = "order" }: { handleAdd: (val: Med
             if (timeout) clearTimeout(timeout);
             timeout = setTimeout(() => {
                 getData(name);
-            }, 700);
+            }, 1000);
         };
     }
 
@@ -72,13 +73,7 @@ function SearchMedicine({ handleAdd, variant = "order" }: { handleAdd: (val: Med
                         </TableHeader>
                         <TableBody>
                             {
-                                isLoading == "loading" ? (
-                                    (
-                                        <TableRow >
-                                            <TableCell>Loading</TableCell>
-                                        </TableRow>
-                                    )
-                                ) : result.length ? result.map((fo, i) => (
+                                 result.map((fo, i) => (
                                     <TableRow key={i} onClick={() => handleSelect(fo)} className={selected?.id == fo.id ? `bg-primary-foreground` : ""}>
                                         <TableCell>{++i}</TableCell>
                                         <TableCell>{fo.medicine_code}</TableCell>
@@ -86,13 +81,21 @@ function SearchMedicine({ handleAdd, variant = "order" }: { handleAdd: (val: Med
                                         <TableCell>{fo.stock}</TableCell>
                                         <TableCell>{variant == "order" ? fo.purchase_price : fo.selling_price}</TableCell>
                                     </TableRow>
-                                )) : (
-                                    <TableRow >
-                                        <TableCell>Data tidak ada</TableCell>
-                                    </TableRow>
-                                )
+                                ))
                             }
                         </TableBody>
+
+                        {
+                            isLoading == "loading" ? (
+                                <TableCaption className='w-full '>
+                                    <Loading type='loader' isLoading='loading' />
+                                </TableCaption>
+                            ) : result.length == 0 && (
+                                <TableCaption className='w-full '>
+                                    <span>Data kosong</span>
+                                </TableCaption>
+                            )
+                        }
                     </Table>
                 </CardContent>
             </Card>

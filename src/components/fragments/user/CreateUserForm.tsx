@@ -12,6 +12,7 @@ import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@components/ui/sheet';
 import { UserPlus } from 'lucide-react';
+import Loading from '@components/ui/loading';
 
 function CreateUserForm() {
 
@@ -211,7 +212,9 @@ function CreateUserForm() {
                             />
                         </div>
                         <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                            {isLoading == "loading" ? "Loading" : "Tambah"}
+                            <Loading isLoading={isLoading}>
+                                Tambah
+                            </Loading>
                         </Button>
                     </form>
                 </Form>

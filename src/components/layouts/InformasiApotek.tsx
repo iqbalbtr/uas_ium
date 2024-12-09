@@ -1,11 +1,17 @@
-"use client";
+"use client"
+import { getApotek } from "@/actions/apotek";
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
+import useFetch from "@hooks/use-fetch";
 import { Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 
-import React from "react";
-
 export default function InformasiApotek() {
+
+  const {data} = useFetch({
+    url: getApotek,
+    defaultValue: undefined
+  })
+
   return (
     <Card className="w-full h-[90vh] ">
       <div className="relative w-full h-[35%]">
@@ -22,30 +28,26 @@ export default function InformasiApotek() {
       </div>
       <CardHeader>
         <CardTitle className="text-4xl font-bold text-center">
-          Empat Husada
+          {data?.name}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-start space-x-3">
           <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
           <p className="text-sm text-muted-foreground">
-            123 Main Street, Anytown, CA 91234
+            {data?.alamat}
           </p>
         </div>
         <div className="flex items-center space-x-3">
           <Phone className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           <p className="text-sm text-muted-foreground">
-            <a href="tel:555-123-4567" className="hover:underline">
-              555-123-4567
-            </a>
+            {data?.phone}
           </p>
         </div>
         <div className="flex items-center space-x-3">
           <Mail className="w-5 h-5 text-muted-foreground flex-shrink-0" />
           <p className="text-sm text-muted-foreground">
-            <a href="mailto:info@doepharmacy.com" className="hover:underline">
-              info@doepharmacy.com
-            </a>
+            {data?.email}
           </p>
         </div>
       </CardContent>

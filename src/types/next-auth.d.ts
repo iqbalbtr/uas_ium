@@ -10,6 +10,7 @@ declare module "next-auth" {
     phone: string;
     status: string;
     roleId: number;
+    roleName: string;
   }
 
   // Extend default JWT
@@ -22,6 +23,7 @@ declare module "next-auth" {
       phone: string;
       status: string;
       roleId: number;
+      roleName: string;
     };
   }
 
@@ -35,6 +37,7 @@ declare module "next-auth" {
       phone: string;
       status: string;
       roleId: number;
+      roleName: string;
     };
   }
 }
