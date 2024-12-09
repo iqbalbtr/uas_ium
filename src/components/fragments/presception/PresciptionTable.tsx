@@ -7,6 +7,7 @@ import React from 'react'
 import UpdatePresciptionForm from './UpdatePresciptionForm'
 import DeletePresciption from './DeletePresciption'
 import { PrescriptionStock } from './PresciptionStock'
+import { useNumberPage } from '@hooks/use-paggination'
 
 
 // export const prescriptions = pgTable("prescriptions", {
@@ -39,6 +40,9 @@ import { PrescriptionStock } from './PresciptionStock'
 
 
 function PresciptionTable({ data, handleFetch, isLoading }: TableView<Prescription>) {
+
+    const { getNumber } = useNumberPage({})
+
     return (
         <TableLayout>
             <TableLayout>
@@ -87,7 +91,7 @@ function PresciptionTable({ data, handleFetch, isLoading }: TableView<Prescripti
                         {
                             data.map((fo, i) => (
                                 <TableRow>
-                                    <TableCell>{++i}</TableCell>
+                                    <TableCell>{getNumber(i)}</TableCell>
                                     <TableCell>{fo.name}</TableCell>
                                     <TableCell>{fo.code_prescription}</TableCell>
                                     <TableCell>{fo.doctor_name}</TableCell>

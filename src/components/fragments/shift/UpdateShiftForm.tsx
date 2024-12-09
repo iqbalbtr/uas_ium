@@ -8,7 +8,7 @@ import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
 import React, { useState } from 'react'
 
-function UpdateShiftForm() {
+function UpdateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
 
     const [isOpen, setOpen] = useState(false)
     const { isLoading, setLoading } = useLoading()
@@ -26,8 +26,9 @@ function UpdateShiftForm() {
                     title: "Success",
                     description: res
                 })
-                setOpen(false)
+                await handleFetch()
                 setSaldo(0)
+                setOpen(false)
             }
         } catch (error: any) {
             toast({

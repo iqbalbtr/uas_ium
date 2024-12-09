@@ -9,12 +9,15 @@ import UpdateMedicineForm from './UpdateMedicineForm';
 import DeleteMedicine from './DeleteMedicine';
 import TableLayout from '@components/layouts/TableLayout';
 import Loading from '@components/ui/loading';
+import { useNumberPage } from '@hooks/use-paggination';
 
 function MedicineTable({
     data,
     isLoading,
     handleFetch
 }: TableView<Medicine>) {
+
+    const { getNumber } = useNumberPage({})
 
     return (
         <TableLayout>
@@ -42,7 +45,7 @@ function MedicineTable({
                     {
                         data.map((fo, i) => (
                             <TableRow key={i}>
-                                <TableCell>{i + 1}</TableCell>
+                                <TableCell>{getNumber(i)}</TableCell>
                                 <TableCell>{fo.name}</TableCell>
                                 <TableCell>{fo.medicine_code}</TableCell>
                                 <TableCell>{fo.medicine_category}</TableCell>

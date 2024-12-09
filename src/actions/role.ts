@@ -2,7 +2,7 @@
 
 import db from "@/db"
 import { roles, users } from "@/db/schema"
-import { eq, sql } from "drizzle-orm"
+import { eq, like, sql } from "drizzle-orm"
 import { getCountData } from "./helper"
 import { NavType } from "@components/app/app-sidebar"
 
@@ -94,7 +94,7 @@ export const getRole = async (
 
     const skip = (page - 1) * limit;
 
-    const count = await getCountData(roles)
+    const count = (await db.select({count: sql`COUNT(*)`}).from(roles).where(name ? like(roles.name, `%${name}%`) : undefined))[0].count as number
 
     const result = await db.query.roles.findMany({
         limit,

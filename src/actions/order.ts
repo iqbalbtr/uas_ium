@@ -1,7 +1,7 @@
 "use server"
 
 import db from "@/db";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, like, ne, sql } from "drizzle-orm";
 import { getCountData } from "./helper";
 import { ResponseList } from "@/model/response";
 import { Item } from "@/app/dashboard/kasir/page";
@@ -228,7 +228,11 @@ export const getOrder = async (
 
     const skip = (page - 1) * page
 
-    const count = await getCountData(orders);
+    const count = (await db.select({count: sql`COUNT(*)`}).from(orders).where(and(
+        query ? like(sql`LOWER(${orders.order_code})`, `%${query?.toLocaleLowerCase()}%`) : undefined,
+        status_received ? ne(orders.request_status, status_received) : undefined,
+        status_payment ? eq(orders.payment_status, status_payment) : undefined
+    )))[0].count as number;
     const result = await db.query.orders.findMany({
         with: {
             order_medicines: {

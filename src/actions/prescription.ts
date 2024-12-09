@@ -206,7 +206,7 @@ export const getPresciption = async (
 ) => {
     const skip = (page - 1) * limit;
 
-    const count = await getCountData(prescriptions)
+    const count = (await db.select({count: sql`COUNT(*)`}).from(prescriptions))[0].count as number
 
     const result = await db.query.prescriptions.findMany({
         limit,

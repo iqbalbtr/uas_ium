@@ -18,12 +18,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { getAllReceiptByIdOrder, getAllReceiptItemByIdOrder, getReceipt, getReceiptById } from "@/actions/receipts";
-import { Receipt, ReceiptMedicine } from "@models/receipts";
+import {  getAllReceiptItemByIdOrder } from "@/actions/receipts";
 import useFetch from "@hooks/use-fetch";
 import Loading from "@components/ui/loading";
 
-export default function DetailItemRceived({ id }: { id: number }) {
+export default function DetailItemReceived({ id }: { id: number }) {
     const [isOpen, setIsOpen] = useState(false);
 
     const { data, isLoading, refresh } = useFetch({

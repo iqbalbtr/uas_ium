@@ -11,7 +11,7 @@ import { toast } from '@hooks/use-toast'
 import { Printer } from 'lucide-react'
 import React, { useState } from 'react'
 
-function EndShiftUserForm({handleFetch}:{handleFetch: () => Promise<void>}) {
+function EndShiftUserForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
 
     const [isOpen, setOpen] = useState(false)
     const { isLoading, setLoading } = useLoading()
@@ -22,11 +22,12 @@ function EndShiftUserForm({handleFetch}:{handleFetch: () => Promise<void>}) {
         try {
             const res = await updateEndShift(notes)
             if (res) {
-                setOpen(false)
                 toast({
                     title: "Success",
                     description: "Sesi berhasil di tutup"
                 })
+                await handleFetch()
+                setOpen(false)
             }
         } catch (error: any) {
             toast({

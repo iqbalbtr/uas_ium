@@ -8,6 +8,7 @@ import DeleteOrder from './DeleteOrder';
 import { getDateFormat, getRupiahFormat } from '@libs/utils';
 import TableLayout from '@components/layouts/TableLayout';
 import Loading from '@components/ui/loading';
+import { useNumberPage } from '@hooks/use-paggination';
 
 function OrderTableMain({
     data,
@@ -15,6 +16,7 @@ function OrderTableMain({
     handleFetch
 }: TableView<Order>) {
 
+    const { getNumber } = useNumberPage({})
 
     return (
         <TableLayout>
@@ -41,7 +43,7 @@ function OrderTableMain({
                     {
                         data.map((fo, i) => (
                             <TableRow key={i}>
-                                <TableCell>{i + 1}</TableCell>
+                                <TableCell>{getNumber(i)}</TableCell>
                                 <TableCell>{fo.order_code}</TableCell>
                                 <TableCell>{fo.supplier}</TableCell>
                                 <TableCell>{fo.total_item}</TableCell>

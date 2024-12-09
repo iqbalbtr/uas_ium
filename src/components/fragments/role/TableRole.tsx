@@ -7,8 +7,11 @@ import DeleteRole from './DeleteRole';
 import { TableView } from '@/model/view';
 import { Role } from '@/model/roles';
 import Loading from '@components/ui/loading';
+import { useNumberPage } from '@hooks/use-paggination';
 
 function TableRole({ data, isLoading, handleFetch }: TableView<Role>) {
+
+    const { getNumber } = useNumberPage({})
 
     return (
         <Table>
@@ -24,7 +27,7 @@ function TableRole({ data, isLoading, handleFetch }: TableView<Role>) {
                 {
                     data.map((fo, i) => (
                         <TableRow key={i}>
-                            <TableCell>{i + 1}</TableCell>
+                            <TableCell>{getNumber(i)}</TableCell>
                             <TableCell>{fo.name}</TableCell>
                             <TableCell><AccessView data={fo.access_rights ?? []} /></TableCell>
                             <TableCell>

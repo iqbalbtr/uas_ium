@@ -7,6 +7,7 @@ import DeleteReceipt from './DeleteReceipt';
 import UpdateReceiptForm from './UpdateReceiptForm';
 import TableLayout from '@components/layouts/TableLayout';
 import Loading from '@components/ui/loading';
+import { useNumberPage } from '@hooks/use-paggination';
 
 
 function ReceiptTable({
@@ -14,6 +15,8 @@ function ReceiptTable({
     isLoading,
     handleFetch
 }: TableView<Receipt>) {
+
+    const { getNumber } = useNumberPage({})
 
     return (
         <TableLayout>
@@ -33,7 +36,7 @@ function ReceiptTable({
                     {
                         data.map((fo, i) => (
                             <TableRow key={i}>
-                                <TableCell>{i + 1}</TableCell>
+                                <TableCell>{getNumber(i)}</TableCell>
                                 <TableCell>{fo.receipt_code}</TableCell>
                                 <TableCell>{fo.delivery_name}</TableCell>
                                 <TableCell>{fo.order.order_code}</TableCell>

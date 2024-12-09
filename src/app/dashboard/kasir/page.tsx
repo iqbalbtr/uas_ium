@@ -19,6 +19,9 @@ import UpdateInstallmentPayment from '@components/fragments/transaction/UpdateIn
 import ReturTransactionForm from '@components/fragments/transaction/ReturTransactionForm'
 import { getLatestShift } from '@/actions/shift'
 import Link from 'next/link'
+import useFetch from '@hooks/use-fetch'
+import Loading from '@components/ui/loading'
+import { getInvoicePdf } from '@services/pdf/invoice'
 
 export type Item = {
   medicineId: number;
@@ -35,17 +38,16 @@ function Kasir() {
   const [total, setTotal] = useState(0);
   const [current, setCurrent] = useState("")
   const { isLoading, setLoading } = useLoading()
-  const [shift, setShift] = useState<any | null>(null)
+
+  const shift = useFetch({
+    url: getLatestShift,
+    defaultValue: undefined
+  })
 
   async function handlePrint() {
     setLoading("loading")
     try {
-      const toko = await getApotek();
-      const trans = await getTransactionByCode(current);
-      if (trans && toko) {
-        await printPdf(await Invoice({ transaksi: trans as any, toko: toko as Apotek }), "Invoice")
-
-      }
+      await getInvoicePdf(current)
     } catch (error: any) {
       toast({
         title: "Error",
@@ -104,21 +106,21 @@ function Kasir() {
     });
   }
 
-  useEffect(() => {
-    getLatestShift().then(res => {
-      if (res)
-        setShift(res)
-    })
-  }, [])
 
   return (
     <Suspense>
       <DashboardLayout>
-        {(shift === null || (shift && shift.status_shift !== "pending")) && (
+        {(shift.data === undefined || (shift.data && shift.data.status_shift !== "pending")) && (
           <div className="absolute top-0 left-0 bg-black/50 z-[9999] w-full h-screen flex justify-center items-center">
-            <Button>
-              <Link href={"/dashboard/apotek/shift"}>Buka shift</Link>
-            </Button>
+            {
+              shift.isLoading !== "idle" ? (
+                <Loading isLoading='loading' type='loader' />
+              ) : (
+                <Button>
+                  <Link href={"/dashboard/apotek/shift"}>Buka shift</Link>
+                </Button>
+              )
+            }
           </div>
         )}
 
@@ -129,7 +131,7 @@ function Kasir() {
         <div className='relative'>
           <div className='grid md:grid-cols-2 gap-2'>
             <div>
-              <Input disabled value={shift?.cashier_balance ?? 0} />
+              <Input disabled value={shift.data?.cashier_balance ?? 0} />
               <SearchMedicine variant='selling' handleAdd={handleAdd} />
             </div>
             <div className='flex flex-col gap-2'>

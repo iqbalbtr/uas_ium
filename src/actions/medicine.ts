@@ -1,7 +1,7 @@
 "use server"
 
 import db from "@/db"
-import { eq, sql } from "drizzle-orm"
+import { and, eq, like, or, sql } from "drizzle-orm"
 import { getCountData } from "./helper"
 import { ObjectValidation } from "@libs/utils"
 import { medicine_reminder, medicines } from "@db/schema"
@@ -9,7 +9,7 @@ import { medicine_reminder, medicines } from "@db/schema"
 export const getMedicineById = async (id: number) => {
 
     const isMedicine = await db.query.medicines.findFirst({
-        where: (medicine, { eq }) => (eq(medicine.id, id)),
+        where: (medicine, { eq, and }) => and(eq(medicine.deleted, false), eq(medicine.id, id)),
         with: {
             medicine_reminder: true
         }
@@ -68,12 +68,12 @@ export const createMedicine = async (
 export const removeMedicine = async (
     id: number
 ) => {
-    const isExist = await db.select({ count: sql`COUNT(*)` }).from(medicines).where(eq(medicines.id, id));
+    const isExist = await getMedicineById(id)
 
-    if (isExist[0].count == 0)
-        throw new Error("Medicine is not found")
-
-    await db.delete(medicines).where(eq(medicines.id, id))
+    await db.update(medicines).set({
+        medicine_code: "-" + isExist.medicine_code,
+        deleted: true
+    }).where(eq(medicines.id, id))
 
     return "Successfully delete"
 }
@@ -105,7 +105,7 @@ export const updateMedicine = async (
 
     ObjectValidation(medicine);
 
-    const isExist = await db.select({ count: sql`COUNT(*)` }).from(medicines).where(eq(medicines.id, id));
+    const isExist = await db.select({ count: sql`COUNT(*)` }).from(medicines).where(and(eq(medicines.deleted, false), eq(medicines.id, id)),);
 
     if (isExist[0].count == 0)
         throw new Error("Medicine is not found")
@@ -133,18 +133,26 @@ export const getMedicine = async (
 
     const skip = (page - 1) * page
 
-    const count = await getCountData(medicines)
+    const count = await db.select({count: sql`COUNT(*)`}).from(medicines).where(and(query ? 
+        or(
+        like(sql`LOWER(${medicines.name})`, `%${query.toLowerCase()}%`),
+        like(sql`LOWER(${medicines.medicine_code})`, `%${query.toLowerCase()}%`),
+    ) : undefined,
+        eq(medicines.deleted, false)
+    ))
     const result = await db.query.medicines.findMany({
         with: {
             medicine_reminder: true
         },
         limit,
         offset: skip,
-        where({ name, medicine_code }, { or, like }) {
-            return query ? or(
+        where({ name, medicine_code, deleted }, { or, like, and, eq }) {
+            return and(query ? or(
                 like(sql`LOWER(${name})`, `%${query.toLowerCase()}%`),
                 like(sql`LOWER(${medicine_code})`, `%${query.toLowerCase()}%`),
-            ) : undefined
+            ) : undefined,
+                eq(deleted, false)
+            )
         },
         orderBy: (med, { desc }) => (desc(med.dosage))
     });
@@ -153,8 +161,8 @@ export const getMedicine = async (
         pagging: {
             limit,
             page,
-            total_page: Math.ceil(count / limit),
-            total_item: count,
+            total_page: Math.ceil(count[0].count as number / limit),
+            total_item: count[0].count as number,
         },
         data: result
     }

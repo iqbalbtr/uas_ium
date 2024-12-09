@@ -1,11 +1,13 @@
 "use client"
-import { getUser } from '@/actions/auth'
 import { getTransaction } from '@/actions/transaction'
-import TablePenjualan from '@components/fragments/laporan/SellinTable'
-import CreateUserForm from '@components/fragments/user/CreateUserForm'
+import PrintToExcel from '@components/fragments/laporan/PrintToExcel'
+import SellingTable from '@components/fragments/laporan/SellingTable'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
 import { Button } from '@components/ui/button'
 import usePagination from '@hooks/use-paggination'
+import { handleDownload } from '@libs/utils'
+import { getOrderExcel } from '@services/reports/order'
+import { getSellingExcel } from '@services/reports/selling'
 import React, { useState } from 'react'
 
 function Penjualan() {
@@ -18,7 +20,7 @@ function Penjualan() {
       if (get) {
         setPenjualan(get.data)
         console.log(get);
-        
+
         setPage(get.pagging)
       }
     },
@@ -28,9 +30,9 @@ function Penjualan() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title='Penjualan'>
-      <Button>Export excel</Button>
+      <PrintToExcel data={getSellingExcel} fileName='data_penjualan.xlsx' />
       </DashboardLayoutHeader>
-      <TablePenjualan data={penjualan} isLoading={isLoading} handleFetch={handleFetch} />
+      <SellingTable data={penjualan} isLoading={isLoading} handleFetch={handleFetch} />
       <Paggination />
     </DashboardLayout>
   )

@@ -92,7 +92,7 @@ function SearchMedicine({ handleAdd, variant = "order" }: { handleAdd: (val: Med
                                 </TableCaption>
                             ) : result.length == 0 && (
                                 <TableCaption className='w-full '>
-                                    Data kosong
+                                    <span>Data kosong</span>
                                 </TableCaption>
                             )
                         }

@@ -31,23 +31,6 @@ const Invoice = async ({
 
     const total_discount = (transaksi.discount! / 100) * total
 
-    // id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-    // transaction_date: timestamp("transaction_date").defaultNow(),
-    // code_transaction: varchar("code_transaction", { length: 50 })
-    //   .unique()
-    //   .notNull(),
-    // buyer: varchar("buyer", { length: 100 }).default("guest").notNull(),
-    // user_id: integer("user_id").references(() => users.id, {
-    //   onDelete: "set null",
-    // }),
-    // total: integer("total").notNull(),
-    // payment_method: payment_method_enum().default("cash"),
-    // payment_expired: timestamp("payment_expired"),
-    // payment_status: payment_status_enum().default("pending"),
-    // transaction_status: transaction_status_enum().default("completed"),
-    // tax: integer("tax").default(0),
-    // discount: integer("discount").default(0),
-
     return (
         <Document>
             <Page size={{ height: "auto", width: 350 }} style={styles.body}>
@@ -110,7 +93,7 @@ const Invoice = async ({
                         {
                             transaksi.items?.map((foo, i) => (
                                 <View style={styles.barangContent} key={i}>
-                                    <Text style={styles.text}>{`${letterFixes(foo.medicine.name, 8)}`}</Text>
+                                    <Text style={styles.text}>{`${letterFixes(foo.medicine?.name, 8)}`}</Text>
                                     <Text style={styles.text}>x{foo.quantity}</Text>
                                     <Text style={styles.text}>Rp. {foo.medicine.selling_price}</Text>
                                     <Text style={styles.text}>Rp. {foo.sub_total}</Text>

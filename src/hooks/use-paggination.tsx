@@ -13,18 +13,30 @@ type Paggination = {
     total_page: number,
 }
 
-function usePagination({
+function useNumberPage({defaultLimit = 10, defaultPage = 1}:{defaultLimit?: number, defaultPage?: number}){
+    const searchParams = useSearchParams();
+    const page = Number(searchParams.get("page") ?? defaultPage);
+    const limit = Number(searchParams.get("limit") ?? defaultLimit);
+
+    return {
+        getNumber: (i: number) => ((page - 1) * limit + i + 1)
+    }
+}
+
+function usePagination<T>({
     handleGet,
-    initialize
-}:{
-    handleGet?: (pagging: Paggination, setPagination: React.Dispatch<React.SetStateAction<Paggination>> ) => Promise<void>,
-    initialize?: boolean
+    initialize,
+    setData
+}: {
+    handleGet?: (pagging: Paggination, setPagination: React.Dispatch<React.SetStateAction<Paggination>>) => Promise<void>,
+    initialize?: boolean,
+    setData?: React.Dispatch<React.SetStateAction<T[]>>
 }) {
     const searchParams = useSearchParams();
-    const {isLoading, setLoading} = useLoading()
+    const { isLoading, setLoading } = useLoading()
 
     const [pagination, setPagination] = useState({
-        limit: 15,
+        limit: 10,
         page: 1,
         total_item: 0,
         total_page: 0,
@@ -55,17 +67,20 @@ function usePagination({
 
     useEffect(() => {
         handleFetch()
-    }, [searchParams]);    
+    }, [searchParams]);
 
-    const handleFetch = async() => {
+    const handleFetch = async () => {
         const page = Number(searchParams.get("page"));
+
         try {
             if (page) {
+                setData && setData([])
                 setPagination((prev) => ({ ...prev, page }));
                 setLoading("loading")
                 handleGet && await handleGet(pagination, setPagination)
                 setLoading("success")
             } else {
+                setData && setData([])
                 setLoading("loading")
                 initialize && handleGet && await handleGet(pagination, setPagination)
                 setLoading("success")
@@ -90,7 +105,7 @@ function usePagination({
                             <PaginationItem>
                                 <PaginationPrevious
                                     onClick={handlePrev}
-                                    href={`?page=${pagination.page - 1}`}
+                                    href={`?page=${pagination.page - 1}&limit=${pagination.limit}`}
                                 />
                             </PaginationItem>
                         )
@@ -121,7 +136,7 @@ function usePagination({
                             <PaginationItem>
                                 <PaginationNext
                                     onClick={handleNext}
-                                    href={`?page=${pagination.page + 1}`}
+                                    href={`?page=${pagination.page + 1}&limit=${pagination.limit}`}
                                 />
                             </PaginationItem>
                         )
@@ -135,5 +150,7 @@ function usePagination({
         isLoading
     }
 }
+
+export {useNumberPage}
 
 export default usePagination

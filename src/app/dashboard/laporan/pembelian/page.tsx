@@ -1,12 +1,11 @@
 "use client"
-import { getUser } from '@/actions/auth'
 import { getOrder } from '@/actions/order'
-import TablePembelian from '@components/fragments/laporan/ReceiptTable'
-import TablePenjualan from '@components/fragments/laporan/SellinTable'
-import CreateUserForm from '@components/fragments/user/CreateUserForm'
+import PrintToExcel from '@components/fragments/laporan/PrintToExcel'
+import ReceiptTable from '@components/fragments/laporan/ReceiptTable'
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
 import { Button } from '@components/ui/button'
 import usePagination from '@hooks/use-paggination'
+import { getOrderExcel } from '@services/reports/order'
 import React, { useState } from 'react'
 
 function Pembelian() {
@@ -27,9 +26,9 @@ function Pembelian() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title='Pembelian'>
-        <Button>Export excel</Button>
+        <PrintToExcel data={getOrderExcel} fileName='data_pembelian.xlsx' />
       </DashboardLayoutHeader>
-      <TablePembelian data={pembelian} isLoading={isLoading} handleFetch={handleFetch} />
+      <ReceiptTable data={pembelian} isLoading={isLoading} handleFetch={handleFetch} />
       <Paggination />
     </DashboardLayout>
   )

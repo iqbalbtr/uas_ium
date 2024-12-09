@@ -34,7 +34,7 @@ function RecentTransaction() {
                     <TableBody>
                         {
                             data.map((fo, i) => (
-                                <TableRow>
+                                <TableRow key={i}>
                                     <TableCell>{fo.code_transaction}</TableCell>
                                     <TableCell>{fo.buyer}</TableCell>
                                     <TableCell>{getRupiahFormat(fo.total)}</TableCell>

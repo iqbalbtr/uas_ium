@@ -2,16 +2,17 @@
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@components/ui/table";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TableView } from "@/model/view";
 import { Transaction } from "@models/transactions";
-import ModalTable from "./modal-table";
-import { Button } from "@components/ui/button";
+import Loading from "@components/ui/loading";
+import PrintInvoice from "./PrintInvoice";
 
 function SellingTable({
   data,
@@ -37,7 +38,7 @@ function SellingTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {isLoading !== "loading" ? (
+        {
           data.map((fo, i) => (
             <TableRow key={i}>
               <TableCell>{i + 1}</TableCell>
@@ -54,18 +55,24 @@ function SellingTable({
                 {fo.total}
               </TableCell>
               <TableCell>
-                <Button>
-                  Cetak
-                </Button>
+                <PrintInvoice current={fo.code_transaction} />
               </TableCell>
             </TableRow>
           ))
-        ) : (
-          <TableRow>
-            <TableCell>Loading</TableCell>
-          </TableRow>
-        )}
+        }
       </TableBody>
+
+      {
+        isLoading == "loading" ? (
+          <TableCaption className='w-full '>
+            <Loading type='loader' isLoading='loading' />
+          </TableCaption>
+        ) : data.length == 0 && (
+          <TableCaption className='w-full '>
+            Data kosong
+          </TableCaption>
+        )
+      }
     </Table>
   );
 }

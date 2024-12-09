@@ -3,7 +3,7 @@
 import db from "@/db"
 import { getMedicineById } from "./medicine";
 import { medicines, shift, transaction_item, transactions } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, like, sql } from "drizzle-orm";
 import type { ResponseList } from "@/model/response";
 import { ObjectValidation } from "@/lib/utils";
 import { getLatestShift } from "./shift";
@@ -58,7 +58,6 @@ export const createTransaction = async (
         buyer: string,
         payment_method: "cash" | "installment",
         payment_expired?: Date,
-        transaction_status: "pending" | "completed" | "cancelled",
         discount: number;
         tax: number;
     },
@@ -143,7 +142,7 @@ export const createTransaction = async (
             discount: transaction.discount,
             payment_method: transaction.payment_method,
             tax: transaction.tax,
-            transaction_status: transaction.transaction_status,
+            transaction_status: transaction.payment_method == "cash" ? "completed" : "pending",
             total: total - disc + tax,
             user_id: userId,
             transaction_date: new Date(),
@@ -157,7 +156,7 @@ export const createTransaction = async (
 
             await tx.update(medicines).set({
                 stock: item.stock
-            })
+            }).where(eq(medicines.id, item.medicineId))
 
             await tx.insert(transaction_item).values({
                 quantity: item.qty,
@@ -205,7 +204,8 @@ export const updatePaymentInstallment = async (
     await db.transaction(async tx => {
         await tx.update(transactions).set({
             payment_status: "completed",
-            payment_date: new Date()
+            payment_date: new Date(),
+            transaction_status: "completed",
         }).where(eq(transactions.id, isExist.id))
 
         await tx.update(shift).set({
@@ -268,7 +268,11 @@ export const getTransaction = async (
 
     const skip = (page - 1) * limit;
 
-    const totalItem = await db.select({ count: sql`COUNT(*)` }).from(transactions);
+    const totalItem = await db.select({ count: sql`COUNT(*)` }).from(transactions).where(and(
+        payment_method ? eq(transactions.payment_method, payment_method) : undefined,
+        code ? like(transactions.code_transaction, `%${code}%`) : undefined,
+        payment_status ? eq(transactions.payment_status, payment_status) : undefined
+    ));
 
     const result = await db.query.transactions.findMany({
         limit,

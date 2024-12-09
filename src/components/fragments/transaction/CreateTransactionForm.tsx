@@ -40,7 +40,6 @@ function CreateTransactionForm({
         discount: z.number().min(0).max(100),
         payment_expired: z.date().optional().default(new Date()),
         payment_method: z.enum(["cash", "installment", ""]),
-        transaction_status: z.enum(["pending", "cancelled", "completed", ""]),
         tax: z.number().min(0),
         cash: z.number().min(0),
     })
@@ -55,7 +54,6 @@ function CreateTransactionForm({
             cash: 0,
             payment_expired: new Date(),
             payment_method: "",
-            transaction_status: ""
         },
     })
 
@@ -74,7 +72,7 @@ function CreateTransactionForm({
         try {
             if (!items.length)
                 throw new Error("1 item min")
-
+            console.log(items);
             setLoading("loading")
             const res = await createTransaction(user?.user.id!, {
                 discount: values.discount,
@@ -82,7 +80,6 @@ function CreateTransactionForm({
                 payment_expired: values.payment_expired!,
                 tax: values.tax,
                 payment_method: values.payment_method as "cash" | "installment",
-                transaction_status: values.transaction_status as "completed" | "pending" | "cancelled"
             }, items, values.cash);
             if (res) {
                 toast({
@@ -272,41 +269,6 @@ function CreateTransactionForm({
                             </div>
                         )
                     }
-                </div>
-                <div className="space-y-2">
-                    <FormField
-                        control={form.control}
-                        name='transaction_status'
-                        render={({ field }) => (
-                            <FormItem className='flex flex-col gap-1'>
-                                <FormLabel>
-                                    Status Transaksi
-                                </FormLabel>
-                                <FormControl>
-                                    <Select value={field.value} onValueChange={field.onChange}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Pilih status" />
-                                        </SelectTrigger>
-
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectItem value='cancelled'>
-                                                    Dibatalkan
-                                                </SelectItem>
-                                                <SelectItem value='pending'>
-                                                    Di Tangguhkan
-                                                </SelectItem>
-                                                <SelectItem value='completed'>
-                                                    Selesai
-                                                </SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </FormControl>
-                                <FormMessage className="text-red-500 font-normal" />
-                            </FormItem>
-                        )}
-                    />
                 </div>
                 {
                     !method && (

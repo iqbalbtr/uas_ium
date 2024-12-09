@@ -7,6 +7,7 @@ import {
   timestamp,
   pgEnum,
   json,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 export const payment_method_enum = pgEnum("payment_method", [
@@ -94,6 +95,7 @@ export const medicines = pgTable("medicines", {
   medicine_code: varchar("medicine_code", { length: 255 }).notNull().unique(),
   medicine_type: varchar("medicine_type", { length: 100 }).notNull(),
   medicine_category: varchar("medicine_category", { length: 100 }).notNull(),
+  deleted: boolean("deleted").default(false)
 });
 
 export const medicine_reminder = pgTable("medicine_reminder", {
@@ -368,3 +370,10 @@ export const shift = pgTable("shift", {
   cashier_balance: integer("cahsier_balance").notNull(),
   balance_holder: integer("balance_holder").references(() => users.id, { onDelete: "no action" }).notNull()
 })
+
+export const shift_relations = relations(shift, ({one}) => ({
+  holder: one(users, {
+    fields: [shift.balance_holder],
+    references: [users.id]
+  })
+}))

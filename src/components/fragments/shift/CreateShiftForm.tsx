@@ -6,18 +6,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
-import { createUser } from '@/actions/auth';
-import { RoleSelect } from '../role/RoleSelect';
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@components/ui/sheet';
-import { UserPlus } from 'lucide-react';
 import { createShift } from '@/actions/shift';
 import { UserSelect } from './UserSelect';
 import { Switch } from '@components/ui/switch';
 import Loading from '@components/ui/loading';
 
-function CreateShiftForm() {
+function CreateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
 
     const { isLoading, setLoading } = useLoading();
     const [isOpen, setOpen] = useState(false);
@@ -40,13 +37,14 @@ function CreateShiftForm() {
 
     const handleCreate = async (values: z.infer<typeof userSchema>) => {
         try {
-            setLoading("loading")
+            setLoading("loading")            
             const res = await createShift(values.balance_holder, values.balance, values.method_balance);
             if (res) {
                 toast({
                     title: "Success",
                     description: res
                 })
+                await handleFetch()
                 setOpen(false)
             }
         } catch (error: any) {

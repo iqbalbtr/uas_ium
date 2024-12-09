@@ -1,15 +1,8 @@
 import * as React from "react";
 import {
-  BriefcaseMedical,
   ChevronsUpDown,
-  Computer,
-  HousePlus,
-  LayoutDashboard,
   LucideAArrowUp,
-  ScrollText,
-  UserCog,
 } from "lucide-react";
-import nav_content from "@/assets/json/nav.json"
 import { NavMain } from "@components/navbar/nav-main";
 import { NavUser } from "@components/navbar/nav-user";
 import {
@@ -38,21 +31,9 @@ export interface Item {
   url: string;
 }
 
-const data = {
-  user: {
-    name: "Admin tester",
-    email: "admin@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: nav_content
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const [sideData, setSideData] = React.useState<NavType[]>([])
-
-  console.log(sideData);
-  
 
   const { data } = useSession()
 

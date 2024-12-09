@@ -17,7 +17,7 @@ function Loading({ children, isLoading, type = "line", className, ...props }: { 
 
     return isLoading === "loading" ? (
         <span className={getType()} {...props} />
-    ) : children ?? null
+    ) : <>{children}</>
 }
 
 export default Loading

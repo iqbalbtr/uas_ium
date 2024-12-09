@@ -55,7 +55,7 @@ function OrderTable({
                     </TableHeader>
                     <TableBody>
                         {
-                            items.map((fo, i) => (
+                            items.length && items.map((fo, i) => (
                                 <TableRow key={i}>
                                     <TableCell>{++i}</TableCell>
                                     <TableCell>{fo.name}</TableCell>
@@ -76,7 +76,7 @@ function OrderTable({
                     {
                         items.length == 0 && (
                             <TableCaption className='w-full '>
-                                Data kosong
+                               <span> Data kosong</span>
                             </TableCaption>
                         )
                     }

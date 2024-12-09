@@ -6,12 +6,16 @@ import UpdateUserForm from './UpdateUserForm';
 import { TableView } from '@/model/view';
 import DeleteUser from './DeleteUser';
 import Loading from '@components/ui/loading';
+import { useSearchParams } from 'next/navigation';
+import { useNumberPage } from '@hooks/use-paggination';
 
 function UserTable({
     data,
     isLoading,
     handleFetch
 }: TableView<User>) {
+
+    const { getNumber } = useNumberPage({})
 
     return (
         <Table>
@@ -30,7 +34,7 @@ function UserTable({
                 {isLoading !== "loading" &&
                     data.map((fo, i) => (
                         <TableRow key={i}>
-                            <TableCell>{i + 1}</TableCell>
+                            <TableCell>{getNumber(i)}</TableCell>
                             <TableCell>{fo.username}</TableCell>
                             <TableCell>{fo.name}</TableCell>
                             <TableCell>{fo.status}</TableCell>

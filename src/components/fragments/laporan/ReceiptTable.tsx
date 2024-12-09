@@ -2,18 +2,24 @@
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@components/ui/table";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { TableView } from "@/model/view";
 import ModalTable from "./modal-table";
 import { Order } from "@models/orders";
 import DetailItemOrder from "./DetailItemOrder";
+import { useNumberPage } from "@hooks/use-paggination";
+import Loading from "@components/ui/loading";
 
 function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
+
+  const { getNumber } = useNumberPage({})
+
   return (
     <Table>
       <TableHeader>
@@ -33,10 +39,10 @@ function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {isLoading !== "loading" ? (
+        {
           data.map((fo, i) => (
             <TableRow key={i}>
-              <TableCell>{i + 1}</TableCell>
+              <TableCell>{getNumber(i)}</TableCell>
               <TableCell>{fo.order_code}</TableCell>
               <TableCell>{fo.order_date?.toLocaleString()}</TableCell>
               <TableCell>{fo.supplier}</TableCell>
@@ -54,12 +60,20 @@ function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
               <TableCell>{fo.payment_expired?.toLocaleString()}</TableCell>
             </TableRow>
           ))
-        ) : (
-          <TableRow>
-            <TableCell>Loading</TableCell>
-          </TableRow>
-        )}
+        }
       </TableBody>
+
+      {
+        isLoading == "loading" ? (
+          <TableCaption className='w-full '>
+            <Loading type='loader' isLoading='loading' />
+          </TableCaption>
+        ) : data.length == 0 && (
+          <TableCaption className='w-full '>
+            Data kosong
+          </TableCaption>
+        )
+      }
     </Table>
   );
 }

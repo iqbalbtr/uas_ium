@@ -234,7 +234,7 @@ export const getReceipt = async (
 ) => {
 
     const skip = (page - 1) * limit
-    const count = await getCountData(receipts)
+    const count = (await db.select({count: sql`COUNT(*)`}).from(orders))[0].count as number
 
     const res = await db.query.receipts.findMany({
         limit,
