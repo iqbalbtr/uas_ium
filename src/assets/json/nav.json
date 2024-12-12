@@ -66,6 +66,10 @@
         {
           "title": "Role Master",
           "url": "/dashboard/user/role"
+        },
+        {
+          "title": "Log Aktifitas",
+          "url": "/dashboard/user/activity"
         }
       ]
     },

@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import { TableView } from "@/model/view";
 import { Transaction } from "@models/transactions";
 import ModalTable from "./modal-table";
+import { TimelineDialog } from "../activity/dialog-activity";
 
 function ShiftTable({ data, isLoading, handleFetch }: TableView<Transaction>) {
   return (
@@ -24,6 +25,7 @@ function ShiftTable({ data, isLoading, handleFetch }: TableView<Transaction>) {
           <TableHead>Total Pengembalian</TableHead>
           <TableHead>Total Pengeluaran</TableHead>
           <TableHead>Catatan</TableHead>
+          <TableHead>Log Aktivitas</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Pemegang</TableHead>
         </TableRow>
@@ -52,6 +54,20 @@ function ShiftTable({ data, isLoading, handleFetch }: TableView<Transaction>) {
             <TableCell>Loading</TableCell>
           </TableRow>
         )} */}
+        <TableRow>
+          <TableCell>1</TableCell>
+          <TableCell>2pm</TableCell>
+          <TableCell>3pm</TableCell>
+          <TableCell>2000000</TableCell>
+          <TableCell>2000</TableCell>
+          <TableCell>32222</TableCell>
+          <TableCell>Yahahah Rungkad</TableCell>
+          <TableCell>
+            <TimelineDialog />
+          </TableCell>
+          <TableCell>sudah ada</TableCell>
+          <TableCell>iqbal</TableCell>
+        </TableRow>
       </TableBody>
     </Table>
   );

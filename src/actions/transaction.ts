@@ -7,6 +7,7 @@ import { eq, sql } from "drizzle-orm";
 import type { ResponseList } from "@/model/response";
 import { ObjectValidation } from "@/lib/utils";
 import { getLatestShift } from "./shift";
+import { createActivityLog } from "./activity-log";
 
 export type TransactionItem = {
     qty: number;
@@ -173,6 +174,13 @@ export const createTransaction = async (
                 cashier_balance: (currentShift?.cashier_balance! - (cash! - (total - disc + tax)))
             }).where(eq(shift.id, currentShift?.id!))
     })
+
+      await createActivityLog((user) => ({
+        action_name: "Membuat Transaksi",
+        action_type: "create",
+        description: `${user.name} membuat informasi transaksi`,
+        title: "Membuat transaksi",
+      }));
 
     return "TS" + String(code[0].count as number)
 }
