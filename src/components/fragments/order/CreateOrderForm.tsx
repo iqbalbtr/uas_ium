@@ -19,28 +19,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { Calendar } from '@components/ui/calendar';
 import { cn, getDateFormat } from '@libs/utils';
 import Loading from '@components/ui/loading';
+import { Item } from '@/app/dashboard/kasir/page';
 
-export type ItemOrder = {
-    medicineId: number;
-    qty: number;
-    name: string;
-    price: number;
-    stock: number;
-}
 
-function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
+function CreateOrderForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
 
     const { isLoading, setLoading } = useLoading()
-    const [items, setItems] = useState<ItemOrder[]>([])
+    const [items, setItems] = useState<Item[]>([])
     const [isOpen, setOpen] = useState(false)
     const [effectted, setEffect] = useState(false)
     const [total, setTotal] = useState(0)
     const [isExpire, setExpire] = useState(false)
 
 
-    function handleAdd(val: Medicine, qty: number) {
+    function handleAdd(val: Item, qty: number) {
 
-        const isExist = items.find(fo => fo.medicineId == val.id)
+        const isExist = items.find(fo => fo.id == val.id)
 
         if (!qty)
             return toast({
@@ -60,24 +54,20 @@ function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
         setItems(prevItems => {
             if (isExist) {
                 return prevItems.map((item) =>
-                    item.medicineId === isExist.medicineId
+                    item.id === isExist.id
                         ? { ...item, qty: item.qty + qty }
                         : item
                 );
             } else {
                 return [
                     {
-                        medicineId: val.id,
-                        name: val.name,
-                        price: val.purchase_price,
-                        qty: qty,
-                        stock: val.stock,
-                        max: val.medicine_reminder?.max_stock ?? 0
+                        ...val,
+                        qty: qty
                     },
                     ...prevItems,
                 ];
             }
-        });
+        })
     }
 
 
@@ -107,7 +97,7 @@ function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
 
 
     useEffect(() => {
-        const total = items.reduce((acc, pv) => acc += (pv.qty * pv.price), 0)
+        const total = items.reduce((acc, pv) => acc += (pv.qty * pv.purchase_price), 0)
         setTotal(total - ((disc / 100) * total) + ((tax / 100) * total))
     }, [items, disc, tax, effectted])
 
@@ -267,7 +257,7 @@ function CreateOrderForm({handleFetch}:{handleFetch: () => Promise<void>}) {
                                             <FormControl>
                                                 <Select value={field.value} onValueChange={(e) => {
                                                     field.onChange(e)
-                                                    if(e == "cash") {
+                                                    if (e == "cash") {
                                                         setExpire(false)
                                                         form.setValue("payment_expire", new Date())
                                                     } else {

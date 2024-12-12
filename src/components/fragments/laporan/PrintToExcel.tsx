@@ -10,7 +10,7 @@ import React from 'react'
 function PrintToExcel({
     data,
     fileName
-}:{
+}: {
     data: () => Promise<any>,
     fileName: string
 }) {
@@ -21,27 +21,29 @@ function PrintToExcel({
     async function handlePrint() {
         setLoading("loading")
         try {
-          const get = await data();
-          if(get){
-            await handleDownload(fileName, get as Buffer)
-          }
+            const get = await data();
+            if (get) {
+                await handleDownload(fileName, get as Buffer)
+            }
         } catch (error: any) {
             toast({
                 title: "Error",
                 description: error.message,
                 variant: "destructive"
             })
-        } finally{
+        } finally {
             setLoading("idle")
         }
-      }
+    }
 
     return (
-        <Button onClick={handlePrint} disabled={isLoading == "loading"}>
-            <Loading isLoading={isLoading}>
-                Cetak ke Excel<Printer />
-            </Loading>
-        </Button>
+        <div>
+            <Button onClick={handlePrint} disabled={isLoading == "loading"}>
+                <Loading isLoading={isLoading}>
+                    Cetak ke Excel<Printer />
+                </Loading>
+            </Button>
+        </div>
     )
 }
 

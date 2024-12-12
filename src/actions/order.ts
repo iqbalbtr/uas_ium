@@ -78,7 +78,7 @@ export const getOrderByCode = async (id: string) => {
 }
 
 export const createOrder = async (
-    medicine: Item[],
+    items: Item[],
     order: {
         supplier: string;
         orderStatus: "cancelled" | "completed" | "pending",
@@ -89,7 +89,7 @@ export const createOrder = async (
     }
 ) => {
 
-    if (!medicine.length)
+    if (!items.length)
         throw new Error("Medicine minimum is one");
 
     if (order.payment_method == "installment" && !order.payment_expire) {
@@ -100,8 +100,8 @@ export const createOrder = async (
 
     const expired = order.payment_expire ? new Date(order.payment_expire) : new Date()
 
-    const isValidate = medicine.map(async (m) => {
-        const isExist = await getMedicineById(m.medicineId);
+    const isValidate = items.map(async (m) => {
+        const isExist = await getMedicineById(m.id);
 
         if (!isExist)
             throw new Error("Medicine is not found")
@@ -117,7 +117,7 @@ export const createOrder = async (
     const count = await db.select({ count: sql`COUNT(*)` }).from(orders);
     const code = generateCode(count[0].count as number)
 
-    const totalOrder = medicine.reduce((acc, prev) => acc += (prev.price * prev.qty), 0);
+    const totalOrder = items.reduce((acc, prev) => acc += (prev.purchase_price * prev.qty), 0);
 
     const totalTax = (order.tax / 100) * totalOrder;
 

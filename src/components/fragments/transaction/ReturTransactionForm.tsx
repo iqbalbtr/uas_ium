@@ -18,28 +18,23 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover';
 import { Calendar } from '@components/ui/calendar';
 import { cn, getDateFormat } from '@libs/utils';
+import Loading from '@components/ui/loading';
+import { Item } from '@/app/dashboard/kasir/page';
 
-export type ItemOrder = {
-    medicineId: number;
-    qty: number;
-    name: string;
-    price: number;
-    stock: number;
-}
 
-function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) {
+function ReturTransactionForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
 
     const { isLoading, setLoading } = useLoading()
-    const [items, setItems] = useState<ItemOrder[]>([])
+    const [items, setItems] = useState<Item[]>([])
     const [isOpen, setOpen] = useState(false)
     const [effectted, setEffect] = useState(false)
     const [total, setTotal] = useState(0)
     const [isExpire, setExpire] = useState(false)
 
 
-    function handleAdd(val: Medicine, qty: number) {
+    function handleAdd(val: Item, qty: number) {
 
-        const isExist = items.find(fo => fo.medicineId == val.id)
+        const isExist = items.find(fo => fo.id == val.id)
 
         if (!qty)
             return toast({
@@ -59,24 +54,20 @@ function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) 
         setItems(prevItems => {
             if (isExist) {
                 return prevItems.map((item) =>
-                    item.medicineId === isExist.medicineId
+                    item.id === isExist.id
                         ? { ...item, qty: item.qty + qty }
                         : item
                 );
             } else {
                 return [
                     {
-                        medicineId: val.id,
-                        name: val.name,
-                        price: val.purchase_price,
-                        qty: qty,
-                        stock: val.stock,
-                        max: val.medicine_reminder?.max_stock ?? 0
+                        ...val,
+                        qty: qty
                     },
                     ...prevItems,
                 ];
             }
-        });
+        })
     }
 
 
@@ -106,7 +97,7 @@ function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) 
 
 
     useEffect(() => {
-        const total = items.reduce((acc, pv) => acc += (pv.qty * pv.price), 0)
+        const total = items.reduce((acc, pv) => acc += (pv.qty * pv.purchase_price), 0)
         setTotal(total - ((disc / 100) * total) + ((tax / 100) * total))
     }, [items, disc, tax, effectted])
 
@@ -114,17 +105,17 @@ function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) 
     const handleCreate = async (values: z.infer<typeof orderSchema>) => {
         try {
             setLoading("loading")
-            // const res = await (items, { ...values, payment_method: values.payment_method as any, orderStatus: values.order_status as "cancelled" | "completed" | "pending" });
-            // if (res) {
-            //     toast({
-            //         title: "Success",
-            //         description: res
-            //     })
-            //     setOpen(false)
-            //     form.reset()
-            //     setItems([])
-            //     handleFetch && handleFetch()
-            // }
+            const res = await createOrder(items, { ...values, payment_method: values.payment_method as any, orderStatus: values.order_status as "cancelled" | "completed" | "pending" });
+            if (res) {
+                toast({
+                    title: "Success",
+                    description: res
+                })
+                setOpen(false)
+                form.reset()
+                setItems([])
+                handleFetch && handleFetch()
+            }
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -141,13 +132,13 @@ function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) 
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="default">
-                    Retur
+                    Tambah
                     <UserPlus />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
                 <DrawerHeader>
-                    <DrawerTitle>Retur obat</DrawerTitle>
+                    <DrawerTitle>Pesan obat</DrawerTitle>
                 </DrawerHeader>
 
                 <div className='grid md:grid-cols-2 gap-6'>
@@ -266,7 +257,7 @@ function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) 
                                             <FormControl>
                                                 <Select value={field.value} onValueChange={(e) => {
                                                     field.onChange(e)
-                                                    if(e == "cash") {
+                                                    if (e == "cash") {
                                                         setExpire(false)
                                                         form.setValue("payment_expire", new Date())
                                                     } else {
@@ -342,7 +333,9 @@ function ReturTransactionForm({handleFetch}:{handleFetch: () => Promise<void>}) 
                                     )
                                 }
                                 <Button disabled={isLoading == "loading"} type='submit' className="w-full">
-                                    {isLoading == "loading" ? "Loading" : "Pesan"}
+                                    <Loading isLoading={isLoading}>
+                                        Pesan
+                                    </Loading>
                                 </Button>
                             </form>
                         </Form>

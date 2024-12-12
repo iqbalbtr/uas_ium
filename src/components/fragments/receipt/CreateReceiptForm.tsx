@@ -252,7 +252,7 @@ function CreateReceiptForm({ handlefetch }: { handlefetch: () => Promise<void> }
                                     </FormItem>
                                 )}
                             />
-                            < Button disabled={isLoading == "loading"} type='submit' className="w-full">
+                            <Button disabled={isLoading == "loading"} type='submit' className="w-full">
                                 <Loading isLoading={isLoading}>
                                     Terima
                                 </Loading>

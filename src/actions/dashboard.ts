@@ -58,6 +58,18 @@ export const getAnalisytTypeTransaction = async () => {
 
 export const getAnalisytStatisticTransaction = async () => {
 
+    const current = new Date()
+
+    const startMont = (current.getMonth() + 1) >= 6 ? [7,8,9,10,11,12] : [1,2,3,4,5,6]
+
+    const result =  startMont.map(fo => ({
+        id: fo,
+        month: monthsIndonesian[fo-1],
+        year: current.getFullYear(),
+        sales: 0,
+        orders: 0
+    }))
+
     const monthlySales = await db
         .select({
             month: sql<number>`EXTRACT(MONTH FROM ${transactions.transaction_date})`,
@@ -126,12 +138,15 @@ export const getAnalisytStatisticTransaction = async () => {
     //     .groupBy(sql`DATE(${orders.order_date}), TO_CHAR(${orders.order_date}, 'Day')`)
     //     .orderBy(({ date }) => [sql`${date} ASC`]);
 
-
-    return monthlySales.map((fo, i) => ({
-        ...fo,
-        month: monthsIndonesian[fo.month - 1],
-        orderTotal: monthlyOrder[i].orderTotal
-    }))
+    return result.map((sale) => {
+        const matchingSales = monthlySales.find((r) => +r.month === sale.id);
+        const matchingOrders = monthlyOrder.find((r) => +r.month === sale.id);
+        return {
+          ...sale,
+          sellingTotal: matchingSales?.sellingTotal ?? 0,
+          orderTotal: matchingOrders?.orderTotal ?? 0
+        };
+      });
 }
 
 export const getLatestTransaction = async () => {

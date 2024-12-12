@@ -50,7 +50,7 @@ export const authOption = {
         strategy: "jwt",
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
                 token.id = user.id;
                 token.email = user.email;
@@ -60,6 +60,11 @@ export const authOption = {
                 token.roleId = user.roleId;
                 token.status = user.status;
             }
+
+            if(trigger == "update"){
+                token.FcmToken = user.FcmToken;
+            }
+
             return token;
         },
         async session({ session, token }) {

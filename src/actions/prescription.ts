@@ -9,7 +9,7 @@ import { ObjectValidation } from "@/lib/utils";
 import { ItemPresciption } from "@components/fragments/presception/PresciptionMedicineTable";
 
 export type MedicinePresciption = {
-    medicineId: number;
+    id: number;
     qty: number;
     notes: string;
 }
@@ -17,7 +17,7 @@ export type MedicinePresciption = {
 export const getPresciptionById = async (id: number) => {
 
     const get = await db.query.prescriptions.findFirst({
-        where: (pres, { eq }) => (eq(pres.id, id)),
+        where: (pres, { eq, and }) => and(eq(pres.id, id), eq(pres.deleted, false)),
         with: {
             prescription_medicines: {
                 with: {
@@ -36,7 +36,7 @@ export const getPresciptionCode = async (id: string) => {
 
     try {
         const get = await db.query.prescriptions.findFirst({
-            where: (pres, { eq }) => (eq(pres.code_prescription, id)),
+            where: (pres, { eq, and }) => and(eq(pres.code_prescription, id), eq(pres.deleted, false)),
         })
 
         return get;
@@ -65,7 +65,7 @@ export const createPresciption = async (
         throw new Error("Medicine at least one item")
 
     const isItem = medicines.map(async (med) => {
-        const existing = await getMedicineById(med.medicineId);
+        const existing = await getMedicineById(med.id);
         return existing;
     })
 
@@ -100,7 +100,7 @@ export const createPresciption = async (
                 prescription_id: newPresciption[0].id,
                 quantity: item.qty,
                 notes: item.notes,
-                medicine_id: item.medicineId
+                medicine_id: item.id
             })
         }
     })
@@ -124,7 +124,7 @@ export const removePresciption = async (
                 stock: (fo.medicine?.stock ?? 0) + (fo.quantity * isExist.stock)
             }).where(eq(medicines.id, fo.medicine_id!))
         }
-        await tx.delete(prescriptions).where(eq(prescriptions.id, id))
+        await tx.update(prescriptions).set({ code_prescription: "-" + isExist.code_prescription, deleted: true }).where(eq(prescriptions.id, id))
     })
 
 
@@ -155,7 +155,7 @@ export const updatePresciption = async (
         throw new Error("Medicine at least one item")
 
     const isItem = medicnes.map(async (med) => {
-        const existing = await getMedicineById(med.medicineId);
+        const existing = await getMedicineById(med.id);
         return existing;
     })
 
@@ -192,7 +192,7 @@ export const updatePresciption = async (
                 prescription_id: id,
                 quantity: item.qty,
                 notes: item.notes,
-                medicine_id: item.medicineId
+                medicine_id: item.id
             })
         }
     })
@@ -202,22 +202,34 @@ export const updatePresciption = async (
 
 export const getPresciption = async (
     page: number = 1,
-    limit: number = 15
+    limit: number = 15,
+    query?: string
 ) => {
     const skip = (page - 1) * limit;
 
-    const count = (await db.select({count: sql`COUNT(*)`}).from(prescriptions))[0].count as number
+    const count = (await db.select({ count: sql`COUNT(*)` }).from(prescriptions).where(eq(prescriptions.deleted, false)))[0].count as number
 
     const result = await db.query.prescriptions.findMany({
         limit,
         offset: skip,
+        where: ({ code_prescription, name, deleted }, { like, or, and, eq }) => and(
+            query ? or(
+                like(sql`LOWER(${code_prescription})`, `%${query.toLowerCase()}%`),
+                like(sql`LOWER(${name})`, `%${query.toLowerCase()}%`),
+            ) : undefined,
+            eq(deleted, false)
+        ),
         with: {
             prescription_medicines: {
                 with: {
                     medicine: true
                 }
             }
-        }
+        },
+        
+        orderBy(fields, operators) {
+            return operators.desc(fields.prescription_date)
+        },
     })
 
     return {

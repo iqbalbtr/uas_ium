@@ -250,7 +250,10 @@ export const getReceipt = async (
                 }
             },
             order: true
-        }
+        },
+        orderBy(fields, operators) {
+            return operators.desc(fields.id)
+        },
     })
 
     return {

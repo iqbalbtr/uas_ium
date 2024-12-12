@@ -218,7 +218,8 @@ export const prescriptions = pgTable("prescriptions", {
   fee: integer("fee").default(0),
   tax: integer("tax").default(0),
   instructions: text("instructions"),
-  stock: integer("stock").notNull()
+  stock: integer("stock").notNull(),
+  deleted: boolean("deleted").default(false)
 });
 
 export const prescription_medicine = pgTable("prescription_medicine", {
@@ -255,8 +256,8 @@ export const transactions = pgTable("transactions", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   transaction_date: timestamp("transaction_date").defaultNow(),
   code_transaction: varchar("code_transaction", { length: 50 })
-  .unique()
-  .notNull(),
+    .unique()
+    .notNull(),
   buyer: varchar("buyer", { length: 100 }).default("guest").notNull(),
   user_id: integer("user_id").references(() => users.id, {
     onDelete: "set null",
@@ -299,6 +300,9 @@ export const transaction_item = pgTable("transaction_item", {
   medicine_id: integer("medicine_id").references(() => medicines.id, {
     onDelete: "set null",
   }),
+  presciption_id: integer("presciption_id").references(() => prescriptions.id, {
+    onDelete: "set null",
+  }),
   transaction_id: integer("transaction_id")
     .references(() => transactions.id, { onDelete: "cascade" })
     .notNull(),
@@ -321,6 +325,10 @@ export const transaction_item_relations = relations(
     medicine: one(medicines, {
       fields: [transaction_item.medicine_id],
       references: [medicines.id],
+    }),
+    prescription: one(prescriptions, {
+      fields: [transaction_item.presciption_id],
+      references: [prescriptions.id],
     }),
     transaction: one(transactions, {
       fields: [transaction_item.transaction_id],
@@ -368,12 +376,29 @@ export const shift = pgTable("shift", {
   transaction_total: integer("transaction_total").notNull(),
   status_shift: shift_status_enum().default("pending"),
   cashier_balance: integer("cahsier_balance").notNull(),
-  balance_holder: integer("balance_holder").references(() => users.id, { onDelete: "no action" }).notNull()
+  balance_holder: integer("balance_holder").references(() => users.id, { onDelete: "no action" }),
+  receivables_total: integer("receivables_total").notNull(),
+  sales_total: integer("sales_total").notNull(),
 })
 
-export const shift_relations = relations(shift, ({one}) => ({
+export const shift_relations = relations(shift, ({ one }) => ({
   holder: one(users, {
     fields: [shift.balance_holder],
     references: [users.id]
   })
 }))
+
+export const notif_type_enum = pgEnum("type", [
+  "stock",
+  "expired"
+])
+
+export const notif = pgTable("noif", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  title: varchar("title", { length: 100 }).notNull(),
+  description: varchar("description", { length: 255 }),
+  is_active: boolean("is_active").default(true),
+  is_deleted: boolean("is_deleted").default(false),
+  type: notif_type_enum(),
+  medicine_id: integer("medicine_id").references(() => medicines.id, { onDelete: "cascade" })
+})

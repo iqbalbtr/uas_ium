@@ -26,7 +26,10 @@ export const getUserActivity = async (
                     username: true
                 }
             }
-        }
+        },
+        orderBy(fields, operators) {
+            return operators.desc(fields.date)
+        },
     })
 
     const total_item = await db.select({ count: sql`COUNT(*)` }).from(activity_log);

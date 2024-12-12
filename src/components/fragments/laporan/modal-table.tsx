@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { getAllReceiptByIdOrder, getReceipt } from "@/actions/receipts";
 import { Receipt } from "@models/receipts";
-import DetailItemRceived from "./DetailItemRceived";
+import DetailItemRceived from "./DetailItemReceived";
 
 export default function ModalTable({id}:{id: number}) {
   const [isOpen, setIsOpen] = useState(false);

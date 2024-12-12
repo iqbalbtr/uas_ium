@@ -10,7 +10,7 @@ function PresciptionMedicineNote({ item, setItem }: { item: ItemPresciption, set
 
     function handleEdit(e: string) {        
         setItem(pv => pv.map(fo => (
-            fo.medicineId == item.medicineId ? {
+            fo.id == item.id ? {
                 ...fo,
                 notes: e
             } : fo

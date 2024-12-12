@@ -20,17 +20,13 @@ function CreateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
     const [isOpen, setOpen] = useState(false);
 
     const userSchema = z.object({
-        balance: z.number().min(0),
-        method_balance: z.boolean(),
-        balance_holder: z.string().min(1),
+        balance: z.number().min(0)
     })
 
     const form = useForm<z.infer<typeof userSchema>>({
         resolver: zodResolver(userSchema),
         defaultValues: {
-            balance: 0,
-            method_balance: true,
-            balance_holder: ""
+            balance: 0
         },
     })
 
@@ -38,7 +34,7 @@ function CreateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
     const handleCreate = async (values: z.infer<typeof userSchema>) => {
         try {
             setLoading("loading")            
-            const res = await createShift(values.balance_holder, values.balance, values.method_balance);
+            const res = await createShift( values.balance);
             if (res) {
                 toast({
                     title: "Success",
@@ -91,40 +87,6 @@ function CreateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
                                                 {...field}
                                                 onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
                                             />
-                                        </FormControl>
-                                        <FormMessage className="text-red-500 font-normal" />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <FormField
-                                control={form.control}
-                                name='method_balance'
-                                render={({ field }) => (
-                                    <FormItem className='flex items-center gap-4'>
-                                        <FormLabel>
-                                            Tambah saldo shift sebelumnya
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                        <FormMessage className="text-red-500 font-normal" />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <FormField
-                                control={form.control}
-                                name='balance_holder'
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            Pemegang saldo
-                                        </FormLabel>
-                                        <FormControl>
-                                            <UserSelect value={field.value} onChange={field.onChange} />
                                         </FormControl>
                                         <FormMessage className="text-red-500 font-normal" />
                                     </FormItem>

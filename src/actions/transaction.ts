@@ -2,11 +2,13 @@
 
 import db from "@/db"
 import { getMedicineById } from "./medicine";
-import { medicines, shift, transaction_item, transactions } from "@/db/schema";
+import { medicines, prescriptions, shift, transaction_item, transactions } from "@/db/schema";
 import { and, eq, like, sql } from "drizzle-orm";
 import type { ResponseList } from "@/model/response";
 import { ObjectValidation } from "@/lib/utils";
 import { getLatestShift } from "./shift";
+import { Item } from "@/app/dashboard/kasir/page";
+import { getPresciptionById } from "./prescription";
 
 export type TransactionItem = {
     qty: number;
@@ -38,7 +40,8 @@ export const getTransactionByCode = async (id: string) => {
         with: {
             items: {
                 with: {
-                    medicine: true
+                    medicine: true,
+                    prescription: true
                 }
             },
             user: true
@@ -61,7 +64,7 @@ export const createTransaction = async (
         discount: number;
         tax: number;
     },
-    items: TransactionItem[],
+    items: Item[],
     cash?: number
 ) => {
 
@@ -85,21 +88,42 @@ export const createTransaction = async (
         throw new Error("Item at least one item")
 
     const isItem = items.map(async (it) => {
-        const isExist = await getMedicineById(it.medicineId)
+        if (it.type == "medicine") {
+            const isExist = await getMedicineById(it.id)
 
-        if (!isExist)
-            throw new Error("Medicine is not found")
+            if (!isExist)
+                throw new Error("Medicine is not found")
 
-        if (isExist.stock - it.qty < 0) {
-            throw new Error(`${isExist.name} stock is not enough`)
-        }
+            if (isExist.stock - it.qty < 0) {
+                throw new Error(`${isExist.name} stock is not enough`)
+            }
 
-        return {
-            medicineId: isExist.id,
-            subTotal: (isExist.selling_price * it.qty),
-            diffenceTotal: (isExist.selling_price * it.qty) - (isExist.purchase_price * it.qty),
-            qty: it.qty,
-            stock: isExist.stock - it.qty
+            return {
+                id: isExist.id,
+                subTotal: (isExist.selling_price * it.qty),
+                diffenceTotal: (isExist.selling_price * it.qty) - (isExist.purchase_price * it.qty),
+                qty: it.qty,
+                stock: isExist.stock - it.qty,
+                type: it.type
+            }
+        } else {
+            const isExist = await getPresciptionById(it.id)
+
+            if (!isExist)
+                throw new Error("Preciption is not found")
+
+            if (isExist.stock - it.qty < 0) {
+                throw new Error(`${isExist.name} stock is not enough`)
+            }
+
+            return {
+                id: isExist.id,
+                subTotal: (isExist.price * it.qty),
+                diffenceTotal: (isExist.price * it.qty) - (isExist.price * it.qty),
+                qty: it.qty,
+                stock: isExist.stock - it.qty,
+                type: it.type
+            }
         }
     })
 
@@ -127,9 +151,6 @@ export const createTransaction = async (
 
         if (cash < (total - disc + tax))
             throw new Error("Cash is not enough")
-
-        if ((cash - (total - disc + tax)) > currentShift?.cashier_balance!)
-            throw new Error("Cashier balance is not enough")
     }
 
     const code = await db.select({ count: sql`COUNT(*)` }).from(transactions)
@@ -154,23 +175,33 @@ export const createTransaction = async (
 
         for (const item of allItem) {
 
-            await tx.update(medicines).set({
-                stock: item.stock
-            }).where(eq(medicines.id, item.medicineId))
+            if (item.type == "medicine") {
+                await tx.update(medicines).set({
+                    stock: item.stock
+                }).where(eq(medicines.id, item.id))
 
-            await tx.insert(transaction_item).values({
-                quantity: item.qty,
-                sub_total: item.subTotal,
-                transaction_id: trans[0].id,
-                medicine_id: item.medicineId,
-                difference_sub_total: item.diffenceTotal
-            })
+                await tx.insert(transaction_item).values({
+                    quantity: item.qty,
+                    sub_total: item.subTotal,
+                    transaction_id: trans[0].id,
+                    medicine_id: item.id,
+                    difference_sub_total: item.diffenceTotal
+                })
+            } else {
+                await tx.update(prescriptions).set({
+                    stock: item.stock
+                }).where(eq(prescriptions.id, item.id))
+    
+                await tx.insert(transaction_item).values({
+                    quantity: item.qty,
+                    sub_total: item.subTotal,
+                    transaction_id: trans[0].id,
+                    presciption_id: item.id,
+                    difference_sub_total: item.diffenceTotal
+                })
+            }
         }
 
-        if (transaction.payment_method == "cash")
-            await tx.update(shift).set({
-                cashier_balance: (currentShift?.cashier_balance! - (cash! - (total - disc + tax)))
-            }).where(eq(shift.id, currentShift?.id!))
     })
 
     return "TS" + String(code[0].count as number)
@@ -198,8 +229,8 @@ export const updatePaymentInstallment = async (
     if (isExist.total > cash)
         throw new Error("Cash not enough")
 
-    if (cash > currentShift?.cashier_balance!)
-        throw new Error("Cashier balance is not enough")
+    if (!currentShift)
+        throw new Error("Shift is not found")
 
     await db.transaction(async tx => {
         await tx.update(transactions).set({
@@ -207,10 +238,6 @@ export const updatePaymentInstallment = async (
             payment_date: new Date(),
             transaction_status: "completed",
         }).where(eq(transactions.id, isExist.id))
-
-        await tx.update(shift).set({
-            cashier_balance: currentShift?.cashier_balance! - (cash - isExist.total)
-        }).where(eq(shift.id, currentShift?.id!))
     })
 
     return "Payment successfully"
@@ -292,6 +319,9 @@ export const getTransaction = async (
                 payment_status ? operators.eq(fields.payment_status, payment_status) : undefined
             )
         },
+        orderBy(fields, operators) {
+            return operators.desc(fields.payment_date)
+        },
     })
 
     return {
@@ -302,5 +332,5 @@ export const getTransaction = async (
             total_page: Math.ceil(totalItem[0].count as number / limit),
         },
         data: result as any[]
-    } 
+    }
 }

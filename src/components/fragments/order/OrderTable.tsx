@@ -25,10 +25,10 @@ function OrderTable({
             return
 
         if (type == "minus" && medicine.qty <= 1)
-            return setItem(pv => pv.filter(fo => fo.medicineId !== medicine.medicineId))
+            return setItem(pv => pv.filter(fo => fo.id !== medicine.id))
 
         setItem(pv => pv.map((item) =>
-            item.medicineId === medicine.medicineId
+            item.id === medicine.id
                 ? { ...item, qty: type == "minus" ? --item.qty : ++item.qty }
                 : item
         ))
@@ -59,9 +59,9 @@ function OrderTable({
                                 <TableRow key={i}>
                                     <TableCell>{++i}</TableCell>
                                     <TableCell>{fo.name}</TableCell>
-                                    <TableCell>{fo.price}</TableCell>
+                                    <TableCell>{variant == "transaction" ? fo.selling_price : fo.purchase_price}</TableCell>
                                     <TableCell>{fo.qty}</TableCell>
-                                    <TableCell>{fo.qty * fo.price}</TableCell>
+                                    <TableCell>{fo.qty * (variant == "transaction" ? fo.selling_price : fo.purchase_price)}</TableCell>
                                     {!disabled && (
                                         <TableCell className='flex gap-2 items-center'>
                                             <Button onClick={() => handleMutation("plus", fo)} variant={"default"}><Plus /></Button>

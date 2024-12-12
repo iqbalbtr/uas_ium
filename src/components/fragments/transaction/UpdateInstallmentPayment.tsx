@@ -160,11 +160,14 @@ function UpdateInstallmentPayment() {
                         <OrderTable
                             items={order?.items.length ?
                                 order.items.map(fo => ({
-                                    medicineId: fo.medicine_id!,
+                                    id: fo.medicine_id!,
                                     name: fo.medicine?.name!,
-                                    price: fo.medicine.selling_price ?? 0,
                                     qty: fo.quantity ?? 0,
-                                    stock: fo.medicine.stock ?? 0
+                                    stock: fo.medicine?.stock ?? 0,
+                                    code: fo.medicine?.medicine_code!,
+                                    purchase_price: fo.medicine?.purchase_price!,
+                                    selling_price: fo.medicine?.selling_price!,
+                                    type: "medicine"
                                 })) : []
                             }
                             variant='transaction'

@@ -8,7 +8,7 @@ import { Item } from '@/app/dashboard/kasir/page'
 import PresciptionMedicineNote from './PresciptionMedicineNote'
 
 export type ItemPresciption = {
-    medicineId: number;
+    id: number;
     qty: number;
     name: string;
     price: number;
@@ -27,10 +27,10 @@ function PresciptionMedicineTable({
     function handleMutation(type: "plus" | "minus", medicine: ItemPresciption) {
 
         if (type == "minus" && medicine.qty <= 1)
-            return setItem(pv => pv.filter(fo => fo.medicineId !== medicine.medicineId))
+            return setItem(pv => pv.filter(fo => fo.id !== medicine.id))
 
         setItem(pv => pv.map((item) =>
-            item.medicineId === medicine.medicineId
+            item.id === medicine.id
                 ? { ...item, qty: type == "minus" ? --item.qty : ++item.qty }
                 : item
         ))

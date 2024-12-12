@@ -11,6 +11,7 @@ declare module "next-auth" {
     status: string;
     roleId: number;
     roleName: string;
+    FcmToken?: string;
   }
 
   // Extend default JWT
@@ -24,7 +25,9 @@ declare module "next-auth" {
       status: string;
       roleId: number;
       roleName: string;
-    };
+
+FcmToken?: string;    }
+    ;
   }
 
   // Extend default Session
@@ -38,6 +41,8 @@ declare module "next-auth" {
       status: string;
       roleId: number;
       roleName: string;
-    };
+
+FcmToken?: string;    }
+    ;
   }
 }

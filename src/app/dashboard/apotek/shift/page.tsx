@@ -16,7 +16,7 @@ import {
 } from "@components/ui/card";
 import useFetch from "@hooks/use-fetch";
 import { getRupiahFormat } from "@libs/utils";
-import { Pen, Wallet2 } from "lucide-react";
+import { Wallet2 } from "lucide-react";
 import React from "react";
 
 function Shift() {
@@ -30,8 +30,8 @@ function Shift() {
         <DashboardLayout>
             <DashboardLayoutHeader title="Shift">
                 {data?.status_shift == "pending" && <UpdateShiftForm handleFetch={refresh} />}
-                {data?.status_shift == "pending" && <EndShiftUserForm handleFetch={refresh} />}
-                {data?.status_shift !== "pending" && <CreateShiftForm handleFetch={refresh} />}
+                {data?.status_shift == "pending" && <EndShiftUserForm notes={data.notes ?? ""} handleFetch={refresh} />}
+                {data?.status_shift === "completed" || data?.status_shift === "cancelled" || !data && <CreateShiftForm handleFetch={refresh} />}
             </DashboardLayoutHeader>
 
             <div className="grid grid-cols-5 grid-rows-6 gap-3">
@@ -84,7 +84,7 @@ function Shift() {
                 {/* Chart */}
                 <ShiftStatistic />
             </div>
-        </DashboardLayout>
+        </DashboardLayout> 
     );
 }
 export default Shift;

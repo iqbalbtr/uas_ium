@@ -154,7 +154,7 @@ export const getMedicine = async (
                 eq(deleted, false)
             )
         },
-        orderBy: (med, { desc }) => (desc(med.dosage))
+        orderBy: (med, { desc }) => (desc(med.id))
     });
 
     return {
