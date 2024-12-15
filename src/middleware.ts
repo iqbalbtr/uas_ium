@@ -25,7 +25,13 @@ function getPath(data: NavType[]) {
 }
 
 export default async function middleware(req: NextRequest) {
+
+
     const path = req.nextUrl.pathname;
+
+    if (path == "/") {
+        return NextResponse.redirect(new URL('/login', req.nextUrl));
+    }
 
     const isProtectedRoute = path.startsWith('/dashboard');
     const isAuthRoute = authRoute.includes(path);
@@ -43,14 +49,14 @@ export default async function middleware(req: NextRequest) {
     if (isProtectedRoute && session) {
         const getRole = await db.query.roles.findFirst({
             where: (role, { eq }) => eq(role.id, session.roleId),
-        });        
+        });
 
         if (!getRole) {
             return NextResponse.redirect(new URL('/login', req.nextUrl));
         }
 
         const userPath = getPath(getRole.access_rights as NavType[])
-        
+
         if (!userPath.includes(path)) {
             return NextResponse.redirect(new URL('/not-authorized', req.nextUrl));
         }

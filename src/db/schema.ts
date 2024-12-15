@@ -270,6 +270,7 @@ export const transactions = pgTable("transactions", {
   transaction_status: transaction_status_enum().default("completed"),
   tax: integer("tax").default(0),
   discount: integer("discount").default(0),
+  cash: integer("cash").default(0)
 });
 
 export const retur_transactions = pgTable("retur_transactions", {

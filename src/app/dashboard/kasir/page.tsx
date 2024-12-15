@@ -15,6 +15,7 @@ import Link from 'next/link'
 import useFetch from '@hooks/use-fetch'
 import Loading from '@components/ui/loading'
 import { getInvoicePdf } from '@services/pdf/invoice'
+import { getRupiahFormat } from '@libs/utils'
 
 export type Item = {
   id: number;
@@ -129,7 +130,7 @@ function Kasir() {
             </div>
             <div className='flex flex-col gap-2'>
               <div>
-                <Input value={total} disabled className='text-xl text-left' />
+                <h1 className='text-xl font-semibold px-3 py-2'>{getRupiahFormat(total)}</h1>
               </div>
               <OrderTable variant='transaction' items={items} setItem={setItems} />
               <div className='p-3 rounded-md bg-card shadow border-foreground'>
