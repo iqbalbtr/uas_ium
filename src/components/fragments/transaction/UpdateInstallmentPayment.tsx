@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
-import { UserPlus } from 'lucide-react';;
+import { HandCoins, UserPlus } from 'lucide-react';;
 import { Table, TableBody, TableCell, TableRow } from '@components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Medicine } from '@models/medicines';
@@ -34,17 +34,15 @@ function UpdateInstallmentPayment() {
     const { isLoading, setLoading } = useLoading()
     const [isOpen, setOpen] = useState(false)
     const [order, setOrder] = useState<Transaction | null>(null)
-    
+
 
     const receiptSchema = z.object({
-        cash: z.number().min(0),
         id_transaction: z.string().min(1),
     })
 
     const form = useForm<z.infer<typeof receiptSchema>>({
         resolver: zodResolver(receiptSchema),
         defaultValues: {
-            cash: 0,
             id_transaction: ""
         },
     })
@@ -55,7 +53,7 @@ function UpdateInstallmentPayment() {
             setLoading("loading")
             if (!order)
                 throw new Error("Pilih order")
-            const res = await updatePaymentInstallment(order.id, values.cash)
+            const res = await updatePaymentInstallment(order.id)
             if (res) {
                 toast({
                     title: "Success",
@@ -75,17 +73,12 @@ function UpdateInstallmentPayment() {
             setLoading("idle")
         }
     }
-
-    console.log(order?.items);
-    
-
-
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="default">
                     Bayar Piutang
-                    <UserPlus />
+                    <HandCoins />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
@@ -176,7 +169,7 @@ function UpdateInstallmentPayment() {
                     </div>
 
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 p-6 bg-background shadow border-2 rounded-lg border-border">
+                        <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 p-6 h-fit bg-background shadow border-2 rounded-lg border-border">
                             <FormField
                                 control={form.control}
                                 name='id_transaction'
@@ -186,37 +179,15 @@ function UpdateInstallmentPayment() {
                                             Cari Transaksi
                                         </FormLabel>
                                         <FormControl>
-                                            <TransactionSelect setOrder={setOrder} {...field} />
+                                            <TransactionSelect setOrder={setOrder} onChange={field.onChange} value={field.value} />
                                         </FormControl>
                                         <FormMessage className="text-red-500 font-normal" />
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name='cash'
-                                render={({ field }) => (
-                                    <FormItem className='flex flex-col gap-1'>
-                                        <FormLabel>
-                                            Uang pembayaran
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                id="delivery_name"
-                                                placeholder=".."
-                                                type="text"
-                                                className="placeholder:opacity-50"
-                                                {...field}
-                                                onChange={(e) => { field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value) }}
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-red-500 font-normal" />
-                                    </FormItem>
-                                )}
-                            />
-                            < Button disabled={isLoading == "loading"} type='submit' className="w-full">
+                            <Button disabled={isLoading == "loading"} type='submit' className="w-full">
                                 <Loading isLoading={isLoading}>
-                                    Ubah
+                                    Bayar
                                 </Loading>
                             </Button>
                         </form>

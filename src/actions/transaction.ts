@@ -2,13 +2,17 @@
 
 import db from "@/db"
 import { getMedicineById } from "./medicine";
-import { medicines, prescriptions, shift, transaction_item, transactions } from "@/db/schema";
+import { medicines, notif, prescriptions, shift, transaction_item, transactions } from "@/db/schema";
 import { and, eq, like, sql } from "drizzle-orm";
 import type { ResponseList } from "@/model/response";
 import { ObjectValidation } from "@/lib/utils";
 import { getLatestShift } from "./shift";
+import { createActivityLog } from "./activity-log";
 import { Item } from "@/app/dashboard/kasir/page";
 import { getPresciptionById } from "./prescription";
+import { getServerSession } from "next-auth";
+import { authOption } from "@libs/auth";
+import { createNotif } from "./notification";
 
 export type TransactionItem = {
     qty: number;
@@ -104,7 +108,8 @@ export const createTransaction = async (
                 diffenceTotal: (isExist.selling_price * it.qty) - (isExist.purchase_price * it.qty),
                 qty: it.qty,
                 stock: isExist.stock - it.qty,
-                type: it.type
+                type: it.type,
+                data: isExist
             }
         } else {
             const isExist = await getPresciptionById(it.id)
@@ -122,7 +127,8 @@ export const createTransaction = async (
                 diffenceTotal: (isExist.price * it.qty) - (isExist.price * it.qty),
                 qty: it.qty,
                 stock: isExist.stock - it.qty,
-                type: it.type
+                type: it.type,
+                data: isExist
             }
         }
     })
@@ -176,6 +182,14 @@ export const createTransaction = async (
         for (const item of allItem) {
 
             if (item.type == "medicine") {
+
+                if (item.data.medicine_reminder.min_stock! >= item.stock) {
+                    await createNotif("stock", item.id, {
+                        title: "Stok obat menipis",
+                        description: `Stok obat ${item.data.name} mulai menipis ${item.stock} dengan batas ${item.data.medicine_reminder.min_stock}`
+                    })
+                }
+
                 await tx.update(medicines).set({
                     stock: item.stock
                 }).where(eq(medicines.id, item.id))
@@ -191,7 +205,7 @@ export const createTransaction = async (
                 await tx.update(prescriptions).set({
                     stock: item.stock
                 }).where(eq(prescriptions.id, item.id))
-    
+
                 await tx.insert(transaction_item).values({
                     quantity: item.qty,
                     sub_total: item.subTotal,
@@ -204,6 +218,13 @@ export const createTransaction = async (
 
     })
 
+    await createActivityLog((user) => ({
+        action_name: "Membuat Transaksi",
+        action_type: "create",
+        description: `${user.name} melakukan transaksi oleh pembeli ${transaction.buyer}`,
+        title: "Membuat transaksi",
+    }));
+
     return "TS" + String(code[0].count as number)
 }
 
@@ -211,23 +232,26 @@ export const removeTransaction = async (
     id: number
 ) => {
 
-    await getTransactionById(id)
+    const isExist = await getTransactionById(id)
 
     await db.delete(transactions).where(eq(transactions.id, id))
+
+    await createActivityLog((user) => ({
+        action_name: "Menghapus Transaksi",
+        action_type: "delete",
+        description: `${user.name} menghapus transaksi ${isExist.code_transaction}`,
+        title: "Menghapus transaksi",
+    }));
 
     return "Delete successfully"
 }
 
 export const updatePaymentInstallment = async (
     id: number,
-    cash: number,
 ) => {
     const isExist = await getTransactionById(id)
 
     const currentShift = await getLatestShift()
-
-    if (isExist.total > cash)
-        throw new Error("Cash not enough")
 
     if (!currentShift)
         throw new Error("Shift is not found")
@@ -239,6 +263,13 @@ export const updatePaymentInstallment = async (
             transaction_status: "completed",
         }).where(eq(transactions.id, isExist.id))
     })
+
+    await createActivityLog((user) => ({
+        action_name: "Mengubah Transaksi",
+        action_type: "update",
+        description: `${user.name} melakukan perubahan pembayaran transaksi ${isExist.code_transaction}`,
+        title: "Mengubah transaksi",
+    }));
 
     return "Payment successfully"
 }
@@ -282,6 +313,13 @@ export const updateTransaction = async (
         payment_expired: transaction.expired ? new Date(transaction.expired) : null,
         total: total - disc - tax
     })
+
+    await createActivityLog((user) => ({
+        action_name: "Mengubah Transaksi",
+        action_type: "update",
+        description: `${user.name} mengubah transaksi ${exisitngTransaction.code_transaction}`,
+        title: "Mengubah transaksi",
+    }));
 
 }
 
@@ -333,4 +371,8 @@ export const getTransaction = async (
         },
         data: result as any[]
     }
+}
+
+export const updateExpire = async () => {
+
 }

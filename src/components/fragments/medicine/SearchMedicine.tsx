@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
+import { getRupiahFormat } from '@libs/utils'
 import { Medicine } from '@models/medicines'
 import { Plus } from 'lucide-react'
 import React, { useState } from 'react'
@@ -123,7 +124,7 @@ function SearchMedicine({ handleAdd, variant = "order" }: { handleAdd: (val: Ite
                                         <TableCell>{fo.code}</TableCell>
                                         <TableCell>{fo.name}</TableCell>
                                         <TableCell>{fo.stock}</TableCell>
-                                        <TableCell>{variant == "order" ? fo.purchase_price : fo.selling_price}</TableCell>
+                                        <TableCell>{getRupiahFormat(variant == "order" ? fo.purchase_price : fo.selling_price)}</TableCell>
                                     </TableRow>
                                 ))
                             }

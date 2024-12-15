@@ -8,6 +8,7 @@ import UpdateReceiptForm from './UpdateReceiptForm';
 import TableLayout from '@components/layouts/TableLayout';
 import Loading from '@components/ui/loading';
 import { useNumberPage } from '@hooks/use-paggination';
+import { getStatusClass } from '@libs/style';
 
 
 function ReceiptTable({
@@ -16,7 +17,7 @@ function ReceiptTable({
     handleFetch
 }: TableView<Receipt>) {
 
-    const { getNumber } = useNumberPage({})
+    const { getNumber } = useNumberPage({});
 
     return (
         <TableLayout>
@@ -40,9 +41,9 @@ function ReceiptTable({
                                 <TableCell>{fo.receipt_code}</TableCell>
                                 <TableCell>{fo.delivery_name}</TableCell>
                                 <TableCell>{fo.order.order_code}</TableCell>
-                                <TableCell>{fo.receipt_status}</TableCell>
+                                <TableCell><span className={getStatusClass(fo.receipt_status as any).class}>{getStatusClass(fo.receipt_status as any).label}</span></TableCell>
                                 <TableCell>{fo.total_received_item}</TableCell>
-                                <TableCell>
+                                <TableCell className='flex gap-2 items-center'>
                                     <DeleteReceipt data={fo} handleFetch={handleFetch} />
                                     <UpdateReceiptForm data={fo} handleFetch={handleFetch} />
                                 </TableCell>

@@ -8,12 +8,12 @@ import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
-import {Pen } from 'lucide-react';
+import { Pen } from 'lucide-react';
 import { TextArea } from '@components/ui/textarea';
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
 import { CategoryMedicineSelect } from './CategoryMedicineSelect';
 import { TypeMedicineSelect } from './TypeMedicineSelect';
-import {  updateMedicine } from '@/actions/medicine';
+import { updateMedicine } from '@/actions/medicine';
 import { TableMutation } from '@models/view';
 import { Medicine } from '@models/medicines';
 import Loading from '@components/ui/loading';
@@ -87,9 +87,10 @@ function UpdateMedicineForm({ data, handleFetch }: TableMutation<Medicine>) {
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="ghost">
-                    <Pen />
-                </Button>
+                <button className={`bg-yellow-400/70 p-1 rounded-md border border-yellow-600`}>
+                    <Pen size={15} className={`text-yellow-700`} />
+                </button>
+
             </DrawerTrigger>
             <DrawerContent className='max-h-[100vh]'>
                 <DrawerHeader>
@@ -131,54 +132,54 @@ function UpdateMedicineForm({ data, handleFetch }: TableMutation<Medicine>) {
                                         />
                                     </div>
                                     <div className="">
-                                            <FormField
-                                                control={form.control}
-                                                name='purchase_price'
-                                                render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-1'>
-                                                        <FormLabel>
-                                                            Harga Beli
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                id="purchase_price"
-                                                                placeholder="Harga.."
-                                                                type="text"
-                                                                className="placeholder:opacity-50"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-red-500 font-normal" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
+                                        <FormField
+                                            control={form.control}
+                                            name='purchase_price'
+                                            render={({ field }) => (
+                                                <FormItem className='flex flex-col gap-1'>
+                                                    <FormLabel>
+                                                        Harga Beli
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id="purchase_price"
+                                                            placeholder="Harga.."
+                                                            type="text"
+                                                            className="placeholder:opacity-50"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-red-500 font-normal" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                                        <div className="">
-                                            <FormField
-                                                control={form.control}
-                                                name='selling_price'
-                                                render={({ field }) => (
-                                                    <FormItem className='flex flex-col gap-1'>
-                                                        <FormLabel>
-                                                            Harga Jual
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                id="selling_price"
-                                                                placeholder="Harga jual.."
-                                                                type="text"
-                                                                className="placeholder:opacity-50"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage className="text-red-500 font-normal" />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
+                                    <div className="">
+                                        <FormField
+                                            control={form.control}
+                                            name='selling_price'
+                                            render={({ field }) => (
+                                                <FormItem className='flex flex-col gap-1'>
+                                                    <FormLabel>
+                                                        Harga Jual
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            id="selling_price"
+                                                            placeholder="Harga jual.."
+                                                            type="text"
+                                                            className="placeholder:opacity-50"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(!isNaN(Number(e.target.value)) ? Number(e.target.value) : field.value)}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-red-500 font-normal" />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
                                     <div className='grid grid-cols-2 gap-2'>
                                         <div className="space-y-2">
                                             <FormField

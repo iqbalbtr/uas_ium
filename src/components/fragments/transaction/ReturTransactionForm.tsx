@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
-import { CalendarIcon, UserPlus } from 'lucide-react';
+import { CalendarIcon, PackageX, UserPlus } from 'lucide-react';
 import OrderTable from '@components/fragments/order/OrderTable';
 import SearchMedicine from '@components/fragments/medicine/SearchMedicine';
 import { Medicine } from '@models/medicines';
@@ -132,8 +132,8 @@ function ReturTransactionForm({ handleFetch }: { handleFetch: () => Promise<void
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="default">
-                    Tambah
-                    <UserPlus />
+                    Pengembalian
+                    <PackageX />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>

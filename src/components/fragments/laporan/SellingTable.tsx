@@ -13,12 +13,15 @@ import { TableView } from "@/model/view";
 import { Transaction } from "@models/transactions";
 import Loading from "@components/ui/loading";
 import PrintInvoice from "./PrintInvoice";
+import { cn, getRupiahFormat } from "@libs/utils";
+import { getPaymentClass, getStatusTransClass } from "@libs/style";
 
 function SellingTable({
   data,
   isLoading,
   handleFetch,
 }: TableView<Transaction>) {
+
   return (
     <Table>
       <TableHeader>
@@ -29,7 +32,6 @@ function SellingTable({
           <TableHead>Karyawan</TableHead>
           <TableHead>Metode</TableHead>
           <TableHead>Kadaluarsa</TableHead>
-          <TableHead>Status Pembayaran</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Pajak</TableHead>
           <TableHead>Diskon</TableHead>
@@ -45,14 +47,13 @@ function SellingTable({
               <TableCell>{fo.code_transaction}</TableCell>
               <TableCell>{fo.buyer}</TableCell>
               <TableCell>{fo.user?.name}</TableCell>
-              <TableCell>{fo.payment_method}</TableCell>
+              <TableCell><span className={getPaymentClass(fo.payment_method).class}>{getPaymentClass(fo.payment_method).label}</span></TableCell>
               <TableCell>{fo.payment_expired?.toLocaleDateString()}</TableCell>
-              <TableCell>{fo.payment_method}</TableCell>
-              <TableCell>{fo.transaction_status}</TableCell>
-              <TableCell>{fo.tax}</TableCell>
-              <TableCell>{fo.discount}</TableCell>
+              <TableCell><span className={cn(getStatusTransClass(fo.transaction_status).class)}>{getStatusTransClass(fo.transaction_status).label}</span></TableCell>
+              <TableCell>{fo.tax}%</TableCell>
+              <TableCell>{fo.discount}%</TableCell>
               <TableCell>
-                {fo.total}
+                {getRupiahFormat(fo.total)}
               </TableCell>
               <TableCell>
                 <PrintInvoice current={fo.code_transaction} />

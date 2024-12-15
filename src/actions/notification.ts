@@ -1,67 +1,96 @@
 "use server"
-
-// import db from "@db/index"
-// import { medicine_reminder, medicines, transactions } from "@db/schema"
-// import { and, eq, gte, lt, lte, or, sql } from "drizzle-orm"
-
-// export const getNotification = async () => {
-//     const getMinMax = await db.select()
-//         .from(medicines)
-//         .innerJoin(medicine_reminder, eq(medicines.id, medicine_reminder.id))
-//         .where(or(
-//             lte(medicines.stock, medicine_reminder.min_stock),
-//             gte(medicines.stock, medicine_reminder.max_stock)
-//         ));
-
-//     const lastThreeDays = new Date().getTime() - (60 * 60 * 24 * 3);
-
-//     const getExpire = await db.select()
-//         .from(transactions)
-//         .where(and(
-//             gte(new Date(lastThreeDays), transactions.payment_expired),
-//             eq(transactions.payment_method, "installment"),
-//             eq(transactions.payment_status, "pending")
-//         ))
-
-//     const updateNotif = getMinMax.map(async fo => {
-//     })
-// }
+import db from "@db/index";
+import { notif } from "@db/schema";
 import { authOption } from "@libs/auth";
-import admin from "firebase-admin";
+import { eq, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
-import conf from "@assets/json/firebase-service.json"
 
-admin.initializeApp({
-    credential: admin.credential.cert({
-        clientEmail: conf.client_email,
-        privateKey: conf.private_key,
-        projectId: conf.project_id,
+export const createNotif = async (type: "stock" | "expired", medicine_id: number, payload: { title: string; description: string; }) => {
+
+    const session = await getServerSession(authOption)
+
+    if (!session?.user)
+        return;
+
+    await db.insert(notif).values({
+        title: payload.title,
+        description: payload.description,
+        type: type,
+        medicine_id,
+        user_id: session?.user.id
     })
-});
+}
 
-// const registrationToken = 'BLs5QZuyUjEZ22H6fR23IY0Y6X-VBewnKxeMCh-IyiJ1gIvCLexEHbPakde5xpHXTKdi6GWwFJRXYY555I6FX84'; 
+export const getNotifInterval = async (len: number): Promise<any[]> => {
+
+    const session = await getServerSession(authOption)
+
+    if (!session)
+        throw new Error("Session is not found");
+
+    return new Promise((resolve, reject) => {
+
+        const int = setInterval(async () => {
+            try {
+                const countResult = await db
+                    .select({ count: sql`COUNT(*)` })
+                    .from(notif)
+                    .where(eq(notif.id, session.user.id));
+
+                const count = Number(countResult[0]?.count || 0);
+
+                if (count !== len) {
+                    const res = await db.query.notif.findMany({
+                        where: ({ user_id }, { eq }) => eq(user_id, session.user.id),
+                    });
 
 
-export const sendMessage = async (payload: {title: string, body: string}) => {
 
-    const session = await getServerSession(authOption);
+                    clearInterval(int);
+                    resolve(res);
+                }
+            } catch (error) {
+                clearInterval(int);
+                reject(error);
+            }
+        }, 1000 * 60 * 10 )
+    });
+}
 
-    console.log(session);
-    
+export const deleteNotif = async (id: number) => {
+    const isExist = await db.select({ count: sql`COUNT(*)` }).from(notif).where(eq(notif.id, id))
+    console.log(isExist);
 
-    if(!session?.user.FcmToken)
-        throw new Error("Session required")
+    if (isExist[0].count as number == 0) {
+        throw new Error("Notif is not found")
+    }
 
-    const message = {
-        notification: payload,
-        token: session?.user.FcmToken!,
-    };
-    admin.messaging().send(message)
-        .then((response) => {
-            console.log('Pesan berhasil dikirim:', response);
-        })
-        .catch((error) => {
-            console.log('Gagal mengirim pesan:', error);
-        });
+    await db.delete(notif).where(eq(notif.id, id))
+}
 
+export const getNotiUser = async () => {
+
+    const session = await getServerSession(authOption)
+
+    if (!session)
+        throw new Error("Session is not found");
+
+    const res = await db.query.notif.findMany({
+        where: ({ user_id }, { eq }) => eq(user_id, session.user.id),
+    });
+
+    return res;
+}
+
+export const updateNotifExpired = async () => {
+    // const get = await db
+    // .select()
+    // .from(receipt_medicine)
+    // .where(and(
+    //     lte((receipts.ordermedicines.expired))
+    // ))
+    // .leftJoin(receipts, eq(receipt_medicine.receipt_id, receipts.id))
+    // .leftJoin(orders, eq(receipts.order_id, orders.id))
+    // .leftJoin(order_medicine, eq(order_medicine.id, receipt_medicine.order_medicine_id))
+    // .leftJoin(medicines, eq(medicines.id, order_medicine.medicine_id))
 }

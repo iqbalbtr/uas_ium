@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import { Minus, Plus } from 'lucide-react'
 import { Item } from '@/app/dashboard/kasir/page'
+import { getRupiahFormat } from '@libs/utils'
 
 
 function OrderTable({
@@ -47,40 +48,46 @@ function OrderTable({
                         <TableRow>
                             <TableHead>No</TableHead>
                             <TableHead>Nama</TableHead>
-                            <TableHead>harga</TableHead>
-                            <TableHead>jumlah</TableHead>
-                            <TableHead>Sub total</TableHead>
+                            <TableHead>Harga</TableHead>
+                            <TableHead>Jumlah</TableHead>
+                            <TableHead>Sub Total</TableHead>
                             {!disabled && <TableHead></TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {
-                            items.length && items.map((fo, i) => (
-                                <TableRow key={i}>
-                                    <TableCell>{++i}</TableCell>
-                                    <TableCell>{fo.name}</TableCell>
-                                    <TableCell>{variant == "transaction" ? fo.selling_price : fo.purchase_price}</TableCell>
-                                    <TableCell>{fo.qty}</TableCell>
-                                    <TableCell>{fo.qty * (variant == "transaction" ? fo.selling_price : fo.purchase_price)}</TableCell>
-                                    {!disabled && (
-                                        <TableCell className='flex gap-2 items-center'>
-                                            <Button onClick={() => handleMutation("plus", fo)} variant={"default"}><Plus /></Button>
-                                            <Button onClick={() => handleMutation("minus", fo)} variant={"destructive"}><Minus /></Button>
-                                        </TableCell>
-                                    )}
-                                </TableRow>
-                            ))
-                        }
+                        {items.length > 0 ? (
+                            items.map((fo, index) => {
+                                const price = variant === "transaction" ? fo.selling_price : fo.purchase_price;
+                                return (
+                                    <TableRow key={fo.id || index}>
+                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell>{fo.name}</TableCell>
+                                        <TableCell>{price}</TableCell>
+                                        <TableCell>{fo.qty}</TableCell>
+                                        <TableCell>{getRupiahFormat(fo.qty * price)}</TableCell>
+                                        {!disabled && (
+                                            <TableCell className='flex gap-2 items-center'>
+                                                <Button onClick={() => handleMutation("plus", fo)} variant={"default"}>
+                                                    <Plus />
+                                                </Button>
+                                                <Button onClick={() => handleMutation("minus", fo)} variant={"destructive"}>
+                                                    <Minus />
+                                                </Button>
+                                            </TableCell>
+                                        )}
+                                    </TableRow>
+                                );
+                            })
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center">
+                                    Data kosong
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
-
-                    {
-                        items.length == 0 && (
-                            <TableCaption className='w-full '>
-                               <span> Data kosong</span>
-                            </TableCaption>
-                        )
-                    }
                 </Table>
+
             </CardContent>
         </Card>
     )

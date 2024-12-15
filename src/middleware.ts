@@ -25,7 +25,6 @@ function getPath(data: NavType[]) {
 }
 
 export default async function middleware(req: NextRequest) {
-    // const cookie = cookies();
     const path = req.nextUrl.pathname;
 
     const isProtectedRoute = path.startsWith('/dashboard');
@@ -44,7 +43,7 @@ export default async function middleware(req: NextRequest) {
     if (isProtectedRoute && session) {
         const getRole = await db.query.roles.findFirst({
             where: (role, { eq }) => eq(role.id, session.roleId),
-        });
+        });        
 
         if (!getRole) {
             return NextResponse.redirect(new URL('/login', req.nextUrl));

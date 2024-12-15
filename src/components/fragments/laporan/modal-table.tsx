@@ -17,17 +17,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllReceiptByIdOrder, getReceipt } from "@/actions/receipts";
+import { getAllReceiptByIdOrder } from "@/actions/receipts";
 import { Receipt } from "@models/receipts";
 import DetailItemRceived from "./DetailItemReceived";
+import { getStatusClass } from "@libs/style";
 
-export default function ModalTable({id}:{id: number}) {
+export default function ModalTable({ id }: { id: number }) {
   const [isOpen, setIsOpen] = useState(false);
   const [receipts, setReceipts] = useState<Receipt[]>([])
 
   useEffect(() => {
     getAllReceiptByIdOrder(id).then(res => setReceipts(res as Receipt[]))
-  },[])
+  }, [])
 
 
   return (
@@ -56,7 +57,7 @@ export default function ModalTable({id}:{id: number}) {
                   <TableCell>{receipt.receipt_code}</TableCell>
                   <TableCell>{receipt.delivery_name}</TableCell>
                   <TableCell>{receipt.total_received_item}</TableCell>
-                  <TableCell>{receipt.receipt_status}</TableCell>
+                  <TableCell ><span className={getStatusClass(receipt.receipt_status as any).class}>{getStatusClass(receipt.receipt_status as any).label}</span></TableCell>
                   <TableCell><DetailItemRceived id={id} /></TableCell>
                 </TableRow>
               ))}

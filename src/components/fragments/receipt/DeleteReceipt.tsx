@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@components/ui/alert-dialog';
 import { Button } from '@components/ui/button';
-import { DeleteIcon } from 'lucide-react';
+import { Delete, DeleteIcon } from 'lucide-react';
 import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { Receipt } from '@models/receipts';
@@ -16,7 +16,7 @@ function DeleteReceipt({
 }: TableMutation<Receipt>) {
 
     const [isOpen, setOpen] = useState(false)
-    const {isLoading, setLoading} = useLoading()
+    const { isLoading, setLoading } = useLoading()
 
     const handleDelete = async () => {
         setLoading("loading")
@@ -45,9 +45,9 @@ function DeleteReceipt({
     return (
         <AlertDialog open={isOpen} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="ghost" className='text-destructive'>
-                    <DeleteIcon />
-                </Button>
+                <button className={`bg-red-400/70 p-1 rounded-md border border-red-600`}>
+                    <Delete size={15} className={`text-red-700`} />
+                </button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

@@ -1,70 +1,53 @@
 "use client"
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Bell } from "lucide-react";
+import { Bell, BellDot, Dot } from "lucide-react";
 import NotificationsList from "./notification-content";
-import { useEffect } from "react";
-import { sendMessage } from "@/actions/notification";
-import useFCMToken from "@hooks/use-fcm-token";
-import { getMessaging, onMessage } from "firebase/messaging";
-import firebaseApp from "@libs/firebase";
-import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { getNotiUser, getNotifInterval } from "@/actions/notification";
+import { Notification as NotifType } from "@models/notif";
+import { usePathname } from "next/navigation";
 
 function AppNotication() {
 
-  const {premission, token} = useFCMToken();
-  const data = useSession()
-  console.log(data);
-  
+  const [notif, setNotif] = useState<NotifType[]>([]);
+  const route = usePathname();
 
-  async function send() {
-    await sendMessage({
-      body: "Halo",
-      title: "mantap"
-    })
-  }
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      const messaging = getMessaging(firebaseApp);
-      const unsubscribe = onMessage(messaging, (payload) => {
-        console.log('Foreground push notification received:', payload);
-      });
-      return () => {
-        unsubscribe(); // Unsubscribe from the onMessage event
-      };
+  async function getNotif() {
+    try {
+      const get = await getNotiUser()
+      if (get) {
+        setNotif(get as any)
+      }
+    } catch (error) {
     }
-  }, []);
+  }
+
+  useEffect(() => {
+    getNotif()
+  }, [route])
+
+
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button>
-          <Bell />
-        </Button>
+        <button className="relative">
+          {notif.length ? <BellDot /> : <Bell />}
+        </button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>All noricication</SheetTitle>
+          <SheetTitle>Semua Notifikasi</SheetTitle>
         </SheetHeader>
-        <NotificationsList />
-        <SheetFooter>
-          <SheetClose asChild>
-            <span>Footer</span>
-          </SheetClose>
-          <Button onClick={send}>Test</Button>
-        </SheetFooter>
+        <NotificationsList data={notif} setData={setNotif} />
       </SheetContent>
     </Sheet>
   );

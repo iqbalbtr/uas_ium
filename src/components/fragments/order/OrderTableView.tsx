@@ -9,6 +9,7 @@ import { getDateFormat, getRupiahFormat } from '@libs/utils';
 import TableLayout from '@components/layouts/TableLayout';
 import Loading from '@components/ui/loading';
 import { useNumberPage } from '@hooks/use-paggination';
+import { getPaymentClass, getRequestClass, getStatusTransClass } from '@libs/style';
 
 function OrderTableMain({
     data,
@@ -24,15 +25,15 @@ function OrderTableMain({
                 <TableHeader>
                     <TableRow>
                         <TableHead>No</TableHead>
-                        <TableHead>Kode</TableHead>
+                        <TableHead className='w-[170px]'>Kode</TableHead>
                         <TableHead>Supplier</TableHead>
                         <TableHead>Total Item</TableHead>
                         <TableHead>Tanggal Pemesanan</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Status Penerimaan</TableHead>
-                        <TableHead>Metode Pembayaram</TableHead>
-                        <TableHead>Status Pembayaram</TableHead>
-                        <TableHead>Tanggal jatuh tempo</TableHead>
+                        <TableHead className='w-[170px]'>Status</TableHead>
+                        <TableHead className='w-[120px]'>Status Penerimaan</TableHead>
+                        <TableHead className='w-[120px]'>Metode Pembayaram</TableHead>
+                        <TableHead className='w-[120px]'>Status Pembayaram</TableHead>
+                        <TableHead className='w-[100px]'>Jatuh tempo</TableHead>
                         <TableHead>Pajak</TableHead>
                         <TableHead>Diskon</TableHead>
                         <TableHead>Total</TableHead>
@@ -48,15 +49,15 @@ function OrderTableMain({
                                 <TableCell>{fo.supplier}</TableCell>
                                 <TableCell>{fo.total_item}</TableCell>
                                 <TableCell>{getDateFormat(fo.order_date)}</TableCell>
-                                <TableCell>{fo.order_status}</TableCell>
-                                <TableCell>{fo.request_status}</TableCell>
-                                <TableCell>{fo.payment_method}</TableCell>
-                                <TableCell>{fo.payment_status}</TableCell>
+                                <TableCell><span className={getStatusTransClass(fo.order_status).class}>{getStatusTransClass(fo.order_status).label}</span></TableCell>
+                                <TableCell><span className={getRequestClass(fo.request_status).class}>{getRequestClass(fo.request_status).label}</span></TableCell>
+                                <TableCell><span className={getPaymentClass(fo.payment_method).class}>{getPaymentClass(fo.payment_method).label}</span></TableCell>
+                                <TableCell><span className={getStatusTransClass(fo.payment_status).class}>{getStatusTransClass(fo.payment_status).label}</span></TableCell>
                                 <TableCell>{fo.payment_method == "installment" ? getDateFormat(fo.payment_expired) : "Tidak ada"}</TableCell>
-                                <TableCell>{fo.tax}</TableCell>
-                                <TableCell>{fo.discount}</TableCell>
+                                <TableCell>{fo.tax}%</TableCell>
+                                <TableCell>{fo.discount}%</TableCell>
                                 <TableCell>{getRupiahFormat(fo.total)}</TableCell>
-                                <TableCell>
+                                <TableCell className='flex gap-2 items-center'>
                                     <DeleteOrder data={fo} handleFetch={handleFetch} />
                                     <UpdateOrderForm handleFetch={handleFetch} data={fo} />
                                 </TableCell>

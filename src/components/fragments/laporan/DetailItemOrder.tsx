@@ -24,6 +24,7 @@ import { getAllMedicineOrderById, getOrderMedicineById } from "@/actions/order";
 import { OrderMedicine } from "@models/orders";
 import useFetch from "@hooks/use-fetch";
 import Loading from "@components/ui/loading";
+import { getRupiahFormat } from "@libs/utils";
 
 export default function DetailItemOrder({ id }: { id: number }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -67,8 +68,8 @@ export default function DetailItemOrder({ id }: { id: number }) {
                                     <TableCell>{receipt.medicine?.medicine_code}</TableCell>
                                     <TableCell>{receipt.quantity}</TableCell>
                                     <TableCell>{receipt.received_total}</TableCell>
-                                    <TableCell>{receipt.price}</TableCell>
-                                    <TableCell>{receipt.sub_total}</TableCell>
+                                    <TableCell>{getRupiahFormat(receipt.price)}</TableCell>
+                                    <TableCell>{getRupiahFormat(receipt.sub_total)}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

@@ -393,12 +393,12 @@ export const notif_type_enum = pgEnum("type", [
   "expired"
 ])
 
-export const notif = pgTable("noif", {
+export const notif = pgTable("notif", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   title: varchar("title", { length: 100 }).notNull(),
   description: varchar("description", { length: 255 }),
-  is_active: boolean("is_active").default(true),
-  is_deleted: boolean("is_deleted").default(false),
+  date: timestamp("date").defaultNow(),
   type: notif_type_enum(),
-  medicine_id: integer("medicine_id").references(() => medicines.id, { onDelete: "cascade" })
+  medicine_id: integer("medicine_id").references(() => medicines.id, { onDelete: "cascade" }),
+  user_id: integer("user_id").references(() => users.id)
 })

@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
-import { UserPlus } from 'lucide-react';
+import { PackagePlus, UserPlus } from 'lucide-react';
 import SearchMedicine from '@components/fragments/medicine/SearchMedicine';
 import { Medicine } from '@models/medicines';
 import { TextArea } from '@components/ui/textarea';
@@ -146,7 +146,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
             <DrawerTrigger asChild>
                 <Button variant="default">
                     Buat racikan
-                    <UserPlus />
+                    <PackagePlus />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
@@ -231,7 +231,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col gap-1'>
                                                 <FormLabel>
-                                                    Diskon
+                                                    Diskon %
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -253,7 +253,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col gap-1'>
                                                 <FormLabel>
-                                                    jasa
+                                                    jasa | rupiah
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -276,7 +276,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-1'>
                                             <FormLabel>
-                                                Pajak
+                                                Pajak %
                                             </FormLabel>
                                             <FormControl>
                                                 <Input

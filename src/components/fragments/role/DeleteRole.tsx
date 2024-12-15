@@ -15,13 +15,13 @@ function DeleteRole({
 }: TableMutation<Role>) {
 
     const [isOpen, setOpen] = useState(false)
-    const {isLoading, setLoading} = useLoading()
+    const { isLoading, setLoading } = useLoading()
 
     const handleDelete = async () => {
         setLoading("loading")
         try {
             const get = await removeRole(data.id);
-            if (get){
+            if (get) {
                 toast({
                     title: "Success",
                     description: get
@@ -29,7 +29,7 @@ function DeleteRole({
                 handleFetch && handleFetch()
                 setOpen(false)
             }
-                
+
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -44,9 +44,9 @@ function DeleteRole({
     return (
         <AlertDialog open={isOpen} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="ghost" className='text-destructive'>
-                    <DeleteIcon />
-                </Button>
+                <button className={`bg-red-400/70 p-1 rounded-md border border-red-600`}>
+                    <Delete size={15} className={`text-red-700`} />
+                </button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

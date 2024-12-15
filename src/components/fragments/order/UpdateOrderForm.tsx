@@ -8,7 +8,7 @@ import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
-import { CalendarIcon, UserPlus } from 'lucide-react';
+import { CalendarIcon, Pen, UserPlus } from 'lucide-react';
 import { updateOrder } from '@/actions/order';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select';
 import { TableMutation } from '@models/view';
@@ -24,8 +24,8 @@ function UpdateOrderForm({ data, handleFetch }: TableMutation<Order>) {
     const { isLoading, setLoading } = useLoading()
     const [isOpen, setOpen] = useState(false)
     const [isExpire, setExpire] = useState(false)
-    
-    
+
+
     const userSchema = z.object({
         supplier: z.string().min(3).max(55),
         order_status: z.enum(["cancelled", "completed", "pending", ""]),
@@ -81,9 +81,9 @@ function UpdateOrderForm({ data, handleFetch }: TableMutation<Order>) {
     return (
         <Dialog open={isOpen} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost">
-                        <UserPlus />
-                </Button>
+                <button className={`bg-yellow-400/70 p-1 rounded-md border border-yellow-600`}>
+                    <Pen size={15} className={`text-yellow-700`} />
+                </button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -278,91 +278,91 @@ function UpdateOrderForm({ data, handleFetch }: TableMutation<Order>) {
                             />
                         </div>
                         <FormField
+                            control={form.control}
+                            name='payment_method'
+                            render={({ field }) => (
+                                <FormItem className='flex flex-col gap-1'>
+                                    <FormLabel>
+                                        Metode pembayaran
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Select value={field.value} onValueChange={(e) => {
+                                            field.onChange(e)
+                                            if (e == "cash") {
+                                                setExpire(false)
+                                                form.setValue("payment_expire", new Date())
+                                            } else {
+                                                setExpire(true)
+                                            }
+                                        }}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Pilih metode" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectItem value='cash'>
+                                                        Tunai
+                                                    </SelectItem>
+                                                    <SelectItem value='installment'>
+                                                        Jatuh tempo
+                                                    </SelectItem>
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage className="text-red-500 font-normal" />
+                                </FormItem>
+                            )}
+                        />
+                        {
+                            isExpire && (
+                                <FormField
                                     control={form.control}
-                                    name='payment_method'
+                                    name='payment_expire'
                                     render={({ field }) => (
-                                        <FormItem className='flex flex-col gap-1'>
+                                        <FormItem>
                                             <FormLabel>
-                                                Metode pembayaran
+                                                Jatuh Tempo
                                             </FormLabel>
                                             <FormControl>
-                                                <Select value={field.value} onValueChange={(e) => {
-                                                    field.onChange(e)
-                                                    if(e == "cash") {
-                                                        setExpire(false)
-                                                        form.setValue("payment_expire", new Date())
-                                                    } else {
-                                                        setExpire(true)
-                                                    }
-                                                }}>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Pilih metode" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectItem value='cash'>
-                                                                Tunai
-                                                            </SelectItem>
-                                                            <SelectItem value='installment'>
-                                                                Jatuh tempo
-                                                            </SelectItem>
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button
+                                                                variant={"outline"}
+                                                                className={cn(
+                                                                    "w-[240px] pl-3 text-left font-normal",
+                                                                    !field.value && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                {field.value ? (
+                                                                    getDateFormat(field.value)
+                                                                ) : (
+                                                                    <span>Pick a date</span>
+                                                                )}
+                                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={field.value}
+                                                            onSelect={field.onChange}
+                                                            disabled={(date) =>
+                                                                date < new Date()
+                                                            }
+                                                            initialFocus
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
                                             </FormControl>
                                             <FormMessage className="text-red-500 font-normal" />
                                         </FormItem>
                                     )}
                                 />
-                                {
-                                    isExpire && (
-                                        <FormField
-                                            control={form.control}
-                                            name='payment_expire'
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Jatuh Tempo
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Popover>
-                                                            <PopoverTrigger asChild>
-                                                                <FormControl>
-                                                                    <Button
-                                                                        variant={"outline"}
-                                                                        className={cn(
-                                                                            "w-[240px] pl-3 text-left font-normal",
-                                                                            !field.value && "text-muted-foreground"
-                                                                        )}
-                                                                    >
-                                                                        {field.value ? (
-                                                                            getDateFormat(field.value)
-                                                                        ) : (
-                                                                            <span>Pick a date</span>
-                                                                        )}
-                                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                                    </Button>
-                                                                </FormControl>
-                                                            </PopoverTrigger>
-                                                            <PopoverContent className="w-auto p-0" align="start">
-                                                                <Calendar
-                                                                    mode="single"
-                                                                    selected={field.value}
-                                                                    onSelect={field.onChange}
-                                                                    disabled={(date) =>
-                                                                        date < new Date()
-                                                                    }
-                                                                    initialFocus
-                                                                />
-                                                            </PopoverContent>
-                                                        </Popover>
-                                                    </FormControl>
-                                                    <FormMessage className="text-red-500 font-normal" />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    )
-                                }
+                            )
+                        }
                         <Button disabled={isLoading == "loading"} type='submit' className="w-full">
                             <Loading isLoading={isLoading}>
                                 Ubah

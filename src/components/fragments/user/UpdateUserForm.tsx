@@ -10,7 +10,7 @@ import { updateUser } from '@/actions/auth';
 import { RoleSelect } from '../role/RoleSelect';
 import useLoading from '@hooks/use-loading';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@components/ui/dialog';
-import { Edit } from 'lucide-react';
+import { Edit, Pen } from 'lucide-react';
 import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { User } from '@/model/users';
@@ -72,9 +72,10 @@ function UpdateUserForm({ data, handleFetch }: TableMutation<User>) {
     return (
         <Dialog open={isOpen} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant={"ghost"}>
-                    <Edit />
-                </Button>
+                <button className={`bg-yellow-400/70 p-1 rounded-md border border-yellow-600`}>
+                    <Pen size={15} className={`text-yellow-700`} />
+                </button>
+
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>

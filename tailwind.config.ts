@@ -92,5 +92,6 @@ export default {
   		}
   	}
   },
+  safelist: ["bg-green-400", "bg-green-600", "bg-green-700", "bg-red-400", "bg-red-600", "bg-red-700", "bg-yellow-400", "bg-yellow-600", "bg-yellow-700"],
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;

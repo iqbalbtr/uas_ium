@@ -1,13 +1,14 @@
+"use client"
 import React, { useState } from 'react'
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@components/ui/alert-dialog';
 import { Button } from '@components/ui/button';
-import { DeleteIcon } from 'lucide-react';
 import { toast } from '@hooks/use-toast';
 import { TableMutation } from '@/model/view';
 import { deleteUser } from '@/actions/auth';
 import { User } from '@/model/users';
 import useLoading from '@hooks/use-loading';
 import Loading from '@components/ui/loading';
+import { Delete } from 'lucide-react';
 
 function DeleteUser({
     data,
@@ -15,7 +16,7 @@ function DeleteUser({
 }: TableMutation<User>) {
 
     const [isOpen, setOpen] = useState(false)
-    const {isLoading, setLoading} = useLoading()
+    const { isLoading, setLoading } = useLoading()
 
     const handleDelete = async () => {
         setLoading("loading")
@@ -29,7 +30,7 @@ function DeleteUser({
                 handleFetch && handleFetch()
                 setOpen(false)
             }
-            
+
         } catch (error: any) {
             toast({
                 title: "Error",
@@ -44,9 +45,9 @@ function DeleteUser({
     return (
         <AlertDialog open={isOpen} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>
-                <Button variant="ghost" className='text-destructive'>
-                    <DeleteIcon />
-                </Button>
+                <button className={`bg-red-400/70 p-1 rounded-md border border-red-600`}>
+                    <Delete size={15} className={`text-red-700`} />
+                </button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>

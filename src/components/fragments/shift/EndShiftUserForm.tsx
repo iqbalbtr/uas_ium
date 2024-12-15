@@ -4,12 +4,10 @@ import { updateEndShift } from '@/actions/shift'
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@components/ui/alert-dialog'
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
-import { Label } from '@components/ui/label'
 import Loading from '@components/ui/loading'
 import { TextArea } from '@components/ui/textarea'
 import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
-import { Printer } from 'lucide-react'
 import React, { useState } from 'react'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"

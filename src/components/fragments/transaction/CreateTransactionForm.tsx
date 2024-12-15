@@ -136,7 +136,7 @@ function CreateTransactionForm({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Diskon
+                                        Diskon %
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -160,7 +160,7 @@ function CreateTransactionForm({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Pajak
+                                        Pajak %
                                     </FormLabel>
                                     <FormControl>
                                         <Input

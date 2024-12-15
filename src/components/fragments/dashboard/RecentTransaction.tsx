@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
 import Loading from '@components/ui/loading'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@components/ui/table'
 import useFetch from '@hooks/use-fetch'
+import { getStatusTransClass } from '@libs/style'
 import { getRupiahFormat } from '@libs/utils'
 import React from 'react'
 
@@ -16,9 +17,9 @@ function RecentTransaction() {
     })
 
     return (
-        <Card className="col-span-4">
+        <Card className="col-span-4 h-fit">
             <CardHeader>
-                <CardTitle>Order Status</CardTitle>
+                <CardTitle>Riwayat Penjualan</CardTitle>
             </CardHeader>
             <CardContent>
                 <Table>
@@ -39,10 +40,10 @@ function RecentTransaction() {
                                     <TableCell>{fo.buyer}</TableCell>
                                     <TableCell>{getRupiahFormat(fo.total)}</TableCell>
                                     <TableCell>
-                                        <Badge className="bg-rose-500">{fo.payment_status}</Badge>
+                                        <Badge className={getStatusTransClass(fo.payment_status as any).class}>{getStatusTransClass(fo.payment_status as any).label}</Badge>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge className="bg-rose-500">{fo.transaction_status}</Badge>
+                                        <Badge className={getStatusTransClass(fo.transaction_status as any).class}>{getStatusTransClass(fo.transaction_status as any).label}</Badge>
                                     </TableCell>
                                 </TableRow>
                             ))

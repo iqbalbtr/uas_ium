@@ -9,10 +9,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
-import { CalendarIcon, UserPlus } from 'lucide-react';
+import { CalendarIcon, PackageCheck, UserPlus } from 'lucide-react';
 import OrderTable from '@components/fragments/order/OrderTable';
 import SearchMedicine from '@components/fragments/medicine/SearchMedicine';
-import { Medicine } from '@models/medicines';
 import { createOrder } from '@/actions/order';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover';
@@ -133,7 +132,7 @@ function CreateOrderForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
             <DrawerTrigger asChild>
                 <Button variant="default">
                     Tambah
-                    <UserPlus />
+                    <PackageCheck />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
@@ -175,7 +174,7 @@ function CreateOrderForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-1'>
                                             <FormLabel>
-                                                Diskon
+                                                Diskon %
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
@@ -197,7 +196,7 @@ function CreateOrderForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
                                     render={({ field }) => (
                                         <FormItem className='flex flex-col gap-1'>
                                             <FormLabel>
-                                                Pajak
+                                                Pajak %
                                             </FormLabel>
                                             <FormControl>
                                                 <Input

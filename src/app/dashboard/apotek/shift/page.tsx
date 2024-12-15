@@ -15,7 +15,7 @@ import {
     CardTitle,
 } from "@components/ui/card";
 import useFetch from "@hooks/use-fetch";
-import { getRupiahFormat } from "@libs/utils";
+import { getDateFormat, getRupiahFormat } from "@libs/utils";
 import { Wallet2 } from "lucide-react";
 import React from "react";
 
@@ -30,7 +30,7 @@ function Shift() {
         <DashboardLayout>
             <DashboardLayoutHeader title="Shift">
                 {data?.status_shift == "pending" && <UpdateShiftForm handleFetch={refresh} />}
-                {data?.status_shift == "pending" && <EndShiftUserForm notes={data.notes ?? ""} handleFetch={refresh} />}
+                {data?.status_shift == "pending" && <EndShiftUserForm notes={data.notes!} handleFetch={refresh} />}
                 {data?.status_shift === "completed" || data?.status_shift === "cancelled" || !data && <CreateShiftForm handleFetch={refresh} />}
             </DashboardLayoutHeader>
 
@@ -38,12 +38,12 @@ function Shift() {
 
                 <Card className="bg-purple-100 flex flex-col justify-between dark:bg-purple-900/20 col-span-2 row-span-2">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-lg font-medium">Saldo</CardTitle>
+                        <CardTitle className="text-lg font-medium">Waktu Mulai</CardTitle>
                         <Wallet2 size={30} className=" text-purple-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-4xl font-bold text-purple-600">{getRupiahFormat(data?.cashier_balance ?? 0)}</div>
-                        <p className="text-base pt-2 text-purple-600/80">Saldo saat ini</p>
+                        <div className="text-4xl font-bold text-purple-600">{getDateFormat(data?.start_shift!, "-")}</div>
+                        <p className="text-base pt-2 text-purple-600/80">{String(data?.start_shift?.getHours()).padStart(2, "0")}:{String(data?.start_shift?.getMinutes()).padStart(2,"0")}</p>
                     </CardContent>
                 </Card>
 
@@ -66,7 +66,7 @@ function Shift() {
                         <Wallet2 size={30} className=" text-emerald-600" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-xl font-bold text-emerald-600">{data?.holder?.name ?? "--"}</div>
+                        <div className="text-xl font-bold text-emerald-600">{data?.holder?.username ?? "--"}</div>
                         <p className="text-base pt-2 text-emerald-600/80">Pemegang saldo</p>
                     </CardContent>
                 </Card>
@@ -81,7 +81,6 @@ function Shift() {
                     </CardContent>
                 </Card>
 
-                {/* Chart */}
                 <ShiftStatistic />
             </div>
         </DashboardLayout> 

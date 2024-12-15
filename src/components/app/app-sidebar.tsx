@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
 import { getRoleById } from "@/actions/role";
+import useLoading from "@hooks/use-loading";
+import Loading from "@components/ui/loading";
 
 
 export interface NavType {
@@ -34,12 +36,28 @@ export interface Item {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const [sideData, setSideData] = React.useState<NavType[]>([])
+  const {isLoading, setLoading} = useLoading()
 
   const { data } = useSession()
 
+  async function getSideData() {
+    setLoading("loading")
+    try {
+      const get = await getRoleById(data?.user.roleId!)
+      if(get){
+        setSideData(get.access_rights as NavType[])
+      }
+    } catch (error) {
+      
+    } finally {
+      setLoading("idle")
+    }
+  }
+
   React.useEffect(() => {
-    if (data?.user.roleId)
-      getRoleById(data?.user.roleId!).then(res => setSideData(res.access_rights as NavType[]))
+    if (data?.user.roleId) {
+      getSideData()
+    }
   }, [data])
 
   return (
@@ -62,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={sideData} />
+        {isLoading == "loading" ? <Loading className="p-6" isLoading={isLoading} /> : <NavMain items={sideData} />}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

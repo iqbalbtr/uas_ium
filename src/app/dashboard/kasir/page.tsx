@@ -5,16 +5,9 @@ import TrasnsactionForm from '@components/fragments/transaction/CreateTransactio
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
 import { Input } from '@components/ui/input'
 import { toast } from '@hooks/use-toast'
-import { Medicine } from '@models/medicines'
 import React, { Suspense, useEffect, useState } from 'react'
 import { Button } from '@components/ui/button'
-import { getTransactionByCode } from '@/actions/transaction'
-import { printPdf } from '@components/pdf/util'
-import Invoice from '@components/pdf/Invoice'
 import useLoading from '@hooks/use-loading'
-import { getApotek } from '@/actions/apotek'
-import { apotek } from '@db/schema'
-import { Apotek } from '@models/apotek'
 import UpdateInstallmentPayment from '@components/fragments/transaction/UpdateInstallmentPayment'
 import ReturTransactionForm from '@components/fragments/transaction/ReturTransactionForm'
 import { getLatestShift } from '@/actions/shift'
@@ -125,7 +118,7 @@ function Kasir() {
         )}
 
         <DashboardLayoutHeader title='Kasir'>
-          <ReturTransactionForm handleFetch={async () => { }} />
+          {/* <ReturTransactionForm handleFetch={async () => { }} /> */}
           <UpdateInstallmentPayment />
         </DashboardLayoutHeader>
         <div className='relative'>

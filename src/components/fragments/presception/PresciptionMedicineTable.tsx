@@ -6,6 +6,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Minus, Plus } from 'lucide-react'
 import { Item } from '@/app/dashboard/kasir/page'
 import PresciptionMedicineNote from './PresciptionMedicineNote'
+import { getRupiahFormat } from '@libs/utils'
 
 export type ItemPresciption = {
     id: number;
@@ -65,7 +66,7 @@ function PresciptionMedicineTable({
                                     <TableCell>{fo.price}</TableCell>
                                     <TableCell>{fo.qty}</TableCell>
                                     <TableCell><PresciptionMedicineNote item={fo} setItem={setItem} /></TableCell>
-                                    <TableCell>{fo.qty * fo.price}</TableCell>
+                                    <TableCell>{getRupiahFormat(fo.qty * fo.price)}</TableCell>
                                     <TableCell>
 
                                     </TableCell>

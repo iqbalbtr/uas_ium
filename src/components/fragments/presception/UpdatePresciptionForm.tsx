@@ -68,7 +68,7 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
                     {
                         id: val.id,
                         name: val.name,
-                        price: val. selling_price,
+                        price: val.selling_price,
                         qty: qty,
                         stock: val.stock,
                         max: 0,
@@ -129,7 +129,7 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
                     name: values.name,
                     tax: values.tax,
                     code_presciption: values.code_presciption
-                }, 
+                },
                 items
             )
             if (res) {
@@ -157,8 +157,8 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <button>
-                    <Pen size={15} />
+                <button className={`bg-yellow-400/70 p-1 rounded-md border border-yellow-600`}>
+                    <Pen size={15} className={`text-yellow-700`} />
                 </button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
