@@ -4,7 +4,7 @@ import { Apotek } from "@models/apotek";
 import { Transaction } from "@models/transactions";
 import { Document, Font, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
-const Invoice = async ({
+const Invoice = ({
     transaksi,
     toko
 }: {
@@ -22,14 +22,19 @@ const Invoice = async ({
         return input
     }
 
-    console.log(transaksi);
-    
 
     const total = transaksi.items?.reduce((sum, pv) => sum += pv.sub_total, 0)
 
     const total_tax = (transaksi.tax! / 100) * total;
 
     const total_discount = (transaksi.discount! / 100) * total
+
+    const item = transaksi.items.map(fo => ({
+        name: fo.medicine ? fo.medicine.name : fo.prescription!.name,
+        price: fo.medicine ? fo.medicine.selling_price : fo.prescription!.price,
+        quantity: fo.quantity,
+        sub_total: fo.sub_total
+    }))
 
     return (
         <Document>
@@ -91,11 +96,11 @@ const Invoice = async ({
                         }}
                     >
                         {
-                            transaksi.items?.map((foo, i) => (
+                            item.map((foo, i) => (
                                 <View style={styles.barangContent} key={i}>
-                                    <Text style={styles.text}>{`${letterFixes(foo.medicine?.name, 8)}`}</Text>
+                                    <Text style={styles.text}>{`${letterFixes(foo.name, 8)}`}</Text>
                                     <Text style={styles.text}>x{foo.quantity}</Text>
-                                    <Text style={styles.text}>Rp. {foo.medicine.selling_price}</Text>
+                                    <Text style={styles.text}>Rp. {foo.price}</Text>
                                     <Text style={styles.text}>Rp. {foo.sub_total}</Text>
                                 </View>
                             ))

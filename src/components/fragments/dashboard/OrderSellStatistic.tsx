@@ -14,7 +14,6 @@ function OrderSellStatistic() {
         url: getAnalisytStatisticTransaction
     })
 
-
     return (
         <Card className="col-span-4">
             <CardHeader>

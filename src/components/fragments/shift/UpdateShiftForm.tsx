@@ -6,6 +6,7 @@ import { Input } from '@components/ui/input'
 import Loading from '@components/ui/loading'
 import useLoading from '@hooks/use-loading'
 import { toast } from '@hooks/use-toast'
+import { Wallet } from 'lucide-react'
 import React, { useState } from 'react'
 
 function UpdateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
@@ -46,13 +47,14 @@ function UpdateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button>
-                    Tambah saldo
+                    Edit saldo
+                    <Wallet />
                 </Button>
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
-                        <DrawerTitle>Tambah saldo</DrawerTitle>
+                        <DrawerTitle>Edit saldo</DrawerTitle>
                         <DrawerDescription>Estimasi saldo 20000</DrawerDescription>
                     </DrawerHeader>
                     <div className="p-4 pb-0">

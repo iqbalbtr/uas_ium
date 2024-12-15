@@ -1,11 +1,7 @@
 "use client";
-import { getMedicine } from "@/actions/medicine";
-import { getReceipt } from "@/actions/receipts";
-import CreateMedicineForm from "@components/fragments/medicine/CreateMedicineForm";
-import MedicineTable from "@components/fragments/medicine/MedicineTable";
+import { getReceipt } from "@/actions/receipts";;
 import CreateReceiptForm from "@components/fragments/receipt/CreateReceiptForm";
 import ReceiptTable from "@components/fragments/receipt/ReceiptTable";
-import CreateUserForm from "@components/fragments/user/CreateUserForm";
 import DashboardLayout, {
   DashboardLayoutHeader,
 } from "@components/layouts/DashboardLayout";

@@ -62,7 +62,7 @@ function CreateTransactionForm({
 
 
     useEffect(() => {
-        const total = items.reduce((acc, pv) => acc += (pv.qty * pv.price), 0)
+        const total = items.reduce((acc, pv) => acc += (pv.qty * pv.selling_price), 0)
         setTotal(total - ((disc / 100) * total) + ((tax / 100) * total))
     }, [items, disc, tax, effectted])
 
@@ -72,7 +72,6 @@ function CreateTransactionForm({
         try {
             if (!items.length)
                 throw new Error("1 item min")
-            console.log(items);
             setLoading("loading")
             const res = await createTransaction(user?.user.id!, {
                 discount: values.discount,
@@ -137,7 +136,7 @@ function CreateTransactionForm({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Diskon
+                                        Diskon %
                                     </FormLabel>
                                     <FormControl>
                                         <Input
@@ -161,7 +160,7 @@ function CreateTransactionForm({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Pajak
+                                        Pajak %
                                     </FormLabel>
                                     <FormControl>
                                         <Input

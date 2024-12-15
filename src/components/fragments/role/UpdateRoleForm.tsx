@@ -10,7 +10,7 @@ import { z } from "zod"
 import AccessDialog from "./AccessDialog";
 import { Button } from "@components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/ui/dialog";
-import { Edit } from "lucide-react";
+import { Edit, Pen } from "lucide-react";
 import { toast } from "@hooks/use-toast";
 import { TableMutation } from "@/model/view";
 import { Role } from "@/model/roles";
@@ -44,7 +44,7 @@ function UpdateRoleForm({
         setLoading("loading")
         try {
             const res = await updateRole(data.id, values.name, access)
-            if(res){
+            if (res) {
                 setLoading("success")
                 toast({
                     title: "Success",
@@ -66,7 +66,9 @@ function UpdateRoleForm({
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant={"ghost"}><Edit/></Button>
+                <button className={`bg-yellow-400/70 p-1 rounded-md border border-yellow-600`}>
+                    <Pen size={15} className={`text-yellow-700`} />
+                </button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -119,9 +121,9 @@ function UpdateRoleForm({
                             />
                         </div>
                         <Button type='submit' disabled={isLoading == "loading"} className="w-full bg-[#2A2B27] text-white hover:bg-[#3F403B]">
-                           <Loading isLoading={isLoading}>
-                            Ubah
-                           </Loading>
+                            <Loading isLoading={isLoading}>
+                                Ubah
+                            </Loading>
                         </Button>
                     </form>
                 </Form>

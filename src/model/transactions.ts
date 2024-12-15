@@ -1,4 +1,5 @@
 import { Medicine } from "./medicines";
+import { Prescription } from "./prescription";
 import { User } from "./users";
 
 enum PaymentMethod {
@@ -35,5 +36,6 @@ export interface Transaction {
     sub_total: number;
     medicine_id?: number;
     transaction_id: number;
-    medicine: Medicine
+    medicine?: Medicine,
+    prescription?: Prescription,
   }

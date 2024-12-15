@@ -1,4 +1,4 @@
-import InformasiApotek from "@components/layouts/InformasiApotek";
+import InformasiApotek from "@components/fragments/apotek/InformasiApotek";
 import React from "react";
 
 function ApotekInformasi() {

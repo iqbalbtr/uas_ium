@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@components/ui/drawer';
-import { UserPlus } from 'lucide-react';
+import { Pill } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select';
 import { OrderSelect } from '../order/OrderSelect';
 import { Table, TableBody, TableCell, TableRow } from '@components/ui/table';
@@ -54,7 +54,7 @@ function CreateReceiptForm({ handlefetch }: { handlefetch: () => Promise<void> }
 
 
     const handleCreate = async (values: z.infer<typeof receiptSchema>) => {
-        try {
+            try {
             setLoading("loading")
             const res = await createReceipt(
                 values.order_code,
@@ -77,7 +77,7 @@ function CreateReceiptForm({ handlefetch }: { handlefetch: () => Promise<void> }
                 title: "Error",
                 description: error.message,
                 variant: "destructive"
-            })
+            })            
         } finally {
             setLoading("idle")
         }
@@ -107,7 +107,7 @@ function CreateReceiptForm({ handlefetch }: { handlefetch: () => Promise<void> }
             <DrawerTrigger asChild>
                 <Button variant="default">
                     Tambah
-                    <UserPlus />
+                    <Pill />
                 </Button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>
@@ -252,7 +252,7 @@ function CreateReceiptForm({ handlefetch }: { handlefetch: () => Promise<void> }
                                     </FormItem>
                                 )}
                             />
-                            < Button disabled={isLoading == "loading"} type='submit' className="w-full">
+                            <Button disabled={isLoading == "loading"} type='submit' className="w-full">
                                 <Loading isLoading={isLoading}>
                                     Terima
                                 </Loading>

@@ -18,13 +18,14 @@ import { createPresciption, updatePresciption } from '@/actions/prescription';
 import { TableMutation } from '@models/view';
 import { Prescription } from '@models/prescription';
 import Loading from '@components/ui/loading';
+import { Item } from '@/app/dashboard/kasir/page';
 
 
 function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription>) {
 
     const { isLoading, setLoading } = useLoading()
     const [items, setItems] = useState<ItemPresciption[]>(data.prescription_medicines.map(fo => ({
-        medicineId: fo.medicine_id!,
+        id: fo.medicine_id!,
         name: fo.medicine.name!,
         notes: fo.notes!,
         price: fo.medicine.selling_price,
@@ -36,9 +37,9 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
     const [total, setTotal] = useState(0)
 
 
-    function handleAdd(val: Medicine, qty: number) {
+    function handleAdd(val: Item, qty: number) {
 
-        const isExist = items.find(fo => fo.medicineId == val.id)
+        const isExist = items.find(fo => fo.id == val.id)
 
         if (!qty)
             return toast({
@@ -58,19 +59,19 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
         setItems(prevItems => {
             if (isExist) {
                 return prevItems.map((item) =>
-                    item.medicineId === isExist.medicineId
+                    item.id === isExist.id
                         ? { ...item, qty: item.qty + qty }
                         : item
                 );
             } else {
                 return [
                     {
-                        medicineId: val.id,
+                        id: val.id,
                         name: val.name,
-                        price: val. selling_price,
+                        price: val.selling_price,
                         qty: qty,
                         stock: val.stock,
-                        max: val.medicine_reminder?.max_stock ?? 0,
+                        max: 0,
                         notes: ""
                     },
                     ...prevItems,
@@ -128,7 +129,7 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
                     name: values.name,
                     tax: values.tax,
                     code_presciption: values.code_presciption
-                }, 
+                },
                 items
             )
             if (res) {
@@ -156,8 +157,8 @@ function UpdatePresciptionForm({ data, handleFetch }: TableMutation<Prescription
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <button>
-                    <Pen size={15} />
+                <button className={`bg-yellow-400/70 p-1 rounded-md border border-yellow-600`}>
+                    <Pen size={15} className={`text-yellow-700`} />
                 </button>
             </DrawerTrigger>
             <DrawerContent className='md:px-12'>

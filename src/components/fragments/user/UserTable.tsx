@@ -6,8 +6,8 @@ import UpdateUserForm from './UpdateUserForm';
 import { TableView } from '@/model/view';
 import DeleteUser from './DeleteUser';
 import Loading from '@components/ui/loading';
-import { useSearchParams } from 'next/navigation';
 import { useNumberPage } from '@hooks/use-paggination';
+import { TimelineDialog } from '../activity/TimeLineDialog';
 
 function UserTable({
     data,
@@ -22,11 +22,12 @@ function UserTable({
             <TableHeader>
                 <TableRow>
                     <TableHead>No</TableHead>
-                    <TableHead>Username</TableHead>
+                    <TableHead className='w-[200px]'>Username</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Phone</TableHead>
                     <TableHead>Role</TableHead>
+                    <TableHead>Aktivitas</TableHead>
                     <TableHead>Action</TableHead>
                 </TableRow>
             </TableHeader>
@@ -41,6 +42,9 @@ function UserTable({
                             <TableCell>{fo.phone}</TableCell>
                             <TableCell>{fo.role?.name}</TableCell>
                             <TableCell>
+                                <TimelineDialog id={fo.id} />
+                            </TableCell>
+                            <TableCell className='flex gap-2 items-center'>
                                 <DeleteUser data={fo} handleFetch={handleFetch} />
                                 <UpdateUserForm handleFetch={handleFetch} data={fo} />
                             </TableCell>

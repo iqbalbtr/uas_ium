@@ -13,7 +13,9 @@ export interface Shift {
     status_shift: string
     cashier_balance: number
     balance_holder: number
-    holder: Holder
+    holder: Holder,
+    receivables_total: number,
+    sales_total: number;
 }
 
 export interface Holder {

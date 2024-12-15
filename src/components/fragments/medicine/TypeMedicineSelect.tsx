@@ -23,7 +23,7 @@ export function TypeMedicineSelect({
     onChange,
     value
 }: {
-    onChange: (...event: any[]) => void;
+    onChange: (e: string) => void;
     value: string
 }) {
     const [open, setOpen] = React.useState(false)

@@ -5,16 +5,9 @@ import TrasnsactionForm from '@components/fragments/transaction/CreateTransactio
 import DashboardLayout, { DashboardLayoutHeader } from '@components/layouts/DashboardLayout'
 import { Input } from '@components/ui/input'
 import { toast } from '@hooks/use-toast'
-import { Medicine } from '@models/medicines'
 import React, { Suspense, useEffect, useState } from 'react'
 import { Button } from '@components/ui/button'
-import { getTransactionByCode } from '@/actions/transaction'
-import { printPdf } from '@components/pdf/util'
-import Invoice from '@components/pdf/Invoice'
 import useLoading from '@hooks/use-loading'
-import { getApotek } from '@/actions/apotek'
-import { apotek } from '@db/schema'
-import { Apotek } from '@models/apotek'
 import UpdateInstallmentPayment from '@components/fragments/transaction/UpdateInstallmentPayment'
 import ReturTransactionForm from '@components/fragments/transaction/ReturTransactionForm'
 import { getLatestShift } from '@/actions/shift'
@@ -24,11 +17,14 @@ import Loading from '@components/ui/loading'
 import { getInvoicePdf } from '@services/pdf/invoice'
 
 export type Item = {
-  medicineId: number;
+  id: number;
   qty: number;
   name: string;
-  price: number;
-  stock: number
+  code: string;
+  purchase_price: number;
+  stock: number;
+  type: "medicine" | "presciption";
+  selling_price: number;
 }
 
 
@@ -59,7 +55,7 @@ function Kasir() {
     }
   }
 
-  function handleAdd(val: Medicine, qty: number) {
+  function handleAdd(val: Item, qty: number) {
 
     if (!qty)
       return
@@ -75,7 +71,7 @@ function Kasir() {
       })
 
 
-    const isExist = items.find(fo => fo.medicineId == val.id)
+    const isExist = items.find(fo => fo.id == val.id)
 
     if (isExist?.qty! + qty > val.stock)
       return toast({
@@ -87,18 +83,15 @@ function Kasir() {
     setItems(prevItems => {
       if (isExist) {
         return prevItems.map((item) =>
-          item.medicineId === isExist.medicineId
+          item.id === isExist.id
             ? { ...item, qty: item.qty + qty }
             : item
         );
       } else {
         return [
           {
-            medicineId: val.id,
-            name: val.name,
-            price: val.selling_price,
-            qty: qty,
-            stock: val.stock
+            ...val,
+            qty: qty
           },
           ...prevItems,
         ];
@@ -125,13 +118,13 @@ function Kasir() {
         )}
 
         <DashboardLayoutHeader title='Kasir'>
-          <ReturTransactionForm handleFetch={async () => { }} />
+          {/* <ReturTransactionForm handleFetch={async () => { }} /> */}
           <UpdateInstallmentPayment />
         </DashboardLayoutHeader>
         <div className='relative'>
           <div className='grid md:grid-cols-2 gap-2'>
             <div>
-              <Input disabled value={shift.data?.cashier_balance ?? 0} />
+              {/* <Input disabled value={shift.data?.cashier_balance ?? 0} /> */}
               <SearchMedicine variant='selling' handleAdd={handleAdd} />
             </div>
             <div className='flex flex-col gap-2'>

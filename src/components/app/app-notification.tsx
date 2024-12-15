@@ -1,40 +1,53 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client"
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Bell } from "lucide-react";
+import { Bell, BellDot, Dot } from "lucide-react";
 import NotificationsList from "./notification-content";
+import { useEffect, useState } from "react";
+import { getNotiUser, getNotifInterval } from "@/actions/notification";
+import { Notification as NotifType } from "@models/notif";
+import { usePathname } from "next/navigation";
 
 function AppNotication() {
+
+  const [notif, setNotif] = useState<NotifType[]>([]);
+  const route = usePathname();
+
+  async function getNotif() {
+    try {
+      const get = await getNotiUser()
+      if (get) {
+        setNotif(get as any)
+      }
+    } catch (error) {
+    }
+  }
+
+  useEffect(() => {
+    getNotif()
+  }, [route])
+
+
+
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button>
-          <Bell />
-        </Button>
+        <button className="relative">
+          {notif.length ? <BellDot /> : <Bell />}
+        </button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
-          <SheetTitle>All noricication</SheetTitle>
-          <SheetDescription>
-            <NotificationsList />
-          </SheetDescription>
+          <SheetTitle>Semua Notifikasi</SheetTitle>
         </SheetHeader>
-        <div className="grid gap-4 py-4">{/* Content  */}</div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <span>Footer</span>
-          </SheetClose>
-        </SheetFooter>
+        <NotificationsList data={notif} setData={setNotif} />
       </SheetContent>
     </Sheet>
   );

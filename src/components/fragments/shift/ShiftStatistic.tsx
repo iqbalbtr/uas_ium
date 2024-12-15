@@ -5,7 +5,7 @@ import Loading from '@components/ui/loading'
 import useFetch from '@hooks/use-fetch'
 import { TrendingUp } from 'lucide-react'
 import React from 'react'
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 const chartConfig = {
     selling: {
         label: "Total Penjualan",
@@ -41,20 +41,20 @@ function ShiftStatistic() {
                     ) : (
                         <ChartContainer config={chartConfig}>
                             <AreaChart
-                                accessibilityLayer
+                                // accessibilityLayer
                                 data={statistic.data}
                                 margin={{
                                     left: 12,
                                     right: 12,
                                 }}
                             >
+                                <YAxis type='number'  />
                                 <CartesianGrid vertical={false} />
                                 <XAxis
                                     dataKey="hour"
                                     tickLine={false}
                                     axisLine={false}
                                     tickMargin={8}
-                                    tickFormatter={(value) => value.slice(0, 3)}
                                 />
                                 <ChartTooltip
                                     cursor={false}
@@ -88,19 +88,19 @@ function ShiftStatistic() {
                                 </defs>
                                 <Area
                                     dataKey="sellingTotal"
-                                    type="natural"
-                                    fill="url(#fillRetur)"
-                                    fillOpacity={0.4}
-                                    stroke="var(--color-retur)"
-                                    stackId="a"
-                                />
-                                <Area
-                                    dataKey="returTotal"
-                                    type="natural"
+                                    type="bump"
                                     fill="url(#fillSelling)"
                                     fillOpacity={0.4}
                                     stroke="var(--color-selling)"
-                                    stackId="a"
+                                    name='Penjualan'
+                                />
+                                <Area
+                                    dataKey="returTotal"
+                                    type="bump"
+                                    fill="url(#fillRetur)"
+                                    fillOpacity={0.4}
+                                    stroke="var(--color-retur)"
+                                    name={"Retur"}
                                 />
                             </AreaChart>
                         </ChartContainer>

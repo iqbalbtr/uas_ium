@@ -15,6 +15,8 @@ import { Order } from "@models/orders";
 import DetailItemOrder from "./DetailItemOrder";
 import { useNumberPage } from "@hooks/use-paggination";
 import Loading from "@components/ui/loading";
+import { getDateFormat, getRupiahFormat } from "@libs/utils";
+import { getPaymentClass, getStatusTransClass } from "@libs/style";
 
 function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
 
@@ -35,6 +37,7 @@ function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
           <TableHead>Penerimaan</TableHead>
           <TableHead>Obat dibeli</TableHead>
           <TableHead>Metode Pembayaran</TableHead>
+          <TableHead>Status Pembayaran</TableHead>
           <TableHead>Pembayaran Kadaluarsa</TableHead>
         </TableRow>
       </TableHeader>
@@ -46,18 +49,19 @@ function ReceiptTable({ data, isLoading, handleFetch }: TableView<Order>) {
               <TableCell>{fo.order_code}</TableCell>
               <TableCell>{fo.order_date?.toLocaleString()}</TableCell>
               <TableCell>{fo.supplier}</TableCell>
-              <TableCell>{fo.order_status}</TableCell>
-              <TableCell>{fo.tax}</TableCell>
-              <TableCell>{fo.discount}</TableCell>
-              <TableCell>{fo.total}</TableCell>
+              <TableCell ><span className={getStatusTransClass(fo.order_status).class}>{getStatusTransClass(fo.order_status).label}</span></TableCell>
+              <TableCell>{fo.tax}%</TableCell>
+              <TableCell>{fo.discount}%</TableCell>
+              <TableCell>{getRupiahFormat(fo.total)}</TableCell>
               <TableCell>
                 <ModalTable id={fo.id} />
               </TableCell>
               <TableCell>
                 <DetailItemOrder id={fo.id} />
               </TableCell>
-              <TableCell>{fo.payment_method}</TableCell>
-              <TableCell>{fo.payment_expired?.toLocaleString()}</TableCell>
+              <TableCell ><span className={getPaymentClass(fo.payment_method).class}>{getPaymentClass(fo.payment_method).label}</span></TableCell>
+              <TableCell ><span className={getStatusTransClass(fo.payment_status).class}>{getStatusTransClass(fo.payment_status).label}</span></TableCell>
+              <TableCell>{getDateFormat(fo.payment_expired)}</TableCell>
             </TableRow>
           ))
         }

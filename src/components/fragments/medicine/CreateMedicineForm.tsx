@@ -270,7 +270,7 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                                             Jenis
                                                         </FormLabel>
                                                         <FormControl>
-                                                            <TypeMedicineSelect {...field} />
+                                                            <TypeMedicineSelect value={field.value} onChange={field.onChange} />
                                                         </FormControl>
                                                         <FormMessage className="text-red-500 font-normal" />
                                                     </FormItem>
@@ -287,7 +287,7 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                                             Kategori
                                                         </FormLabel>
                                                         <FormControl>
-                                                            <CategoryMedicineSelect {...field} />
+                                                            <CategoryMedicineSelect value={field.value} onChange={field.onChange} />
                                                         </FormControl>
                                                         <FormMessage className="text-red-500 font-normal" />
                                                     </FormItem>
@@ -351,7 +351,7 @@ function CreateMedicineForm({ handleFetch }: { handleFetch: () => Promise<void> 
                                                 render={({ field }) => (
                                                     <FormItem className='flex flex-col gap-1'>
                                                         <FormLabel>
-                                                            Waktu kadaluarsa
+                                                            Waktu kadaluarsa / Hari
                                                         </FormLabel>
                                                         <FormControl>
                                                             <Input

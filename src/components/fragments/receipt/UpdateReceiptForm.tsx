@@ -1,14 +1,14 @@
 "use client"
 import { Button } from '@components/ui/button'
 import { Input } from '@components/ui/input'
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form';
 import useLoading from '@hooks/use-loading';
 import { toast } from '@hooks/use-toast';
-import {  UserPlus } from 'lucide-react';
+import { Pen, UserPlus } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@components/ui/select';
 import { TableMutation } from '@models/view';
 import { Receipt } from '@models/receipts';
@@ -87,13 +87,13 @@ function UpdateReceiptForm({ data, handleFetch }: TableMutation<Receipt>) {
     return (
         <Drawer open={isOpen} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="ghost">
-                    <UserPlus />
-                </Button>
+                <button className={`bg-yellow-400/70 p-1 rounded-md border border-yellow-600`}>
+                    <Pen size={15} className={`text-yellow-700`} />
+                </button>
             </DrawerTrigger>
             <DrawerContent className='px-24'>
                 <DrawerHeader>
-                    <DrawerTitle>Tambah User</DrawerTitle>
+                    <DrawerTitle>Terima Barang</DrawerTitle>
                 </DrawerHeader>
 
                 <div className='grid md:grid-cols-2 gap-3'>
@@ -157,7 +157,7 @@ function UpdateReceiptForm({ data, handleFetch }: TableMutation<Receipt>) {
                                     )}
                                 />
                             </div>
-                            <Button disabled={isLoading == "loading"} type='submit' className="w-full">
+                            <Button disabled={isLoading == "loading"} type='submit' className="w-full mt-5">
                                 <Loading isLoading={isLoading}>
                                     Ubah
                                 </Loading>

@@ -38,7 +38,7 @@ export const getShiftExcel = async (start?: Date, end?: Date) => {
     });
 
     main.headRow({
-        position: "C4",
+        position: "B4",
         value: "Mulai",
     });
     
@@ -125,7 +125,7 @@ export const getShiftExcel = async (start?: Date, end?: Date) => {
             item.income_total,
             item.transaction_total,
             item.status_shift,
-            item.holder.username,
+            item.holder?.username,
         ]
 
         resultItem.forEach(itemData => {

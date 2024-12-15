@@ -16,6 +16,7 @@ import { Button } from "@components/ui/button";
 import { Printer } from "lucide-react";
 import Loading from "@components/ui/loading";
 import { useNumberPage } from "@hooks/use-paggination";
+import PrintShift from "../shift/PrintShift";
 
 function ShiftTable({ data, isLoading, handleFetch }: TableView<Shift>) {
 
@@ -52,12 +53,10 @@ function ShiftTable({ data, isLoading, handleFetch }: TableView<Shift>) {
                 {fo.status_shift}
               </TableCell>
               <TableCell>
-                {fo.holder.name}
+                {fo.holder?.name}
               </TableCell>
               <TableCell>
-                <Button>
-                  <Printer />
-                </Button>
+                <PrintShift id={fo.id} />
               </TableCell>
             </TableRow>
           ))

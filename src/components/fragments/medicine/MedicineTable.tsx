@@ -10,6 +10,7 @@ import DeleteMedicine from './DeleteMedicine';
 import TableLayout from '@components/layouts/TableLayout';
 import Loading from '@components/ui/loading';
 import { useNumberPage } from '@hooks/use-paggination';
+import { getRupiahFormat } from '@libs/utils';
 
 function MedicineTable({
     data,
@@ -22,21 +23,21 @@ function MedicineTable({
     return (
         <TableLayout>
             <Table>
-                <TableHeader>
-                    <TableRow>
+                <TableHeader className='overflow-x-auto'>
+                    <TableRow className='w-fit'>
                         <TableHead>No</TableHead>
-                        <TableHead>Name </TableHead>
-                        <TableHead>Kode</TableHead>
-                        <TableHead>Kategori</TableHead>
+                        <TableHead className='w-[150px]'>Name </TableHead>
+                        <TableHead className='w-[60px]'>Kode</TableHead>
+                        <TableHead className='w-[150px]'>Kategori</TableHead>
                         <TableHead>Jenis</TableHead>
-                        <TableHead>Dosis</TableHead>
-                        <TableHead>Active Ingredient</TableHead>
-                        <TableHead>Masa Kadaluarsa</TableHead>
+                        <TableHead className='w-[80px]'>Dosis</TableHead>
+                        <TableHead className='w-[200px]'>Active Ingredient</TableHead>
+                        <TableHead className='w-[180px]'>Masa Kadaluarsa</TableHead>
                         <TableHead>Indication</TableHead>
                         <TableHead>Stok</TableHead>
-                        <TableHead>Harga Jual</TableHead>
-                        <TableHead>Harga Beli</TableHead>
-                        <TableHead>Side Effect</TableHead>
+                        <TableHead className='w-[200px]'>Harga Jual</TableHead>
+                        <TableHead className='w-[200px]'>Harga Beli</TableHead>
+                        <TableHead className='w-[200px]'>Side Effect</TableHead>
                         <TableHead>Pengingat</TableHead>
                         <TableHead>Aksi</TableHead>
                     </TableRow>
@@ -54,9 +55,9 @@ function MedicineTable({
                                 <TableCell>{fo.active_ingredients}</TableCell>
                                 <TableCell>{fo.expired?.toLocaleString()} hari</TableCell>
                                 <TableCell>{fo.indication}</TableCell>
-                                <TableCell>{fo.stock}</TableCell>
-                                <TableCell>{fo.selling_price}</TableCell>
-                                <TableCell>{fo.purchase_price}</TableCell>
+                                <TableCell><span className='p-1 font-semibold rounded-md bg-green-400 text-green-700'>{fo.stock}</span></TableCell>
+                                <TableCell>{getRupiahFormat(fo.selling_price)}</TableCell>
+                                <TableCell>{getRupiahFormat(fo.purchase_price)}</TableCell>
                                 <TableCell>{fo.side_effect}</TableCell>
                                 <TableCell>
                                     <Popover>
@@ -81,7 +82,7 @@ function MedicineTable({
                                         </PopoverContent>
                                     </Popover>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className='flex gap-2'>
                                     <UpdateMedicineForm data={fo} handleFetch={handleFetch} />
                                     <DeleteMedicine data={fo} handleFetch={handleFetch} />
                                 </TableCell>
