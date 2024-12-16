@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 // import { ThemeProvider } from "@components/theme-provider";
-import Page from "@components/navbar/sidebar";
 import { Toaster } from "@components/ui/toaster";
+import { getApotek } from "@/actions/apotek";
 
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
+const apotek = await getApotek()
 
 export const metadata: Metadata = {
-  title: "UAS IUM",
+  title: apotek.name ?? "Apotek",
   description: "",
+  category: "inventory",
+  icons: "/logo.jpg",
+  creator: "",
+  openGraph: {
+    type: "website",
+    images: "/logo.jpg",
+    title: apotek.name,
+    url: "",
+    emails: apotek.email!,
+    phoneNumbers: apotek.phone!
+  }
 };
 
 export default function RootLayout({
@@ -27,15 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      // className={typeof window !== "undefined" ? "light" : "dark"}
-      // style={{ colorScheme: typeof window !== "undefined" ? "light" : "dark" }}
-    >
-      <body
-      // className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-      <Toaster />
+    <html lang="en" >
+      <body >
+        <Toaster />
         <main>{children}</main>
       </body>
     </html>

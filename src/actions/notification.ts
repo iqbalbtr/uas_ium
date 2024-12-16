@@ -59,8 +59,6 @@ export const getNotifInterval = async (len: number): Promise<any[]> => {
 
 export const deleteNotif = async (id: number) => {
     const isExist = await db.select({ count: sql`COUNT(*)` }).from(notif).where(eq(notif.id, id))
-    console.log(isExist);
-
     if (isExist[0].count as number == 0) {
         throw new Error("Notif is not found")
     }

@@ -12,10 +12,7 @@ import { NavType } from '@components/app/app-sidebar'
 
 function AccessDialog({ children, access, setAccess }: { children: ReactNode, access: NavType[], setAccess: Dispatch<SetStateAction<NavType[]>> }) {
 
-
-
     const handleCheck = (parent: string, child?: string) => {
-        console.log(parent, child);
       
         if (child) {
           setAccess((prevAccess) => {

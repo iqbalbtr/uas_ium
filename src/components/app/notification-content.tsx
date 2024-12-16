@@ -1,6 +1,7 @@
 "use client"
 import { deleteNotif } from "@/actions/notification";
 import { Card } from "@/components/ui/card";
+import Loading from "@components/ui/loading";
 import useLoading from "@hooks/use-loading";
 import { toast } from "@hooks/use-toast";
 import { formatCurrentTime } from "@libs/utils";
@@ -61,6 +62,7 @@ export default function NotificationsList({
           </Card>
         ))
       }
+      {isLoading == "loading"  && <Loading isLoading="loading" type="loader" />}
     </div>
   );
 }

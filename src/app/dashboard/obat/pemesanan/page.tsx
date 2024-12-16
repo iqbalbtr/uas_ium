@@ -16,9 +16,7 @@ function Pemesanan() {
     handleGet: async (page, setPage) => {
       const get = await getOrder(page.page, page.limit);
       if (get) {
-        setUser(get.data as Order[]);
-        console.log(get);
-        
+        setUser(get.data as Order[]);        
         setPage(get.pagging);
       }
     },

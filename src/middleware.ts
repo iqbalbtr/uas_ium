@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import db from './db';
 import { NavType } from '@components/app/app-sidebar';
+import { roles } from '@db/schema';
+import { eq } from 'drizzle-orm';
 
 const authRoute = ['/login'];
 
@@ -47,15 +49,13 @@ export default async function middleware(req: NextRequest) {
     }
 
     if (isProtectedRoute && session) {
-        const getRole = await db.query.roles.findFirst({
-            where: (role, { eq }) => eq(role.id, session.roleId),
-        });
+        const getRole = await db.select().from(roles).where(eq(roles.id, session.roleId))
 
-        if (!getRole) {
+        if (!getRole[0]) {
             return NextResponse.redirect(new URL('/login', req.nextUrl));
         }
 
-        const userPath = getPath(getRole.access_rights as NavType[])
+        const userPath = getPath(getRole[0].access_rights as NavType[])
 
         if (!userPath.includes(path)) {
             return NextResponse.redirect(new URL('/not-authorized', req.nextUrl));

@@ -1,24 +1,36 @@
 "use server"
 
 import db from "@db/index"
-import { retur_transaction_item, retur_transactions, shift, transaction_item, transactions } from "@db/schema"
-import { and, eq, gte, lte, sql } from "drizzle-orm"
+import { retur_transaction_item, retur_transactions, shift, transaction_item, transactions, users } from "@db/schema"
+import { and, desc, eq, gte, lte, sql } from "drizzle-orm"
 import { getUserById, getUserByUsername } from "./auth"
 
 export const getLatestShift = async () => {
-    const shift = await db.query.shift.findFirst({
-        orderBy: (sh, { desc }) => desc(sh.start_shift),
-        with: {
-            holder: {
-                columns: {
-                    name: true,
-                    username: true
-                }
-            }
+    const res = await db.select({
+        id: shift.id,
+        start_shift: shift.start_shift,
+        end_shift: shift.end_shift,
+        begining_balance: shift.begining_balance,
+        retur_item_total: shift.retur_item_total,
+        retur_total: shift.retur_total,
+        notes: shift.notes,
+        ending_balance: shift.ending_balance,
+        balance_different: shift.balance_different,
+        income_total: shift.income_total,
+        transaction_total: shift.transaction_total,
+        status_shift: shift.status_shift,
+        cashier_balance: shift.cashier_balance,
+        receivables_total: shift.receivables_total,
+        sales_total: shift.sales_total,
+        holder: {
+            username: users.username,
+            name: users.name
         }
-    })
+    }).from(shift)
+        .leftJoin(users, eq(users.id, shift.balance_holder))
+        .orderBy(desc(shift.start_shift))
 
-    return shift
+    return res[0]
 }
 
 export const createShift = async (balance: number) => {
@@ -46,14 +58,14 @@ export const createShift = async (balance: number) => {
     return "Create shift successfully"
 }
 
-export const getShiftById = async(id: number) => {
+export const getShiftById = async (id: number) => {
     const get = await db.query.shift.findFirst({
         where(fields, operators) {
             return operators.eq(fields.id, id)
         },
     })
 
-    if(!get)
+    if (!get)
         throw new Error("Shift is not found")
 
     return get

@@ -7,9 +7,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import AppNotication from "@components/app/app-notification";
-import NavBreadCrumb from "./nav-breadcumb";
+import NavBreadCrumb from "../navbar/nav-breadcumb";
 
-export default function Page({ children }: { children: React.ReactNode }) {
+export default function AppDashboard({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />

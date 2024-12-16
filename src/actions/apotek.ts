@@ -3,6 +3,7 @@
 import db from "@/db"
 import { apotek } from "@/db/schema"
 import { createActivityLog } from "./activity-log"
+import { eq } from "drizzle-orm"
 
 export const updateApotek = async(
     name: string,
@@ -30,5 +31,5 @@ export const updateApotek = async(
 }
 
 export const getApotek = async() => {
-    return db.query.apotek.findFirst();
+    return (await db.select().from(apotek).where(eq(apotek.id, 1)))[0]
 }

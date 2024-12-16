@@ -5,9 +5,7 @@ import EndShiftUserForm from "@components/fragments/shift/EndShiftUserForm";
 import ShiftStatistic from "@components/fragments/shift/ShiftStatistic";
 import UpdateNote from "@components/fragments/shift/UpdateNote";
 import UpdateShiftForm from "@components/fragments/shift/UpdateShiftForm";
-import DashboardLayout, {
-    DashboardLayoutHeader,
-} from "@components/layouts/DashboardLayout";
+import DashboardLayout, { DashboardLayoutHeader } from "@components/layouts/DashboardLayout";
 import {
     Card,
     CardContent,
@@ -31,12 +29,12 @@ function Shift() {
             <DashboardLayoutHeader title="Shift">
                 {data?.status_shift == "pending" && <UpdateShiftForm handleFetch={refresh} />}
                 {data?.status_shift == "pending" && <EndShiftUserForm notes={data.notes!} handleFetch={refresh} />}
-                {data?.status_shift === "completed" || data?.status_shift === "cancelled" || !data && <CreateShiftForm handleFetch={refresh} />}
+                {(data?.end_shift || !data)  && <CreateShiftForm handleFetch={refresh} />}
             </DashboardLayoutHeader>
 
-            <div className="grid grid-cols-5 grid-rows-6 gap-3">
+            <div className="grid md:grid-cols-5 grid-rows-5 md:grid-rows-6 gap-3">
 
-                <Card className="bg-purple-100 flex flex-col justify-between dark:bg-purple-900/20 col-span-2 row-span-2">
+                <Card className="bg-purple-100 flex flex-col justify-between dark:bg-purple-900/20 col-span-1 md:col-span-2 md:row-span-2">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-lg font-medium">Waktu Mulai</CardTitle>
                         <Wallet2 size={30} className=" text-purple-600" />
@@ -47,7 +45,7 @@ function Shift() {
                     </CardContent>
                 </Card>
 
-                <Card className="bg-indigo-100 flex flex-col justify-between dark:bg-indigo-900/20 col-span-2 row-span-2 col-start-3">
+                <Card className="bg-indigo-100 flex flex-col justify-between dark:bg-indigo-900/20 col-span-1 md:col-span-2 md:row-span-2 md:col-start-3 md:row-start-1 row-start-2">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-lg font-medium">Saldo Awal</CardTitle>
                         <Wallet2 size={30} className=" text-indigo-600" />
@@ -60,7 +58,7 @@ function Shift() {
 
 
 
-                <Card className="bg-emerald-100 flex flex-col justify-between dark:bg-emerald-900/20  row-span-2 col-start-5">
+                <Card className="bg-emerald-100 flex flex-col justify-between dark:bg-emerald-900/20 col-span-1 md:row-span-2 md:col-start-5 row-start-3">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-lg font-medium">Pemegang</CardTitle>
                         <Wallet2 size={30} className=" text-emerald-600" />
@@ -71,7 +69,7 @@ function Shift() {
                     </CardContent>
                 </Card>
 
-                <Card className="col-span-3 row-span-4 relative row-start-3 bg-yellow-100">
+                <Card className="md:col-span-3 md:row-span-4 relative  bg-yellow-100">
                     <CardHeader>
                         <CardTitle>Catatan</CardTitle>
                     </CardHeader>

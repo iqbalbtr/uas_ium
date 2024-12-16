@@ -27,7 +27,7 @@ function ShiftStatistic() {
     })
 
     return (
-        <Card className="col-span-2 row-span-4 bg-slate-100 col-start-4 row-start-3">
+        <Card className="md:col-span-2 row-span-4 bg-slate-100 md:col-start-4 row-start-4 md:row-start-3">
             <CardHeader>
                 <CardTitle>Penjualan - Pengembalian</CardTitle>
                 <CardDescription>

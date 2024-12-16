@@ -16,8 +16,6 @@ function Penjualan() {
       const get = await getTransaction(page.page, page.limit)
       if (get) {
         setPenjualan(get.data)
-        console.log(get);
-
         setPage(get.pagging)
       }
     },

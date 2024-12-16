@@ -17,6 +17,10 @@ import { useSession } from "next-auth/react";
 import { getRoleById } from "@/actions/role";
 import useLoading from "@hooks/use-loading";
 import Loading from "@components/ui/loading";
+import Image from "next/image";
+import useFetch from "@hooks/use-fetch";
+import { getApotek } from "@/actions/apotek";
+import Link from "next/link";
 
 
 export interface NavType {
@@ -36,7 +40,8 @@ export interface Item {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const [sideData, setSideData] = React.useState<NavType[]>([])
-  const {isLoading, setLoading} = useLoading()
+  const { data: apotek } = useFetch({ defaultValue: undefined, url: getApotek })
+  const { isLoading, setLoading } = useLoading()
 
   const { data } = useSession()
 
@@ -44,11 +49,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setLoading("loading")
     try {
       const get = await getRoleById(data?.user.roleId!)
-      if(get){
+      if (get) {
         setSideData(get.access_rights as NavType[])
       }
     } catch (error) {
-      
+
     } finally {
       setLoading("idle")
     }
@@ -63,21 +68,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <LucideAArrowUp className="size-4" />
-          </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">
-              Apotek Empat Husada
-            </span>
-            <span className="truncate text-xs">Husada Group</span>
-          </div>
-          <ChevronsUpDown className="ml-auto" />
-        </SidebarMenuButton>
+        <Link href={"/dashboard"}>
+          <SidebarMenuButton
+            size="lg"
+            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+          >
+            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <Image width={100} height={100} className="h-full object-cover" alt="logo.jpg" src={"/logo.jpg"} decoding="async" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">
+                {apotek?.name}
+              </span>
+              <span className="truncate text-xs">{apotek?.email}</span>
+            </div>
+            <ChevronsUpDown className="ml-auto" />
+          </SidebarMenuButton>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         {isLoading == "loading" ? <Loading className="p-6" isLoading={isLoading} /> : <NavMain items={sideData} />}

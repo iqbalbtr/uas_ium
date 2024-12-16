@@ -17,6 +17,7 @@ import PresciptionMedicineTable, { ItemPresciption } from './PresciptionMedicine
 import { createPresciption } from '@/actions/prescription';
 import Loading from '@components/ui/loading';
 import { Item } from '@/app/dashboard/kasir/page';
+import { getRupiahFormat } from '@libs/utils';
 
 
 function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
@@ -157,7 +158,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                 <div className='grid md:grid-cols-2 gap-6'>
                     <SearchMedicine variant='presciption' handleAdd={handleAdd} />
                     <div>
-                        <Input className='mb-6' disabled value={`Rp. ${total}`} />
+                        <h1 className='text-xl font-bold px-3'>{getRupiahFormat(total)}</h1>
                         <PresciptionMedicineTable items={items} setItem={setItems} />
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 p-6 bg-background shadow border-2 rounded-lg border-border mt-6">
@@ -253,7 +254,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                                         render={({ field }) => (
                                             <FormItem className='flex flex-col gap-1'>
                                                 <FormLabel>
-                                                    jasa | rupiah
+                                                    Biaya Tambahan / Rupiah
                                                 </FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -304,7 +305,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                                                 <TextArea
                                                     rows={4}
                                                     id="tax"
-                                                    placeholder="tax.."
+                                                    placeholder="Deskripsi .."
                                                     className="placeholder:opacity-50"
                                                     {...field}
                                                 />
@@ -325,7 +326,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                                                 <TextArea
                                                     rows={4}
                                                     id="tax"
-                                                    placeholder="tax.."
+                                                    placeholder="Instruksi .."
                                                     className="placeholder:opacity-50"
                                                     {...field}
                                                 />

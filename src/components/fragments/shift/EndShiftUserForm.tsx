@@ -30,7 +30,7 @@ function EndShiftUserForm({ handleFetch, notes }: { notes: string, handleFetch: 
         defaultValues: {
             balance: 0,
             balance_holder: "",
-            notes: notes
+            notes: notes ?? ""
         },
     })
 
@@ -145,7 +145,7 @@ function EndShiftUserForm({ handleFetch, notes }: { notes: string, handleFetch: 
                         <AlertDialogFooter>
                             <Button disabled={isLoading == "loading"} type='submit' className="w-fit">
                                 <Loading isLoading={isLoading}>
-                                    Tutup
+                                    Tutup Shift
                                 </Loading>
                             </Button>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>

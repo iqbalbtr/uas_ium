@@ -70,8 +70,6 @@ export function TimelineDialog({ id }: { id: number }) {
     getTimeline()
   }, [])
 
-  console.log(isLoading);
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

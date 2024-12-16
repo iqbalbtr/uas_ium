@@ -17,7 +17,6 @@ function RecentActivity() {
         defaultValue: []
     })
 
-
     return (
         <Card className="md:col-span-3">
             <CardHeader>

@@ -38,8 +38,6 @@ export const createRole = async (name: string, roleAssignts: RoleAssignts) => {
     name,
     access_rights: roleAssignts,
   });
-
-  console.log(name);
   
   await createActivityLog((user) => ({
     action_name: "Membuat Role",
