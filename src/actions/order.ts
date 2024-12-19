@@ -142,8 +142,8 @@ export const createOrder = async (
 
   if (total < 0) throw new Error("Total is not valid");
 
-  await db.transaction(async (tx) => {
-    const newOrder = await tx
+  // await db.transaction(async (tx) => {
+    const newOrder = await db
       .insert(orders)
       .values({
         ...order,
@@ -160,7 +160,7 @@ export const createOrder = async (
       .returning();
 
     for (const med of requestMedicine) {
-      await tx.insert(order_medicine).values({
+      await db.insert(order_medicine).values({
         order_id: newOrder[0].id,
         quantity: med.payload.qty,
         sub_total: med.payload.qty * med.medicine.purchase_price,
@@ -169,7 +169,7 @@ export const createOrder = async (
         medicine_id: med.medicine.id,
       });
     }
-  });
+  // });
 
   await createActivityLog((user) => ({
     action_name: "Membuat Pesananan",

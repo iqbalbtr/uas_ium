@@ -163,60 +163,60 @@ export const createTransaction = async (
 
     const payment_status = transaction.payment_method == "cash" ? "completed" : "pending"
 
-    await db.transaction(async tx => {
-        const trans = await tx.insert(transactions).values({
-            buyer: transaction.buyer,
-            discount: transaction.discount,
-            payment_method: transaction.payment_method,
-            tax: transaction.tax,
-            transaction_status: transaction.payment_method == "cash" ? "completed" : "pending",
-            total: total - disc + tax,
-            user_id: userId,
-            transaction_date: new Date(),
-            payment_status,
-            payment_expired: transaction.payment_expired ? new Date(transaction.payment_expired) : null,
-            code_transaction: "TS" + String(code[0].count as number),
-            payment_date: transaction.payment_method == "cash" ? new Date() : null
-        }).returning()
+    // await db.transaction(async tx => {
+    const trans = await db.insert(transactions).values({
+        buyer: transaction.buyer,
+        discount: transaction.discount,
+        payment_method: transaction.payment_method,
+        tax: transaction.tax,
+        transaction_status: transaction.payment_method == "cash" ? "completed" : "pending",
+        total: total - disc + tax,
+        user_id: userId,
+        transaction_date: new Date(),
+        payment_status,
+        payment_expired: transaction.payment_expired ? new Date(transaction.payment_expired) : null,
+        code_transaction: "TS" + String(code[0].count as number),
+        payment_date: transaction.payment_method == "cash" ? new Date() : null
+    }).returning()
 
-        for (const item of allItem) {
+    for (const item of allItem) {
 
-            if (item.type == "medicine") {
+        if (item.type == "medicine") {
 
-                if (item.data.medicine_reminder.min_stock! >= item.stock) {
-                    await createNotif("stock", item.id, {
-                        title: "Stok obat menipis",
-                        description: `Stok obat ${item.data.name} mulai menipis ${item.stock} dengan batas ${item.data.medicine_reminder.min_stock}`
-                    })
-                }
-
-                await tx.update(medicines).set({
-                    stock: item.stock
-                }).where(eq(medicines.id, item.id))
-
-                await tx.insert(transaction_item).values({
-                    quantity: item.qty,
-                    sub_total: item.subTotal,
-                    transaction_id: trans[0].id,
-                    medicine_id: item.id,
-                    difference_sub_total: item.diffenceTotal
-                })
-            } else {
-                await tx.update(prescriptions).set({
-                    stock: item.stock
-                }).where(eq(prescriptions.id, item.id))
-
-                await tx.insert(transaction_item).values({
-                    quantity: item.qty,
-                    sub_total: item.subTotal,
-                    transaction_id: trans[0].id,
-                    presciption_id: item.id,
-                    difference_sub_total: item.diffenceTotal
+            if (item.data.medicine_reminder.min_stock! >= item.stock) {
+                await createNotif("stock", item.id, {
+                    title: "Stok obat menipis",
+                    description: `Stok obat ${item.data.name} mulai menipis ${item.stock} dengan batas ${item.data.medicine_reminder.min_stock}`
                 })
             }
-        }
 
-    })
+            await db.update(medicines).set({
+                stock: item.stock
+            }).where(eq(medicines.id, item.id))
+
+            await db.insert(transaction_item).values({
+                quantity: item.qty,
+                sub_total: item.subTotal,
+                transaction_id: trans[0].id,
+                medicine_id: item.id,
+                difference_sub_total: item.diffenceTotal
+            })
+        } else {
+            await db.update(prescriptions).set({
+                stock: item.stock
+            }).where(eq(prescriptions.id, item.id))
+
+            await db.insert(transaction_item).values({
+                quantity: item.qty,
+                sub_total: item.subTotal,
+                transaction_id: trans[0].id,
+                presciption_id: item.id,
+                difference_sub_total: item.diffenceTotal
+            })
+        }
+    }
+
+    // })
 
     await createActivityLog((user) => ({
         action_name: "Membuat Transaksi",
@@ -256,13 +256,11 @@ export const updatePaymentInstallment = async (
     if (!currentShift)
         throw new Error("Shift is not found")
 
-    await db.transaction(async tx => {
-        await tx.update(transactions).set({
-            payment_status: "completed",
-            payment_date: new Date(),
-            transaction_status: "completed",
-        }).where(eq(transactions.id, isExist.id))
-    })
+    await db.update(transactions).set({
+        payment_status: "completed",
+        payment_date: new Date(),
+        transaction_status: "completed",
+    }).where(eq(transactions.id, isExist.id))
 
     await createActivityLog((user) => ({
         action_name: "Mengubah Transaksi",

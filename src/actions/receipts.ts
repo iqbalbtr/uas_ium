@@ -86,8 +86,8 @@ export const createReceipt = async (
       ? "full"
       : "partial";
 
-  await db.transaction(async (tx) => {
-    const receipt = await tx
+  // await db.transaction(async (tx) => {
+    const receipt = await db
       .insert(receipts)
       .values({
         order_id: orderExist.id,
@@ -98,7 +98,7 @@ export const createReceipt = async (
       })
       .returning();
 
-    await tx
+    await db
       .update(orders)
       .set({
         total_item_received: orderExist.total_item_received + total_received,
@@ -107,14 +107,14 @@ export const createReceipt = async (
       .where(eq(orders.id, orderExist.id));
 
     await Promise.all(isItem.map(async (fo) => {
-      await tx
+      await db
         .update(order_medicine)
         .set({
           received_total: fo.received_total + fo.payload.received,
         })
         .where(eq(order_medicine.id, fo.id));
 
-      await tx.insert(receipt_medicine).values({
+      await db.insert(receipt_medicine).values({
         receipt_id: receipt[0].id,
         received: fo.payload.received,
         order_medicine_id: fo.id,
@@ -128,7 +128,7 @@ export const createReceipt = async (
         })
       }
 
-      await tx
+      await db
         .update(medicines)
         .set({
           stock: fo.medicine?.stock! + fo.payload.received,
@@ -136,7 +136,7 @@ export const createReceipt = async (
         .where(eq(medicines.id, fo.medicine_id!));
     })
     );
-  });
+  // });
 
   await createActivityLog((user) => ({
     action_name: "Menerima pesanan",
@@ -153,7 +153,7 @@ export const removeReceipt = async (id: number) => {
 
   const isExisting = await getReceiptById(id);
 
-  await db.transaction(async (tx) => {
+  // await db.transaction(async (tx) => {
     await Promise.all(
       isExisting.receipt_medicines.map(async (fo) => {
         const isMedicine = await getMedicineById(
@@ -163,14 +163,14 @@ export const removeReceipt = async (id: number) => {
         if (isMedicine.stock - fo.received < 0)
           throw new Error("Item stock is not valid");
 
-        await tx
+        await db
           .update(order_medicine)
           .set({
             received_total: fo.order_medicine?.received_total! - fo.received,
           })
           .where(eq(order_medicine.id, fo.order_medicine_id!));
 
-        await tx
+        await db
           .update(medicines)
           .set({
             stock: isMedicine.stock - fo.received,
@@ -183,7 +183,7 @@ export const removeReceipt = async (id: number) => {
       isExisting.order.total_item_received -
       isExisting.receipt_medicines.reduce((acc, pv) => (acc += pv.received), 0);
 
-    await tx
+    await db
       .update(orders)
       .set({
         request_status: totalReceived == 0 ? "not_yet" : "partial",
@@ -191,8 +191,8 @@ export const removeReceipt = async (id: number) => {
       })
       .where(eq(orders.id, isExisting.order_id));
 
-    await tx.delete(receipts).where(eq(receipts.id, id));
-  });
+    await db.delete(receipts).where(eq(receipts.id, id));
+  // });
 
   await createActivityLog((user) => ({
     action_name: "Menerima pesanan",
@@ -264,8 +264,8 @@ export const updateReceipt = async (
         ? "full"
         : "partial";
 
-  await db.transaction(async (tx) => {
-    await tx
+  // await db.transaction(async (tx) => {
+    await db
       .update(orders)
       .set({
         total_item_received: current_order_total_item + total_received,
@@ -273,7 +273,7 @@ export const updateReceipt = async (
       })
       .where(eq(orders.id, orderExist.id));
 
-    await tx
+    await db
       .update(receipts)
       .set({
         receipt_status: receipt.receipt_status,
@@ -284,7 +284,7 @@ export const updateReceipt = async (
 
     await Promise.all(
       isItem.map(async (fo) => {
-        await tx
+        await db
           .update(order_medicine)
           .set({
             received_total:
@@ -292,14 +292,14 @@ export const updateReceipt = async (
           })
           .where(eq(order_medicine.id, fo.payload.order_medicine_id));
 
-        await tx
+        await db
           .update(receipt_medicine)
           .set({
             received: fo.payload.received,
           })
           .where(eq(receipt_medicine.id, fo.payload.receipt_medicine_id!));
 
-        await tx
+        await db
           .update(medicines)
           .set({
             stock: fo.medicine?.stock! + fo.payload.received,
@@ -307,7 +307,7 @@ export const updateReceipt = async (
           .where(eq(medicines.id, fo.medicine_id!));
       })
     );
-  });
+  // });
 
   await createActivityLog((user) => ({
     action_name: "Menerima pesanan",

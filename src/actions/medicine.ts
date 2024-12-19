@@ -50,20 +50,20 @@ export const createMedicine = async (
 
   if (isExist[0].count == 1) throw new Error("Medicine code already exist");
 
-  await db.transaction(async (tx) => {
-    const id = await tx
+  // await db.transaction(async (tx) => {a
+    const id = await db
       .insert(medicines)
       .values({
         ...medicine,
       })
       .returning();
 
-    await tx.insert(medicine_reminder).values({
+    await db.insert(medicine_reminder).values({
       max_stock: reminder.max,
       min_stock: reminder.min,
       medicine_id: id[0].id,
     });
-  });
+  // });
 
   await createActivityLog((user) => ({
     action_name: "Membuat obat ",
@@ -122,8 +122,8 @@ export const updateMedicine = async (
 
   if (isExist[0].count == 0) throw new Error("Medicine is not found");
 
-  await db.transaction(async (tx) => {
-    await tx
+  // await db.transaction(async (tx) => {k
+    await db
       .update(medicines)
       .set({
         ...medicine,
@@ -131,14 +131,14 @@ export const updateMedicine = async (
       })
       .where(eq(medicines.id, id));
 
-    await tx
+    await db
       .update(medicine_reminder)
       .set({
         max_stock: reminder.max,
         min_stock: reminder.min,
       })
       .where(eq(medicine_reminder.medicine_id, id));
-  });
+  // });
 
   await createActivityLog((user) => ({
     action_name: "Mengubah obat",

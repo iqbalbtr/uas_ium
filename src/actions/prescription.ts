@@ -76,8 +76,8 @@ export const createPresciption = async (
   const tax = presciption.tax * total;
   const discount = (presciption.discount / 100) * total;
 
-  await db.transaction(async (tx) => {
-    const newPresciption = await tx
+  // await db.transaction(async (tx) => {
+    const newPresciption = await db
       .insert(prescriptions)
       .values({
         code_prescription: presciption.code_presciption,
@@ -95,14 +95,14 @@ export const createPresciption = async (
       .returning();
 
         for (const item of medicines) {
-            await tx.insert(prescription_medicine).values({
+            await db.insert(prescription_medicine).values({
                 prescription_id: newPresciption[0].id,
                 quantity: item.qty,
                 notes: item.notes,
                 medicine_id: item.id
             })
         }
-    })
+    // })
 
     return "Create presciption successfully"
 }
@@ -110,16 +110,16 @@ export const createPresciption = async (
 export const removePresciption = async (id: number) => {
   const isExist = await getPresciptionById(id);
 
-  await db.transaction(async (tx) => {
+  // await db.transaction(async (tx) => {
     for (const fo of isExist.prescription_medicines) {
       if (!fo.medicine) continue;
 
-            await tx.update(medicines).set({
+            await db.update(medicines).set({
                 stock: (fo.medicine?.stock ?? 0) + (fo.quantity * isExist.stock)
             }).where(eq(medicines.id, fo.medicine_id!))
         }
-        await tx.update(prescriptions).set({ code_prescription: "-" + isExist.code_prescription, deleted: true }).where(eq(prescriptions.id, id))
-    })
+        await db.update(prescriptions).set({ code_prescription: "-" + isExist.code_prescription, deleted: true }).where(eq(prescriptions.id, id))
+    // })
 
 
     return "Remove presciption successfully"
@@ -160,8 +160,8 @@ export const updatePresciption = async (
     throw new Error("Price must more than equal 0");
   }
 
-  await db.transaction(async (tx) => {
-    await tx
+  // await db.transaction(async (tx) => {
+    await db
       .update(prescriptions)
       .set({
         name: presciption.name,
@@ -179,19 +179,19 @@ export const updatePresciption = async (
 
     await presciptionMutation(id, 0);
 
-    await tx
+    await db
       .delete(prescription_medicine)
       .where(eq(prescription_medicine.prescription_id, id));
 
         for (const item of medicnes) {
-            await tx.insert(prescription_medicine).values({
+            await db.insert(prescription_medicine).values({
                 prescription_id: id,
                 quantity: item.qty,
                 notes: item.notes,
                 medicine_id: item.id
             })
         }
-    })
+    // })
 
     return "Update presciption successfully"
 }
@@ -251,7 +251,7 @@ export const presciptionMutation = async (id: number, qty: number) => {
   const isPlus = isExist.stock > qty ? "plus" : "minus";
   const totalQty = Math.abs(isExist.stock - qty);
 
-  await db.transaction(async (tx) => {
+  // await db.transaction(async (tx) => {
     for (const fo of isExist.prescription_medicines) {
       if (!fo.medicine) {
         throw new Error(
@@ -274,7 +274,7 @@ export const presciptionMutation = async (id: number, qty: number) => {
         throw new Error(`Total stock of ${fo.medicine.name} is less than zero`);
       }
 
-      await tx
+      await db
         .update(medicines)
         .set({
           stock:
@@ -283,11 +283,11 @@ export const presciptionMutation = async (id: number, qty: number) => {
         .where(eq(medicines.id, fo.medicine_id!));
     }
 
-    await tx
+    await db
       .update(prescriptions)
       .set({ stock: qty })
       .where(eq(prescriptions.id, id));
-  });
+  // });
 
   return "Update successfully";
 };
