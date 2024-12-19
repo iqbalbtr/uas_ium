@@ -4,10 +4,8 @@ import db from "@/db";
 import { getMedicineById } from "./medicine";
 import { medicines, prescription_medicine, prescriptions } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
-import { getCountData } from "./helper";
 import { ObjectValidation } from "@/lib/utils";
 import { ItemPresciption } from "@components/fragments/presception/PresciptionMedicineTable";
-import { createActivityLog } from "./activity-log";
 
 export type MedicinePresciption = {
     id: number;

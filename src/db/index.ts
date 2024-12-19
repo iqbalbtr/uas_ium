@@ -1,6 +1,18 @@
+export const config = {
+    runtime: 'edge',
+};
+
 import * as schema from "./schema";
-import { drizzle } from "drizzle-orm/neon-serverless";
+import { drizzle, NeonClient, NeonDatabase } from "drizzle-orm/neon-serverless";
 
-const db = drizzle(process.env.NEXT_PUBLIC_DATABASE_URL!, { schema });
+let db: NeonDatabase<typeof schema> & {
+    $client: NeonClient;
+} | null = null;
 
-export default db;
+if (!db) {
+    db = drizzle(process.env.NEXT_PUBLIC_DATABASE_URL!, { schema });
+}
+
+export default db as (NeonDatabase<typeof schema> & {
+    $client: NeonClient;
+});
