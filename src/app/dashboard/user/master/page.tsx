@@ -24,7 +24,7 @@ function MasterUser() {
   return (
     <DashboardLayout>
       <DashboardLayoutHeader title='Master User'>
-        <CreateUserForm />
+        <CreateUserForm handleFetch={handleFetch}  />
       </DashboardLayoutHeader>
       <UserTable data={users} isLoading={isLoading} handleFetch={handleFetch} />
       <Paggination />

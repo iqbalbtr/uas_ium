@@ -8,23 +8,19 @@ import { createActivityLog } from "./activity-log";
 export type RoleAssignts = NavType[];
 
 export const getRoleById = async (id: number) => {
-  const getRole = await db.query.roles.findFirst({
-    where: (role, { eq }) => eq(role.id, id),
-  });
+  const getRole = await db.select().from(roles).where(eq(roles.id, id))
 
-  if (!getRole) throw new Error("Role is not found");
+  if (!getRole[0]) throw new Error("Role is not found");
 
-  return getRole;
+  return getRole[0];
 };
 
 export const getRoleByName = async (name: string) => {
-  const getRole = await db.query.roles.findFirst({
-    where: (role, { eq }) => eq(role.name, name),
-  });
+  const getRole = await db.select().from(roles).where(eq(roles.name, name))
 
-  if (!getRole) throw new Error("Role is not found");
+  if (!getRole[0]) throw new Error("Role is not found");
 
-  return getRole;
+  return getRole[0];
 };
 
 export const createRole = async (name: string, roleAssignts: RoleAssignts) => {
@@ -42,13 +38,16 @@ export const createRole = async (name: string, roleAssignts: RoleAssignts) => {
   await createActivityLog((user) => ({
     action_name: "Membuat Role",
     action_type: "create",
-    description: `${user.name} membuat informasi role ${name}`,
+    description: `${user.name} membuat role ${name}`,
     title: "Membuat Role",
   }));
   return "Role created successfully";
 };
 
 export const removeRole = async (id: number) => {
+  
+  const role = await getRoleById(id)
+  
   const count = await db
     .select({ count: sql`COUNT(*)` })
     .from(users)
@@ -61,7 +60,7 @@ export const removeRole = async (id: number) => {
   await createActivityLog((user) => ({
     action_name: "Menghapus Role",
     action_type: "delete",
-    description: `${user.name} menghapus informasi role`,
+    description: `${user.name} menghapus role ${role.name}`,
     title: "Menghapus role",
   }));
   return "Role deleted successfully";

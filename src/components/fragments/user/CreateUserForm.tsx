@@ -14,7 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@com
 import { UserPlus } from 'lucide-react';
 import Loading from '@components/ui/loading';
 
-function CreateUserForm() {
+function CreateUserForm({handleFetch}:{handleFetch: () => Promise<void>}) {
 
     const { isLoading, setLoading } = useLoading()
     const [isOpen, setOpen] = useState(false)
@@ -51,6 +51,8 @@ function CreateUserForm() {
                     description: res
                 })
                 setOpen(false)
+                await handleFetch()
+                form.reset()
             }
         } catch (error: any) {
             toast({

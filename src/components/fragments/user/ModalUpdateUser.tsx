@@ -101,9 +101,9 @@ export default function UserUpdateDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Update User Information</DialogTitle>
+          <DialogTitle>Ubah User</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Ubah informasi profile anda disini, tekan simpan jika selesai
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

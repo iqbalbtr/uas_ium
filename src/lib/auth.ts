@@ -20,6 +20,13 @@ export const authOption = {
                 }
             
                 const existingUser = await db.query.users.findFirst({
+                    with: {
+                        role: {
+                            columns: {
+                                name: true
+                            }
+                        }
+                    },
                     where: (user, { eq }) => eq(user.username, credentials.username),
                 });
             
@@ -42,6 +49,7 @@ export const authOption = {
                     phone: existingUser.phone,
                     roleId: existingUser.role_id,
                     status: existingUser.status,
+                    roleName: existingUser.role.name
                 } as any
             }
         }),
@@ -59,6 +67,7 @@ export const authOption = {
                 token.phone = user.phone;
                 token.roleId = user.roleId;
                 token.status = user.status;
+                token.roleName = user.roleName;
             }
 
             if(trigger == "update"){
@@ -76,6 +85,7 @@ export const authOption = {
                 session.user.phone = token.phone as string;
                 session.user.roleId = token.roleId as number;
                 session.user.status = token.status as string;
+                session.user.roleName = token.roleName as string;
             }
             return session;
         }

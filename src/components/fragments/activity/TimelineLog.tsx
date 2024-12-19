@@ -72,7 +72,7 @@ export default function TimelineLog() {
   }, [session]);
 
   return (
-    <div className="mx-auto p-4 border flex flex-col rounded-lg">
+    <div className="mx-auto p-4 border flex flex-col rounded-lg space-y-2">
       {timeline.map((item, index) => (
         <TimeLineCard data={item} key={index} />
       ))}

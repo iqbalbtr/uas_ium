@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/db";
-import { users } from "@/db/schema";
+import { roles, users } from "@/db/schema";
 import bcrypt from "bcrypt";
 import { getRoleByName } from "./role";
 import { and, eq, like, sql } from "drizzle-orm";
@@ -13,31 +13,27 @@ import { authOption } from "@libs/auth";
 export const getUserById = async (id: number) => {
   if (!id) throw new Error("id required");
 
-  const get = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.id, id),
-    with: {
-      role: true,
-    },
-  });
+  const get = await db.select().from(users).where(eq(users.id, id)).rightJoin(roles, eq(roles.id, users.role_id))
 
-  if (!get) throw new Error("User is not found");
+  if (!get[0]) throw new Error("User is not found");
 
-  return get;
+  return {
+    ...get[0].users,
+    role: get[0].roles
+  };
 };
 
 export const getUserByUsername = async (id: string) => {
   if (!id) throw new Error("id required");
 
-  const get = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.username, id),
-    with: {
-      role: true,
-    },
-  });
+  const get = await db.select().from(users).where(eq(users.username, id)).rightJoin(roles, eq(roles.id, users.role_id))
 
-  if (!get) throw new Error("User is not found");
+  if (!get[0]) throw new Error("User is not found");
 
-  return get;
+  return {
+    ...get[0].users,
+    role: get[0].roles
+  };
 };
 
 export const createUser = async (data: {
@@ -50,9 +46,7 @@ export const createUser = async (data: {
 }) => {
   ObjectValidation(data);
 
-  const existingUser = await db.query.users.findFirst({
-    where: (user, { eq }) => eq(user.username, data.username),
-  });
+  const existingUser = await getUserByUsername(data.username)
 
   if (existingUser) throw new Error("Username already exist!");
 
@@ -80,25 +74,27 @@ export const getUser = async (page: number = 1, limit: number = 15, query?: stri
     query ? like(users.name, `%${query}%`) : undefined
   ));
 
-  const result = await db.query.users.findMany({
-    limit,
-    offset: skip,
-    with: {
-      role: true,
-    },
-    where: (user, { like, and }) => and(
-      query ? like(user.username, `%${query}%`) : undefined,
-      query ? like(user.name, `%${query}%`) : undefined
-    ),
-    columns: {
-      id: true,
-      username: true,
-      email: true,
-      name: true,
-      phone: true,
-      status: true,
-    },
-  });
+  const result = await db.select({
+    id: users.id,
+    username: users.username,
+    email: users.email,
+    name: users.name,
+    phone: users.phone,
+    status: users.status,
+    role: {
+      id: roles.id,
+      access_rights: roles.access_rights,
+      name: roles.name
+    }
+  })
+    .from(users)
+    .limit(limit)
+    .offset(skip)
+    .leftJoin(roles, eq(roles.id, users.role_id))
+    .where(and(
+      query ? like(users.username, `%${query}%`) : undefined,
+      query ? like(users.name, `%${query}%`) : undefined
+    ))
 
   return {
     data: result as User[],
@@ -158,20 +154,20 @@ export const selftUpdateUser = async (
     !name
   )
     throw new Error("All field must be filled")
-    
-    if(password && !confirm)
-      throw new Error("All field password must be filled")
+
+  if (password && !confirm)
+    throw new Error("All field password must be filled")
 
   const session = await getServerSession(authOption)
 
-  if(!session || !session.user.id)
+  if (!session || !session.user.id)
     throw new Error("Error authorization")
 
   const user = await getUserById(+session?.user.id!)
 
-  if(password){
-    const compare = bcrypt.compareSync(confirm!, user.password)
-    if(!compare)
+  if (password) {
+    const compare = bcrypt.compareSync(confirm!, user?.password!)
+    if (!compare)
       throw new Error("Password is wrong")
   }
 

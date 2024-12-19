@@ -9,11 +9,11 @@ import { toast } from '@hooks/use-toast'
 import { Wallet } from 'lucide-react'
 import React, { useState } from 'react'
 
-function UpdateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) {
+function UpdateShiftForm({ currSaldo, handleFetch }: { handleFetch: () => Promise<void>, currSaldo: number }) {
 
     const [isOpen, setOpen] = useState(false)
     const { isLoading, setLoading } = useLoading()
-    const [saldo, setSaldo] = useState(0)
+    const [saldo, setSaldo] = useState(currSaldo)
 
     async function handleUpdate() {
         setLoading("loading")
@@ -55,7 +55,7 @@ function UpdateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
                 <div className="mx-auto w-full max-w-sm">
                     <DrawerHeader>
                         <DrawerTitle>Edit saldo</DrawerTitle>
-                        <DrawerDescription>Estimasi saldo 20000</DrawerDescription>
+                        <DrawerDescription>Ubah saldo anda</DrawerDescription>
                     </DrawerHeader>
                     <div className="p-4 pb-0">
                         <div className="flex items-center justify-center space-x-2">

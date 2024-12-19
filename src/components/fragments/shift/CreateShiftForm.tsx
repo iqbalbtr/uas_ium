@@ -64,7 +64,7 @@ function CreateShiftForm({ handleFetch }: { handleFetch: () => Promise<void> }) 
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>
-                    <SheetTitle>Tambah User</SheetTitle>
+                    <SheetTitle>Buka Shift</SheetTitle>
                 </SheetHeader>
 
                 <Form {...form}>

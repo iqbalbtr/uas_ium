@@ -130,7 +130,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                 setItems([])
                 handleFetch && handleFetch()
             }
-        } catch (error: any) {
+        } catch (error: any) {            
             toast({
                 title: "Error",
                 description: error.message,
@@ -158,7 +158,7 @@ function CreatePresceptionForm({ handleFetch }: { handleFetch: () => Promise<voi
                 <div className='grid md:grid-cols-2 gap-6'>
                     <SearchMedicine variant='presciption' handleAdd={handleAdd} />
                     <div>
-                        <h1 className='text-xl font-bold px-3'>{getRupiahFormat(total)}</h1>
+                        <h1 className='text-xl py-2 font-bold px-3'>{getRupiahFormat(total)}</h1>
                         <PresciptionMedicineTable items={items} setItem={setItems} />
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4 p-6 bg-background shadow border-2 rounded-lg border-border mt-6">

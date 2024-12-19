@@ -54,37 +54,6 @@ export function CategoryMedicineSelect({
     const { isLoading, setLoading } = useLoading()
     const [category, setCategory] = React.useState("")
 
-    // const getData = async (name?: string) => {
-    //     setLoading("loading");
-    //     try {
-    //         const get = await getRole(1, 5, name || "");
-    //         const data = get?.data || [];
-    //         setRoles(data.map(role => ({ value: role.id, label: role.name })));
-    //         setLoading("success");
-    //     } catch (error: any) {
-    //         console.error("Error fetching roles:", error);
-    //         toast({
-    //             title: "Error",
-    //             description: error.message,
-    //             variant: "destructive",
-    //         });
-    //         setLoading("error");
-    //     }
-    // }
-    // const HandleSearch = (() => {
-    //     let timeout: NodeJS.Timeout | null = null;
-    //     return (name?: string) => {
-    //         if (timeout) clearTimeout(timeout);
-    //         timeout = setTimeout(() => {
-    //             getData(name);
-    //         }, 700);
-    //     };
-    // })();
-
-    // React.useEffect(() => {
-    //     getData()
-    // }, [])
-
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>

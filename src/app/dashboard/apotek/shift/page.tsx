@@ -27,7 +27,7 @@ function Shift() {
     return (
         <DashboardLayout>
             <DashboardLayoutHeader title="Shift">
-                {data?.status_shift == "pending" && <UpdateShiftForm handleFetch={refresh} />}
+                {data?.status_shift == "pending" && <UpdateShiftForm currSaldo={data.begining_balance} handleFetch={refresh} />}
                 {data?.status_shift == "pending" && <EndShiftUserForm notes={data.notes!} handleFetch={refresh} />}
                 {(data?.end_shift || !data)  && <CreateShiftForm handleFetch={refresh} />}
             </DashboardLayoutHeader>

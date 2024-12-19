@@ -59,6 +59,7 @@ function CreateRoleForm({
                 handleFetch && handleFetch()
                 setOpen(false)
                 setAccess([])
+                form.reset()
             }
         } catch (error: any) {
             toast({

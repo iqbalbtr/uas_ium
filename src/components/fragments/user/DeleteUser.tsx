@@ -27,7 +27,7 @@ function DeleteUser({
                     title: "Success",
                     description: get
                 })
-                handleFetch && handleFetch()
+                handleFetch && await handleFetch()
                 setOpen(false)
             }
 

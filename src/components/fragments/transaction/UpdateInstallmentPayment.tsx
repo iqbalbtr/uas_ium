@@ -12,7 +12,6 @@ import { HandCoins, UserPlus } from 'lucide-react';;
 import { Table, TableBody, TableCell, TableRow } from '@components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card';
 import { Medicine } from '@models/medicines';
-import { Input } from '@components/ui/input';
 import TransactionSelect from './TransactionSelect';
 import { Transaction } from '@models/transactions';
 import { updatePaymentInstallment } from '@/actions/transaction';
@@ -163,6 +162,7 @@ function UpdateInstallmentPayment() {
                                     type: "medicine"
                                 })) : []
                             }
+                            disabled
                             variant='transaction'
                             setItem={() => { }}
                         />

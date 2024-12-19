@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { NavType } from "@components/app/app-sidebar"
+import { usePathname } from "next/navigation"
 
 export function NavMain({
   items,
@@ -31,6 +32,7 @@ export function NavMain({
 
     return <Res />
   }
+  const pathname = usePathname()  
 
 
   return (
@@ -46,7 +48,7 @@ export function NavMain({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton isActive={pathname == item.url ? true : (item.url == (pathname.split("/").slice(0,3).join("/")))} tooltip={item.title}>
                   {item.icon && <Icon name={item.icon as keyof typeof icons} />}
                   {
                     item.isParent ?
@@ -62,7 +64,7 @@ export function NavMain({
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild>
+                          <SidebarMenuSubButton isActive={pathname == subItem.url} asChild>
                             <Link href={subItem.url}>
                               <span>{subItem.title}</span>
                             </Link>
