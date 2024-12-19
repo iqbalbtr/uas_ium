@@ -105,7 +105,7 @@ function Kasir() {
     <Suspense>
       <DashboardLayout>
         {(shift.data === undefined || (shift.data && shift.data.status_shift !== "pending")) && (
-          <div className="absolute top-0 left-0 bg-black/50 z-[9999] w-full h-screen flex justify-center items-center">
+          <div className="absolute top-0 left-0 bg-black/50 z-[39] w-full min-h-full flex justify-center items-center">
             {
               shift.isLoading !== "idle" ? (
                 <Loading isLoading='loading' type='loader' />

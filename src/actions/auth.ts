@@ -4,7 +4,7 @@ import db from "@/db";
 import { roles, users } from "@/db/schema";
 import bcrypt from "bcrypt";
 import { getRoleByName } from "./role";
-import { and, eq, like, sql } from "drizzle-orm";
+import { and, count, eq, like, sql } from "drizzle-orm";
 import { ObjectValidation } from "@/lib/utils";
 import { User } from "@/model/users";
 import { getServerSession } from "next-auth";
@@ -46,13 +46,13 @@ export const createUser = async (data: {
 }) => {
   ObjectValidation(data);
 
-  const existingUser = await getUserByUsername(data.username)
+  const existingUser = await db.select({count: count()}).from(users).where(eq(users.username, data.username))
 
-  if (existingUser) throw new Error("Username already exist!");
+  if (existingUser[0].count >= 1) throw new Error("Username already exist!");
 
   const role = await getRoleByName(data.role);
 
-  const hash = await bcrypt.hash(data.password, 10);
+  const hash = bcrypt.hashSync(data.password, 10);
 
   await db.insert(users).values({
     name: data.name,

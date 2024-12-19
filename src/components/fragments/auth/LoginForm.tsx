@@ -88,7 +88,7 @@ function LoginForm() {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
-                                    Username
+                                    Password
                                 </FormLabel>
                                 <FormControl>
                                     <Input
